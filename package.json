@@ -1,0 +1,20 @@
+{
+  "name": "hare-camping-wallpaper",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate:model-textures": "node scripts/generate-model-textures.mjs",
+    "prepare:assets": "node scripts/prepare-assets.mjs",
+    "dev": "npm run prepare:assets && vite --host 127.0.0.1",
+    "test:fps": "node scripts/test-frame-limiter.mjs",
+    "test:settings": "node scripts/test-settings-adapter.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run prepare:assets && npm run typecheck && vite build && node scripts/validate-dist.mjs",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "vite": "8.2.1"
+  }
+}

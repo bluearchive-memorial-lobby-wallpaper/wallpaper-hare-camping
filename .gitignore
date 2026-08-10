@@ -1,0 +1,31 @@
+# JavaScript / TypeScript
+node_modules/
+dist/
+release/
+.vite/
+coverage/
+*.log
+
+# Local tooling
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+
+# Downloaded or generated game assets are local-only until the rights review passes.
+.cache/
+local-assets/
+generated-assets/
+public/assets/hare-camping/model/
+public/assets/hare-camping/model-*/
+public/assets/hare-camping/audio/
+public/assets/hare-camping/bgm/
+public/vendor/
+research/spine-inspection.json
+/log.txt
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
