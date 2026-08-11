@@ -1,6 +1,16 @@
-export function resetAndApplyPlaybackPose(
-  skeleton: any,
-  state: any,
+interface PlaybackSkeleton {
+  setToSetupPose: () => void;
+  updateWorldTransform: () => void;
+}
+
+interface PlaybackAnimationState<TSkeleton extends PlaybackSkeleton> {
+  clearTracks: () => void;
+  apply: (skeleton: TSkeleton) => unknown;
+}
+
+export function resetAndApplyPlaybackPose<TSkeleton extends PlaybackSkeleton>(
+  skeleton: TSkeleton,
+  state: PlaybackAnimationState<TSkeleton>,
   configureTracks: () => void,
 ) {
   state.clearTracks();
