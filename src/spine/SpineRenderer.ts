@@ -2,6 +2,7 @@ import { DIALOGUES, MODEL } from "../config";
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import type { ModelResolution } from "../settings/modelResolution";
+import { resetAndApplyPlaybackPose } from "./resetPlaybackPose";
 import { calculateViewportLayout } from "./viewportLayout";
 
 export type InteractionMode = "intro" | "idle" | "dialogue" | "look" | "pat" | "cooldown";
@@ -337,20 +338,21 @@ export class SpineRenderer {
   }
 
   playInitialSequence(withIntro: boolean) {
-    const state = this.requireData().state;
-    state.clearTracks();
+    const { skeleton, state } = this.requireData();
     this.resetInteractionOffsets();
     this.activeDialogue = null;
     this.activeDialogueEntry = undefined;
     this.dialogueFallbackRemaining = 0;
-    if (withIntro) {
-      this.setInteractionMode("intro");
-      state.setAnimation(MODEL.tracks.base, MODEL.introAnimation, false);
-      state.addAnimation(MODEL.tracks.base, MODEL.idleAnimation, true, 0);
-    } else {
-      this.setInteractionMode("idle");
-      state.setAnimation(MODEL.tracks.base, MODEL.idleAnimation, true);
-    }
+    this.cooldownRemaining = 0;
+    resetAndApplyPlaybackPose(skeleton, state, () => {
+      if (withIntro) {
+        state.setAnimation(MODEL.tracks.base, MODEL.introAnimation, false);
+        state.addAnimation(MODEL.tracks.base, MODEL.idleAnimation, true, 0);
+      } else {
+        state.setAnimation(MODEL.tracks.base, MODEL.idleAnimation, true);
+      }
+    });
+    this.setInteractionMode(withIntro ? "intro" : "idle");
   }
 
   playIntro() {
@@ -364,14 +366,15 @@ export class SpineRenderer {
   }
 
   playIdle() {
-    const state = this.requireData().state;
-    state.clearTracks();
-    state.setAnimation(MODEL.tracks.base, MODEL.idleAnimation, true);
+    const { skeleton, state } = this.requireData();
     this.activeDialogue = null;
     this.activeDialogueEntry = undefined;
     this.dialogueFallbackRemaining = 0;
     this.cooldownRemaining = 0;
     this.resetInteractionOffsets();
+    resetAndApplyPlaybackPose(skeleton, state, () => {
+      state.setAnimation(MODEL.tracks.base, MODEL.idleAnimation, true);
+    });
     this.setInteractionMode("idle");
   }
 

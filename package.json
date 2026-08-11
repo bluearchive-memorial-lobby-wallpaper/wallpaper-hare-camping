@@ -9,6 +9,8 @@
     "dev": "npm run prepare:assets && vite --host 127.0.0.1",
     "test:fps": "node scripts/test-frame-limiter.mjs",
     "test:display": "node scripts/test-display-layout.mjs",
+    "test:dialogue": "node scripts/test-dialogue-playback.mjs",
+    "test:pose": "node scripts/test-spine-pose-reset.mjs",
     "test:settings": "node scripts/test-settings-adapter.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run prepare:assets && npm run typecheck && vite build && node scripts/validate-dist.mjs",

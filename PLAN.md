@@ -167,19 +167,20 @@ loading → intro → idle
 | `mousetracking` | bool | `true` | 视线跟随 |
 | `headpatting` | bool | `true` | 头部互动 |
 | `voicelines` | bool | `true` | 对话开关 |
-| `voicevolume` | slider | `70` | 对话启用时显示的对话音量 |
+| `muted` | bool | `false` | 音量分组的统一静音开关；启用时隐藏两个音量滑块 |
+| `bgmvolume` | slider | `50` | 未静音时显示的 BGM 音量 |
+| `voicevolume` | slider | `70` | 未静音且对话启用时显示的对话音量 |
+| `dialogueautoplay` | bool | `false` | 单击一次后从当前队列位置连续播放至第五组；切换时不重置位置 |
 | `dialoguelanguagepreset` | combo | `zh-cn` | 中/日/韩固定对话预设或 `Custom`；韩语字幕回退简体中文 |
 | `voicelanguage` | combo | `zh-cn` | 自定义对话的中文/日文/韩文语音 |
 | `showsubtitles` | bool | `true` | 自定义对话的字幕开关 |
 | `subtitlelanguage` | combo | `zh-cn` | 自定义对话的简体中文/日文字幕 |
-| `bgmenabled` | bool | `true` | 离线版随包 BGM 开关 |
-| `bgmvolume` | slider | `50` | BGM 音量 |
 | `debugpreset` | combo | `off` | `Off`/`Debug Panel Only`/`All`/`Custom` 调试预设 |
 | `drawhitboxes` | bool | `false` | 自定义调试中的交互命中区域开关 |
 | `debugpanelenabled` | bool | `false` | 自定义调试中的桌面面板及其切换按钮开关 |
 | `panellanguage` | combo | `zh-cn` | 面板启用后显示的简体中文/英文界面选项 |
 
-桌面调试面板按 WE 属性页顺序复用画质、位置与缩放、动画与互动、对话语言和 BGM 的设置及其显隐规则，不提供主题颜色和 `Debug` 预设；对话音量位于互动与语言之间的独立设置块，调试工具和面板语言也独立保留。面板修改只作为当前实例的临时覆盖，不写回 WE 管理页；固定预设与 `Custom` 的子值恢复由同一设置适配器处理，管理页更新某个键时清除该键的临时覆盖，“恢复 WE 设置”清除全部临时覆盖。浏览器开发可用 `?debug=1` 显示面板，真实宿主必须先启用 `debugpanelenabled`。
+桌面调试面板按 WE 属性页顺序复用画质、位置与缩放、动画与互动、音量和对话播放的设置及其显隐规则，不提供主题颜色和 `Debug` 预设。音量分组统一包含静音、BGM 音量和对话音量；对话播放分组包含自动播放与语言预设。调试工具和面板语言独立保留。面板修改只作为当前实例的临时覆盖，不写回 WE 管理页；固定预设与 `Custom` 的子值恢复由同一设置适配器处理，管理页更新某个键时清除该键的临时覆盖，“恢复 WE 设置”清除全部临时覆盖。浏览器开发可用 `?debug=1` 显示面板，真实宿主必须先启用 `debugpanelenabled`。
 
 后续可选属性为视线跟随强度、用户自选 BGM 文件和字幕位置/缩放。实现 `file` 属性时需按 Wallpaper Engine 的本地路径规则转换为 `file:///` URL，并处理空值和不可播放格式；这些增强不属于 `1.0.0` 离线发行门槛。
 

@@ -23,13 +23,14 @@ try {
   const { resolvePropertyGroupVisibility } = await server.ssrLoadModule(
     "/src/settings/propertyGroupVisibility.ts",
   );
-  assert.equal(DEFAULT_SETTINGS_VERSION, 1);
+  assert.equal(DEFAULT_SETTINGS_VERSION, 2);
   assert.deepEqual(resolvePropertyGroupVisibility(DEFAULT_SETTINGS), {
     qualityCustom: false,
     positionCustom: false,
     interactionCustom: false,
     interactionChildren: false,
     dialogueControls: true,
+    voiceVolume: true,
     dialogueCustom: false,
     subtitleLanguage: false,
     bgmVolume: true,
@@ -48,6 +49,7 @@ try {
       interactionCustom: true,
       interactionChildren: true,
       dialogueControls: true,
+      voiceVolume: true,
       dialogueCustom: true,
       subtitleLanguage: true,
       bgmVolume: true,
@@ -57,9 +59,44 @@ try {
     resolvePropertyGroupVisibility({
       ...DEFAULT_SETTINGS,
       interactionPreset: "custom",
+      voiceEnabled: false,
+    }),
+    {
+      qualityCustom: false,
+      positionCustom: false,
+      interactionCustom: true,
+      interactionChildren: true,
+      dialogueControls: false,
+      voiceVolume: false,
+      dialogueCustom: false,
+      subtitleLanguage: false,
+      bgmVolume: true,
+    },
+  );
+  assert.deepEqual(
+    resolvePropertyGroupVisibility({
+      ...DEFAULT_SETTINGS,
+      muted: true,
+    }),
+    {
+      qualityCustom: false,
+      positionCustom: false,
+      interactionCustom: false,
+      interactionChildren: false,
+      dialogueControls: true,
+      voiceVolume: false,
+      dialogueCustom: false,
+      subtitleLanguage: false,
+      bgmVolume: false,
+    },
+  );
+  assert.deepEqual(
+    resolvePropertyGroupVisibility({
+      ...DEFAULT_SETTINGS,
+      interactionPreset: "custom",
       interactionsEnabled: false,
       dialogueLanguagePreset: "custom",
-      bgmEnabled: false,
+      muted: true,
     }),
     {
       qualityCustom: false,
@@ -67,6 +104,7 @@ try {
       interactionCustom: true,
       interactionChildren: false,
       dialogueControls: false,
+      voiceVolume: false,
       dialogueCustom: false,
       subtitleLanguage: false,
       bgmVolume: false,
@@ -119,6 +157,8 @@ try {
       positionPreset: properties.positionpreset.value,
       interactionPreset: properties.interactionpreset.value,
       dialogueLanguagePreset: properties.dialoguelanguagepreset.value,
+      muted: properties.muted.value,
+      dialogueAutoPlay: properties.dialogueautoplay.value,
       debugPreset: properties.debugpreset.value,
       bgmVolume: properties.bgmvolume.value / 100,
       voiceVolume: properties.voicevolume.value / 100,
@@ -134,6 +174,8 @@ try {
       positionPreset: DEFAULT_SETTINGS.positionPreset,
       interactionPreset: DEFAULT_SETTINGS.interactionPreset,
       dialogueLanguagePreset: DEFAULT_SETTINGS.dialogueLanguagePreset,
+      muted: DEFAULT_SETTINGS.muted,
+      dialogueAutoPlay: DEFAULT_SETTINGS.dialogueAutoPlay,
       debugPreset: DEFAULT_SETTINGS.debugPreset,
       bgmVolume: DEFAULT_SETTINGS.bgmVolume,
       voiceVolume: DEFAULT_SETTINGS.voiceVolume,
@@ -149,6 +191,15 @@ try {
 
   assert.equal(adapter.current.debugPanelEnabled, false);
   assert.equal(adapter.current.fpsLimit, 60);
+  assert.equal(adapter.current.muted, false);
+  assert.equal(adapter.current.dialogueAutoPlay, false);
+
+  listener.applyUserProperties({ muted: { value: true } });
+  assert.equal(adapter.current.muted, true);
+  listener.applyUserProperties({ muted: { value: false } });
+  listener.applyUserProperties({ dialogueautoplay: { value: true } });
+  assert.equal(adapter.current.muted, false);
+  assert.equal(adapter.current.dialogueAutoPlay, true);
 
   listener.applyUserProperties({ positionpreset: { value: "custom" } });
   listener.applyUserProperties({

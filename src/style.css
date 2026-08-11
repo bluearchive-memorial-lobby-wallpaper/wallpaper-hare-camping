@@ -333,14 +333,6 @@ body {
   border-left: 1px solid rgba(159, 190, 236, 0.2);
 }
 
-.status-panel__standalone-property {
-  margin: 0;
-  padding: 0.65rem 0.7rem 0.72rem;
-  border: 1px solid rgba(159, 190, 236, 0.18);
-  border-radius: 0.65rem;
-  background: rgba(52, 82, 130, 0.08);
-}
-
 .status-panel__control-label {
   display: flex;
   align-items: center;

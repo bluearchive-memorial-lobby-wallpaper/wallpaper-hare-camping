@@ -44,12 +44,13 @@ export interface WallpaperSettings {
   mouseTracking: boolean;
   headPatting: boolean;
   voiceEnabled: boolean;
+  muted: boolean;
   voiceLocale: VoiceLocale;
   voiceVolume: number;
+  dialogueAutoPlay: boolean;
   dialogueLanguagePreset: DialogueLanguagePreset;
   subtitlesEnabled: boolean;
   subtitleLocale: SubtitleLocale;
-  bgmEnabled: boolean;
   bgmVolume: number;
   qualityPreset: QualityPreset;
   renderResolution: RenderResolution;
@@ -65,7 +66,7 @@ export interface WallpaperSettings {
 type SettingsListener = (settings: Readonly<WallpaperSettings>) => void;
 type PauseListener = (paused: boolean) => void;
 
-export const DEFAULT_SETTINGS_VERSION = 1;
+export const DEFAULT_SETTINGS_VERSION = 2;
 
 export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   positionPreset: "default",
@@ -78,12 +79,13 @@ export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   mouseTracking: true,
   headPatting: true,
   voiceEnabled: true,
+  muted: false,
   voiceLocale: "zh-cn",
   voiceVolume: 0.7,
+  dialogueAutoPlay: false,
   dialogueLanguagePreset: "zh-cn",
   subtitlesEnabled: true,
   subtitleLocale: "zh-cn",
-  bgmEnabled: true,
   bgmVolume: 0.5,
   qualityPreset: "default",
   renderResolution: "1080p",
@@ -416,20 +418,23 @@ export class WallpaperEngineAdapter {
     if (properties.voicelines) {
       patch.voiceEnabled = Boolean(properties.voicelines.value);
     }
+    if (properties.muted) {
+      patch.muted = Boolean(properties.muted.value);
+    }
     if (properties.voicelanguage && isVoiceLocale(properties.voicelanguage.value)) {
       patch.voiceLocale = properties.voicelanguage.value;
     }
     if (properties.voicevolume) {
       patch.voiceVolume = clamp(Number(properties.voicevolume.value) / 100, 0, 1);
     }
+    if (properties.dialogueautoplay) {
+      patch.dialogueAutoPlay = Boolean(properties.dialogueautoplay.value);
+    }
     if (properties.showsubtitles) {
       patch.subtitlesEnabled = Boolean(properties.showsubtitles.value);
     }
     if (properties.subtitlelanguage && isSubtitleLocale(properties.subtitlelanguage.value)) {
       patch.subtitleLocale = properties.subtitlelanguage.value;
-    }
-    if (properties.bgmenabled) {
-      patch.bgmEnabled = Boolean(properties.bgmenabled.value);
     }
     if (properties.bgmvolume) {
       patch.bgmVolume = clamp(Number(properties.bgmvolume.value) / 100, 0, 1);

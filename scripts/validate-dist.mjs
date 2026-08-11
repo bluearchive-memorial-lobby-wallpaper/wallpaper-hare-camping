@@ -83,13 +83,15 @@ if (
   frozenDefaults?.qualitypreset?.value !== "default" ||
   frozenDefaults?.positionpreset?.value !== "default" ||
   frozenDefaults?.interactionpreset?.value !== "default" ||
+  frozenDefaults?.muted?.value !== false ||
+  frozenDefaults?.dialogueautoplay?.value !== false ||
   frozenDefaults?.dialoguelanguagepreset?.value !== "zh-cn" ||
   frozenDefaults?.debugpreset?.value !== "off" ||
   frozenDefaults?.renderresolution?.value !== "1080p" ||
   frozenDefaults?.modelresolution?.value !== "2k" ||
   frozenDefaults?.schemecolor?.value !== "0.054902 0.305882 0.674510"
 ) {
-  throw new Error("Frozen default preset v1 does not match the approved values");
+  throw new Error("Current default settings do not match the approved values");
 }
 const expectedQualityPresets = [
   ["default", "Default (1080P / 2K / 60 FPS)"],
@@ -125,13 +127,14 @@ const expectedPropertyOrder = [
   "mousetracking",
   "headpatting",
   "voicelines",
+  "muted",
+  "bgmvolume",
   "voicevolume",
+  "dialogueautoplay",
   "dialoguelanguagepreset",
   "voicelanguage",
   "showsubtitles",
   "subtitlelanguage",
-  "bgmenabled",
-  "bgmvolume",
   "debugpreset",
   "drawhitboxes",
   "debugpanelenabled",
@@ -142,6 +145,13 @@ const actualPropertyOrder = Object.entries(frozenDefaults)
   .map(([key]) => key);
 if (JSON.stringify(actualPropertyOrder) !== JSON.stringify(expectedPropertyOrder)) {
   throw new Error("Grouped property order does not match the approved layout");
+}
+if (
+  frozenDefaults.muted.type !== "bool" ||
+  frozenDefaults.dialogueautoplay.type !== "bool" ||
+  Object.hasOwn(frozenDefaults, "bgmenabled")
+) {
+  throw new Error("Volume and dialogue playback group controls are invalid");
 }
 const expectedGroupOptions = {
   positionpreset: ["default", "custom"],
@@ -174,13 +184,14 @@ const expectedPropertyLabels = {
   mousetracking: "Mouse Tracking",
   headpatting: "Head Patting",
   voicelines: "Dialogue",
+  muted: "Volume · Mute",
+  bgmvolume: "BGM Volume",
   voicevolume: "Dialogue Volume",
+  dialogueautoplay: "Dialogue Playback · Auto Play",
   dialoguelanguagepreset: "Dialogue Language",
   voicelanguage: "Voice Language",
   showsubtitles: "Show Subtitles",
   subtitlelanguage: "Subtitle Language",
-  bgmenabled: "BGM",
-  bgmvolume: "BGM Volume",
   debugpreset: "Debug",
   drawhitboxes: "Show Interactive Areas",
   debugpanelenabled: "Enable Debug Panel",
@@ -200,7 +211,10 @@ const expectedConditions = {
   mousetracking: "interactionpreset.value == 'custom' && interactions.value == true",
   headpatting: "interactionpreset.value == 'custom' && interactions.value == true",
   voicelines: "interactionpreset.value == 'custom' && interactions.value == true",
+  bgmvolume: "muted.value == false",
   voicevolume:
+    "muted.value == false && (interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true))",
+  dialogueautoplay:
     "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
   dialoguelanguagepreset:
     "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
@@ -210,7 +224,6 @@ const expectedConditions = {
     "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
   subtitlelanguage:
     "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
-  bgmvolume: "bgmenabled.value == true",
   drawhitboxes: "debugpreset.value == 'custom'",
   debugpanelenabled: "debugpreset.value == 'custom'",
   panellanguage: "debugpreset.value == 'custom' && debugpanelenabled.value == true",
@@ -402,9 +415,11 @@ const expectedDebugPanelLayout = [
   "debug-quality-preset",
   "debug-position-preset",
   "debug-interaction-preset",
+  "debug-muted",
+  "debug-bgm-volume-control",
   "debug-voice-volume-control",
+  "debug-dialogue-autoplay",
   "debug-dialogue-language-preset",
-  "debug-bgm-enabled",
 ];
 let previousDebugGroupIndex = -1;
 for (const id of expectedDebugPanelLayout) {
