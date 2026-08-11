@@ -25,7 +25,7 @@
           <div><dt data-panel-text="event">事件</dt><dd id="status-event">—</dd></div>
           <div><dt>BGM</dt><dd id="status-bgm">载入中</dd></div>
           <div><dt>Spine</dt><dd id="status-runtime">3.8.99</dd></div>
-          <div><dt data-panel-text="fpsLimit">FPS 上限</dt><dd id="status-fps">60</dd></div>
+          <div><dt data-panel-text="fps">FPS</dt><dd id="status-fps">0/60</dd></div>
           <div><dt data-panel-text="viewport">视口</dt><dd id="status-viewport">—</dd></div>
           <div><dt data-panel-text="renderStatus">渲染</dt><dd id="status-render-resolution">—</dd></div>
         </dl>
@@ -168,16 +168,34 @@
               </div>
             </fieldset>
 
-            <div id="debug-voice-volume-control" class="status-panel__control-group status-panel__standalone-property">
-              <label class="status-panel__control-label" for="debug-voice-volume">
-                <span data-panel-text="voiceVolume">对话音量</span>
-                <output id="debug-voice-volume-output" for="debug-voice-volume">70%</output>
+            <fieldset class="status-panel__property-group">
+              <legend data-panel-text="volume">音量</legend>
+              <label class="status-panel__checkbox">
+                <span data-panel-text="muted">静音</span>
+                <input id="debug-muted" type="checkbox" />
               </label>
-              <input id="debug-voice-volume" type="range" min="0" max="100" step="1" value="70" />
-            </div>
+              <div id="debug-bgm-volume-control" class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-bgm-volume">
+                  <span data-panel-text="bgmVolume">BGM 音量</span>
+                  <output id="debug-bgm-volume-output" for="debug-bgm-volume">50%</output>
+                </label>
+                <input id="debug-bgm-volume" type="range" min="0" max="100" step="1" value="50" />
+              </div>
+              <div id="debug-voice-volume-control" class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-voice-volume">
+                  <span data-panel-text="voiceVolume">对话音量</span>
+                  <output id="debug-voice-volume-output" for="debug-voice-volume">70%</output>
+                </label>
+                <input id="debug-voice-volume" type="range" min="0" max="100" step="1" value="70" />
+              </div>
+            </fieldset>
 
-            <fieldset id="debug-dialogue-language-group" class="status-panel__property-group">
-              <legend data-panel-text="dialogueLanguage">对话语言</legend>
+            <fieldset id="debug-dialogue-playback-group" class="status-panel__property-group">
+              <legend data-panel-text="dialoguePlayback">对话播放</legend>
+              <label class="status-panel__checkbox">
+                <span data-panel-text="dialogueAutoPlay">自动播放</span>
+                <input id="debug-dialogue-autoplay" type="checkbox" />
+              </label>
               <div class="status-panel__control-group">
                 <label class="status-panel__control-label" for="debug-dialogue-language-preset">
                   <span data-panel-text="preset">预设</span>
@@ -216,20 +234,6 @@
               </div>
             </fieldset>
 
-            <fieldset class="status-panel__property-group">
-              <legend>BGM</legend>
-              <label class="status-panel__checkbox">
-                <span data-panel-text="bgmEnabled">背景音乐</span>
-                <input id="debug-bgm-enabled" type="checkbox" checked />
-              </label>
-              <div id="debug-bgm-volume-control" class="status-panel__control-group">
-                <label class="status-panel__control-label" for="debug-bgm-volume">
-                  <span data-panel-text="bgmVolume">BGM 音量</span>
-                  <output id="debug-bgm-volume-output" for="debug-bgm-volume">50%</output>
-                </label>
-                <input id="debug-bgm-volume" type="range" min="0" max="100" step="1" value="50" />
-              </div>
-            </fieldset>
           </div>
         </div>
         <p id="status-error" class="status-panel__error" hidden></p>

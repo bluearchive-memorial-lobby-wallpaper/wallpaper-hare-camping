@@ -12,6 +12,7 @@ export interface PanelText {
   interaction: string;
   lastAction: string;
   event: string;
+  fps: string;
   fpsLimit: string;
   viewport: string;
   renderStatus: string;
@@ -32,17 +33,18 @@ export interface PanelText {
   mouseTracking: string;
   headPatting: string;
   dialogue: string;
+  volume: string;
+  muted: string;
+  dialoguePlayback: string;
+  dialogueAutoPlay: string;
   dialogueLanguage: string;
   showSubtitles: string;
   subtitleLanguage: string;
-  bgmEnabled: string;
   replay: string;
   skipToIdle: string;
   nextDialogue: string;
   showHitboxes: string;
   hideHitboxes: string;
-  enableBgm: string;
-  disableBgm: string;
   voiceLanguage: string;
   chinese: string;
   japanese: string;
@@ -73,6 +75,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     interaction: "交互",
     lastAction: "最近动作",
     event: "事件",
+    fps: "FPS",
     fpsLimit: "FPS 上限",
     viewport: "视口",
     renderStatus: "渲染",
@@ -93,17 +96,18 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     mouseTracking: "鼠标跟随",
     headPatting: "摸头",
     dialogue: "对话",
+    volume: "音量",
+    muted: "静音",
+    dialoguePlayback: "对话播放",
+    dialogueAutoPlay: "自动播放",
     dialogueLanguage: "对话语言",
     showSubtitles: "显示字幕",
     subtitleLanguage: "字幕语言",
-    bgmEnabled: "背景音乐",
     replay: "完整重播",
     skipToIdle: "切到待机",
     nextDialogue: "下一组对话",
     showHitboxes: "显示命中区",
     hideHitboxes: "隐藏命中区",
-    enableBgm: "开启 BGM",
-    disableBgm: "关闭 BGM",
     voiceLanguage: "对话语音",
     chinese: "中文",
     japanese: "日文",
@@ -132,6 +136,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     interaction: "Interaction",
     lastAction: "Last action",
     event: "Event",
+    fps: "FPS",
     fpsLimit: "FPS limit",
     viewport: "Viewport",
     renderStatus: "Render",
@@ -152,17 +157,18 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     mouseTracking: "Mouse tracking",
     headPatting: "Head patting",
     dialogue: "Dialogue",
+    volume: "Volume",
+    muted: "Mute",
+    dialoguePlayback: "Dialogue Playback",
+    dialogueAutoPlay: "Auto play",
     dialogueLanguage: "Dialogue Language",
     showSubtitles: "Show subtitles",
     subtitleLanguage: "Subtitle language",
-    bgmEnabled: "Background music",
     replay: "Full replay",
     skipToIdle: "Skip to idle",
     nextDialogue: "Next dialogue",
     showHitboxes: "Show hitboxes",
     hideHitboxes: "Hide hitboxes",
-    enableBgm: "Enable BGM",
-    disableBgm: "Disable BGM",
     voiceLanguage: "Dialogue voice",
     chinese: "Chinese",
     japanese: "Japanese",

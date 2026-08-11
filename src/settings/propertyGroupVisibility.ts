@@ -6,6 +6,7 @@ export interface PropertyGroupVisibility {
   interactionCustom: boolean;
   interactionChildren: boolean;
   dialogueControls: boolean;
+  voiceVolume: boolean;
   dialogueCustom: boolean;
   subtitleLanguage: boolean;
   bgmVolume: boolean;
@@ -27,8 +28,9 @@ export function resolvePropertyGroupVisibility(
     interactionChildren:
       settings.interactionPreset === "custom" && settings.interactionsEnabled,
     dialogueControls,
+    voiceVolume: !settings.muted && dialogueControls,
     dialogueCustom,
     subtitleLanguage: dialogueCustom && settings.subtitlesEnabled,
-    bgmVolume: settings.bgmEnabled,
+    bgmVolume: !settings.muted,
   };
 }

@@ -1,9 +1,15 @@
 import { DIALOGUES, type VoiceLocale } from "../config";
 import { BgmPlayer, type BgmStatus } from "../audio/BgmPlayer";
 import { VoicePlayer } from "../audio/VoicePlayer";
+import { DialoguePlaybackSequence } from "../dialogue/DialoguePlaybackSequence";
 import { SubtitlePresenter } from "../dialogue/SubtitlePresenter";
 import { PANEL_TEXT, type PanelText } from "../i18n/panel";
 import { PointerInteractionController } from "../interaction/PointerInteractionController";
+import {
+  canTriggerDialogue,
+  didDialogueSettingChange,
+  didInteractionSettingsChange,
+} from "../interaction/interactionSettings";
 import {
   WallpaperEngineAdapter,
   type WallpaperSettings,
@@ -59,17 +65,18 @@ export class App {
   private readonly mouseTrackingCheckbox: HTMLInputElement;
   private readonly headPattingCheckbox: HTMLInputElement;
   private readonly voiceEnabledCheckbox: HTMLInputElement;
+  private readonly mutedCheckbox: HTMLInputElement;
   private readonly voiceVolumeControl: HTMLElement;
   private readonly voiceVolumeSlider: HTMLInputElement;
   private readonly voiceVolumeOutput: HTMLOutputElement;
-  private readonly dialogueLanguageGroup: HTMLElement;
+  private readonly dialoguePlaybackGroup: HTMLElement;
+  private readonly dialogueAutoPlayCheckbox: HTMLInputElement;
   private readonly dialogueLanguagePresetSelect: HTMLSelectElement;
   private readonly dialogueCustomControls: HTMLElement;
   private readonly voiceLanguageSelect: HTMLSelectElement;
   private readonly showSubtitlesCheckbox: HTMLInputElement;
   private readonly subtitleLanguageControl: HTMLElement;
   private readonly subtitleLanguageSelect: HTMLSelectElement;
-  private readonly bgmEnabledCheckbox: HTMLInputElement;
   private readonly bgmVolumeControl: HTMLElement;
   private readonly bgmVolumeSlider: HTMLInputElement;
   private readonly bgmVolumeOutput: HTMLOutputElement;
@@ -84,6 +91,7 @@ export class App {
   private readonly subtitle: SubtitlePresenter;
   private readonly voice: VoicePlayer;
   private readonly bgm: BgmPlayer;
+  private readonly dialoguePlayback = new DialoguePlaybackSequence(DIALOGUES.length);
   private renderer?: SpineRenderer;
   private pointerController?: PointerInteractionController;
   private settings: Readonly<WallpaperSettings> = this.adapter.current;
@@ -92,7 +100,6 @@ export class App {
   private interactionMode: InteractionMode = "intro";
   private lastAction = "—";
   private lastSpineEvent = "—";
-  private nextDialogueIndex = 1;
   private frameRequest = 0;
   private lastFrameTime = performance.now() / 1000;
   private readonly frameLimiter = new FrameLimiter();
@@ -189,6 +196,7 @@ export class App {
     );
     this.headPattingCheckbox = this.getElement("debug-head-patting", HTMLInputElement);
     this.voiceEnabledCheckbox = this.getElement("debug-voice-enabled", HTMLInputElement);
+    this.mutedCheckbox = this.getElement("debug-muted", HTMLInputElement);
     this.voiceVolumeControl = this.getElement(
       "debug-voice-volume-control",
       HTMLElement,
@@ -198,9 +206,13 @@ export class App {
       "debug-voice-volume-output",
       HTMLOutputElement,
     );
-    this.dialogueLanguageGroup = this.getElement(
-      "debug-dialogue-language-group",
+    this.dialoguePlaybackGroup = this.getElement(
+      "debug-dialogue-playback-group",
       HTMLElement,
+    );
+    this.dialogueAutoPlayCheckbox = this.getElement(
+      "debug-dialogue-autoplay",
+      HTMLInputElement,
     );
     this.dialogueLanguagePresetSelect = this.getElement(
       "debug-dialogue-language-preset",
@@ -226,7 +238,6 @@ export class App {
       "debug-subtitle-language",
       HTMLSelectElement,
     );
-    this.bgmEnabledCheckbox = this.getElement("debug-bgm-enabled", HTMLInputElement);
     this.bgmVolumeControl = this.getElement("debug-bgm-volume-control", HTMLElement);
     this.bgmVolumeSlider = this.getElement("debug-bgm-volume", HTMLInputElement);
     this.bgmVolumeOutput = this.getElement(
@@ -293,7 +304,10 @@ export class App {
           }
           this.interactionMode = mode;
           this.interactionLabel.textContent = this.panelText.interactions[mode];
-          if (mode === "idle") this.subtitle.hide();
+          if (mode === "idle") {
+            this.subtitle.hide();
+            this.finishDialogueAndContinueAutomaticPlayback();
+          }
         },
         onSpineEvent: (event) => this.handleSpineEvent(event),
         onContextLost: () => this.handleRendererContextLost(),
@@ -305,7 +319,7 @@ export class App {
       this.pointerController = new PointerInteractionController(
         this.canvas,
         this.renderer,
-        { onDialogueRequested: () => this.playNextDialogue() },
+        { onDialogueRequested: () => this.playNextDialogue(undefined, true) },
       );
       this.pointerController.applySettings(this.settings);
       this.renderer.playInitialSequence(this.settings.introAnimation);
@@ -331,16 +345,13 @@ export class App {
 
   private applySettings(settings: Readonly<WallpaperSettings>) {
     const previousSettings = this.settings;
+    const interactionSettingsChanged = didInteractionSettingsChange(
+      previousSettings,
+      settings,
+    );
     this.settings = settings;
     this.syncPanelText();
     this.renderer?.applySettings(settings);
-    if (
-      this.renderer &&
-      previousSettings.introAnimation &&
-      !settings.introAnimation
-    ) {
-      this.renderer.skipIntro();
-    }
     if (
       this.renderer &&
       previousSettings.modelResolution !== settings.modelResolution
@@ -350,8 +361,14 @@ export class App {
         .catch((error) => this.fail(error));
     }
     this.pointerController?.applySettings(settings);
-    this.voice.configure(settings.voiceEnabled, settings.voiceVolume);
-    this.bgm.configure(settings.bgmEnabled, settings.bgmVolume);
+    if (interactionSettingsChanged) {
+      this.returnToIdle(didDialogueSettingChange(previousSettings, settings));
+    }
+    this.dialoguePlayback.setAutomaticPlaybackAfterCurrent(
+      settings.dialogueAutoPlay && canTriggerDialogue(settings),
+    );
+    this.voice.configure(settings.voiceEnabled && !settings.muted, settings.voiceVolume);
+    this.bgm.configure(!settings.muted, settings.bgmVolume);
     this.updateBgmLabel(this.bgm.getSnapshot().status);
     this.subtitle.configure(settings.subtitlesEnabled, settings.subtitleLocale);
     this.syncDebugControls(settings);
@@ -380,13 +397,43 @@ export class App {
     if (this.settings.drawHitboxes) this.drawInteractionOverlay();
   }
 
-  private playNextDialogue(index = this.nextDialogueIndex): boolean {
-    if (!this.renderer) return false;
+  private playNextDialogue(index?: number, allowAutomaticPlayback = false): boolean {
+    if (!this.renderer || !canTriggerDialogue(this.settings)) return false;
+    const automatic =
+      allowAutomaticPlayback &&
+      this.settings.dialogueAutoPlay;
+    const targetIndex = index ?? this.dialoguePlayback.nextIndex;
     this.voice.stop();
     this.subtitle.hide();
-    if (!this.renderer.playDialogue(index)) return false;
-    this.nextDialogueIndex = (index % DIALOGUES.length) + 1;
+    if (!this.renderer.playDialogue(targetIndex)) return false;
+    this.dialoguePlayback.start(targetIndex, automatic);
     return true;
+  }
+
+  private finishDialogueAndContinueAutomaticPlayback() {
+    if (!this.renderer) return;
+    const index = this.dialoguePlayback.takeAutomaticContinuation();
+    if (index === null) return;
+    this.voice.stop();
+    this.subtitle.hide();
+    if (!this.renderer.playDialogue(index)) {
+      this.dialoguePlayback.stop();
+    }
+  }
+
+  private skipToIdle() {
+    this.dialoguePlayback.stop();
+    this.voice.stop();
+    this.subtitle.hide();
+    this.renderer?.playIdle();
+  }
+
+  private returnToIdle(resetDialogueQueue = false) {
+    if (resetDialogueQueue) this.dialoguePlayback.reset();
+    else this.dialoguePlayback.stop();
+    this.voice.stop();
+    this.subtitle.hide();
+    this.renderer?.playIdle();
   }
 
   private handleSpineEvent(event: SpineEventDetail) {
@@ -432,7 +479,8 @@ export class App {
         interactionMode: this.interactionMode,
         lastAction: this.lastAction,
         lastSpineEvent: this.lastSpineEvent,
-        nextDialogueIndex: this.nextDialogueIndex,
+        nextDialogueIndex: this.dialoguePlayback.nextIndex,
+        dialogueAutoPlayActive: this.dialoguePlayback.automaticPlaybackActive,
         fpsLimit: this.settings.fpsLimit,
         settings: { ...this.settings },
         settingsState: this.adapter.settingsState,
@@ -448,7 +496,7 @@ export class App {
         },
       }),
       replayIntro: () => this.replaySession(),
-      skipToIdle: () => this.renderer?.playIdle(),
+      skipToIdle: () => this.skipToIdle(),
       playDialogue: (index) => this.playNextDialogue(index),
       setFpsLimit: (fps) => this.adapter.setFpsLimitForDebug(fps),
       retryBgm: () => this.bgm.retryFromUserGesture(),
@@ -463,7 +511,7 @@ export class App {
       this.syncDebugPanelVisibility();
     });
     this.replayIntroButton.addEventListener("click", () => this.replaySession());
-    this.skipIdleButton.addEventListener("click", () => this.renderer?.playIdle());
+    this.skipIdleButton.addEventListener("click", () => this.skipToIdle());
     this.dialogueButton.addEventListener("click", () => this.playNextDialogue());
     this.qualityPresetSelect.addEventListener("change", () =>
       this.adapter.setUserPropertiesForDebug({
@@ -516,9 +564,17 @@ export class App {
         voicelines: this.voiceEnabledCheckbox.checked,
       }),
     );
+    this.mutedCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({ muted: this.mutedCheckbox.checked }),
+    );
     this.voiceVolumeSlider.addEventListener("input", () =>
       this.adapter.setUserPropertiesForDebug({
         voicevolume: Number(this.voiceVolumeSlider.value),
+      }),
+    );
+    this.dialogueAutoPlayCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        dialogueautoplay: this.dialogueAutoPlayCheckbox.checked,
       }),
     );
     this.dialogueLanguagePresetSelect.addEventListener("change", () =>
@@ -537,11 +593,6 @@ export class App {
     this.subtitleLanguageSelect.addEventListener("change", () =>
       this.adapter.setUserPropertiesForDebug({
         subtitlelanguage: this.subtitleLanguageSelect.value,
-      }),
-    );
-    this.bgmEnabledCheckbox.addEventListener("change", () =>
-      this.adapter.setUserPropertiesForDebug({
-        bgmenabled: this.bgmEnabledCheckbox.checked,
       }),
     );
     this.bgmVolumeSlider.addEventListener("input", () =>
@@ -589,11 +640,11 @@ export class App {
     const target = event.target;
     if (
       target instanceof Element &&
-      target.closest("#debug-bgm-enabled, #debug-replay-intro")
+      target.closest("#debug-muted, #debug-replay-intro")
     ) {
       return;
     }
-    if (!this.settings.bgmEnabled || this.isPaused()) return;
+    if (this.settings.muted || this.isPaused()) return;
     void this.bgm.retryFromUserGesture().then((playing) => {
       if (playing) this.removeBgmUnlockListeners();
     });
@@ -608,18 +659,16 @@ export class App {
     if (!this.renderer) return false;
     this.voice.stop();
     this.subtitle.hide();
-    this.nextDialogueIndex = 1;
+    this.dialoguePlayback.reset();
     this.lastSpineEvent = "—";
     this.eventLabel.textContent = "—";
     this.lastAction = "—";
     this.lastActionLabel.textContent = "—";
     this.renderer.playInitialSequence(this.settings.introAnimation);
-    if (this.settings.bgmEnabled) {
+    if (!this.settings.muted) {
       void this.bgm.restartFromUserGesture();
     } else {
       this.bgm.rewind();
-      this.adapter.setUserPropertiesForDebug({ bgmenabled: true });
-      void this.bgm.retryFromUserGesture();
     }
     return true;
   }
@@ -651,17 +700,18 @@ export class App {
     this.headPattingCheckbox.checked = settings.headPatting;
     this.voiceEnabledCheckbox.checked = settings.voiceEnabled;
     this.interactionDependentControls.hidden = !visibility.interactionChildren;
-    this.voiceVolumeControl.hidden = !visibility.dialogueControls;
+    this.mutedCheckbox.checked = settings.muted;
+    this.voiceVolumeControl.hidden = !visibility.voiceVolume;
     this.voiceVolumeSlider.value = String(voiceVolume);
     this.voiceVolumeOutput.value = `${voiceVolume}%`;
-    this.dialogueLanguageGroup.hidden = !visibility.dialogueControls;
+    this.dialoguePlaybackGroup.hidden = !visibility.dialogueControls;
+    this.dialogueAutoPlayCheckbox.checked = settings.dialogueAutoPlay;
     this.dialogueLanguagePresetSelect.value = settings.dialogueLanguagePreset;
     this.dialogueCustomControls.hidden = !visibility.dialogueCustom;
     this.voiceLanguageSelect.value = settings.voiceLocale;
     this.showSubtitlesCheckbox.checked = settings.subtitlesEnabled;
     this.subtitleLanguageControl.hidden = !visibility.subtitleLanguage;
     this.subtitleLanguageSelect.value = settings.subtitleLocale;
-    this.bgmEnabledCheckbox.checked = settings.bgmEnabled;
     this.bgmVolumeControl.hidden = !visibility.bgmVolume;
     this.bgmVolumeSlider.value = String(bgmVolume);
     this.bgmVolumeOutput.value = `${bgmVolume}%`;
@@ -670,9 +720,8 @@ export class App {
     this.renderResolutionSelect.value = settings.renderResolution;
     this.modelResolutionSelect.value = settings.modelResolution;
     this.panelLanguageSelect.value = settings.panelLocale;
+    this.updateFpsLabel();
     const text = this.panelText;
-    this.fpsLabel.textContent =
-      settings.fpsLimit === 0 ? text.unlimited : String(settings.fpsLimit);
     this.hitboxesButton.textContent = settings.drawHitboxes
       ? text.hideHitboxes
       : text.showHitboxes;
@@ -684,6 +733,8 @@ export class App {
     this.frameLimiter.reset();
     this.resetPerformanceWindow();
     const paused = this.isPaused();
+    if (paused) this.measuredFps = 0;
+    this.updateFpsLabel();
     this.voice.setPaused(paused);
     this.bgm.setPaused(paused);
     if (paused) this.setPhase("paused");
@@ -699,6 +750,8 @@ export class App {
     this.lastFrameTime = performance.now() / 1000;
     this.frameLimiter.reset();
     this.resetPerformanceWindow();
+    this.measuredFps = 0;
+    this.updateFpsLabel();
     this.voice.setPaused(true);
     this.bgm.setPaused(true);
     this.setPhase("loading");
@@ -734,7 +787,17 @@ export class App {
     this.root.dataset.actualFps = String(this.measuredFps);
     this.root.dataset.averageRenderMs = String(this.averageRenderMilliseconds);
     this.root.dataset.maximumRenderMs = String(this.maximumRenderMilliseconds);
+    this.updateFpsLabel();
     this.resetPerformanceWindow(timestampMilliseconds);
+  }
+
+  private updateFpsLabel() {
+    const currentFps = this.measuredFps.toFixed(1).replace(/\.0$/, "");
+    const limit =
+      this.settings.fpsLimit === 0
+        ? this.panelText.unlimited
+        : String(this.settings.fpsLimit);
+    this.fpsLabel.textContent = `${currentFps}/${limit}`;
   }
 
   private resetPerformanceWindow(startedAt = performance.now()) {
@@ -776,7 +839,9 @@ export class App {
 
   private updateBgmLabel(status: BgmStatus) {
     const snapshot = this.bgm.getSnapshot();
-    this.bgmLabel.textContent = `${this.panelText.bgmStates[status]} · ${Math.round(this.settings.bgmVolume * 100)}%`;
+    this.bgmLabel.textContent = this.settings.muted
+      ? this.panelText.muted
+      : `${this.panelText.bgmStates[status]} · ${Math.round(this.settings.bgmVolume * 100)}%`;
     this.bgmLabel.dataset.currentTime = String(snapshot.currentTime);
   }
 

@@ -161,84 +161,92 @@
         "type": "bool",
         "value": true
       },
-      "voicevolume": {
-        "condition": "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
-        "fraction": false,
+      "muted": {
         "index": 15,
+        "order": 30,
+        "text": "Volume · Mute",
+        "type": "bool",
+        "value": false
+      },
+      "bgmvolume": {
+        "condition": "muted.value == false",
+        "fraction": false,
+        "index": 16,
         "max": 100,
         "min": 0,
-        "order": 30,
+        "order": 31,
+        "text": "BGM Volume",
+        "type": "slider",
+        "value": 50
+      },
+      "voicevolume": {
+        "condition": "muted.value == false && (interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true))",
+        "fraction": false,
+        "index": 17,
+        "max": 100,
+        "min": 0,
+        "order": 32,
         "text": "Dialogue Volume",
         "type": "slider",
         "value": 70
       },
+      "dialogueautoplay": {
+        "condition": "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
+        "index": 18,
+        "order": 40,
+        "text": "Dialogue Playback · Auto Play",
+        "type": "bool",
+        "value": false
+      },
       "dialoguelanguagepreset": {
         "condition": "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
-        "index": 16,
+        "index": 19,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "Japanese", "value": "ja" },
           { "label": "Korean", "value": "ko" },
           { "label": "Custom", "value": "custom" }
         ],
-        "order": 31,
+        "order": 41,
         "text": "Dialogue Language",
         "type": "combo",
         "value": "zh-cn"
       },
       "voicelanguage": {
         "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
-        "index": 17,
+        "index": 20,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "Japanese", "value": "ja" },
           { "label": "Korean", "value": "ko" }
         ],
-        "order": 32,
+        "order": 42,
         "text": "Voice Language",
         "type": "combo",
         "value": "zh-cn"
       },
       "showsubtitles": {
         "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
-        "index": 18,
-        "order": 33,
+        "index": 21,
+        "order": 43,
         "text": "Show Subtitles",
         "type": "bool",
         "value": true
       },
       "subtitlelanguage": {
         "condition": "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
-        "index": 19,
+        "index": 22,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "Japanese", "value": "ja" }
         ],
-        "order": 34,
+        "order": 44,
         "text": "Subtitle Language",
         "type": "combo",
         "value": "zh-cn"
       },
-      "bgmenabled": {
-        "index": 20,
-        "order": 40,
-        "text": "BGM",
-        "type": "bool",
-        "value": true
-      },
-      "bgmvolume": {
-        "condition": "bgmenabled.value == true",
-        "fraction": false,
-        "index": 21,
-        "max": 100,
-        "min": 0,
-        "order": 41,
-        "text": "BGM Volume",
-        "type": "slider",
-        "value": 50
-      },
       "debugpreset": {
-        "index": 22,
+        "index": 23,
         "options": [
           { "label": "Off", "value": "off" },
           { "label": "Debug Panel Only", "value": "panel" },
@@ -252,7 +260,7 @@
       },
       "drawhitboxes": {
         "condition": "debugpreset.value == 'custom'",
-        "index": 23,
+        "index": 24,
         "order": 51,
         "text": "Show Interactive Areas",
         "type": "bool",
@@ -260,7 +268,7 @@
       },
       "debugpanelenabled": {
         "condition": "debugpreset.value == 'custom'",
-        "index": 24,
+        "index": 25,
         "order": 52,
         "text": "Enable Debug Panel",
         "type": "bool",
@@ -268,7 +276,7 @@
       },
       "panellanguage": {
         "condition": "debugpreset.value == 'custom' && debugpanelenabled.value == true",
-        "index": 25,
+        "index": 26,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "English", "value": "en" }

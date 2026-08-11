@@ -1,6 +1,10 @@
 import { MODEL } from "../config";
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 import type { SpineRenderer } from "../spine/SpineRenderer";
+import {
+  canTriggerDialogue,
+  didInteractionSettingsChange,
+} from "./interactionSettings";
 
 type PointerIntent = "dialogue" | "look" | "pat";
 
@@ -38,8 +42,14 @@ export class PointerInteractionController {
   }
 
   applySettings(settings: Readonly<WallpaperSettings>) {
+    const previousSettings = this.settings;
     this.settings = settings;
-    if (!settings.interactionsEnabled) this.cancelActive();
+    if (
+      !settings.interactionsEnabled ||
+      (previousSettings && didInteractionSettingsChange(previousSettings, settings))
+    ) {
+      this.cancelActive();
+    }
   }
 
   dispose() {
@@ -113,7 +123,9 @@ export class PointerInteractionController {
     if (!active || active.id !== event.pointerId) return;
     if (active.intent === "look") this.renderer.endLook();
     else if (active.intent === "pat") this.renderer.endPat();
-    else this.callbacks.onDialogueRequested();
+    else if (this.settings && canTriggerDialogue(this.settings)) {
+      this.callbacks.onDialogueRequested();
+    }
     this.releaseActive(event.pointerId);
     event.preventDefault();
   };
