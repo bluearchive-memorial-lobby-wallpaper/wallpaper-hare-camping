@@ -398,5 +398,30 @@ if (
 if (/M3\s+LOCAL\s+TEST/i.test(builtHtml)) {
   throw new Error("Built HTML still contains M3 test labeling");
 }
+const expectedDebugPanelLayout = [
+  "debug-quality-preset",
+  "debug-position-preset",
+  "debug-interaction-preset",
+  "debug-voice-volume-control",
+  "debug-dialogue-language-preset",
+  "debug-bgm-enabled",
+];
+let previousDebugGroupIndex = -1;
+for (const id of expectedDebugPanelLayout) {
+  const index = builtHtml.indexOf(`id="${id}"`);
+  if (index <= previousDebugGroupIndex) {
+    throw new Error(`Debug panel property group is missing or out of order: ${id}`);
+  }
+  previousDebugGroupIndex = index;
+}
+if (
+  builtHtml.includes('id="debug-debug-preset"') ||
+  builtHtml.includes('id="debug-theme-color"') ||
+  !builtHtml.includes('id="debug-hitboxes"')
+) {
+  throw new Error(
+    "Debug panel must omit Theme Color and the WE Debug preset while retaining tools",
+  );
+}
 
 console.log("Validated offline 1.0 dist: preview, metadata, notices, 2K/4K/8K model tiers, 30 voices, BGM, Runtime, and checksums.");

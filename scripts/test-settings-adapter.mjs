@@ -20,7 +20,58 @@ try {
   } = await server.ssrLoadModule(
     "/src/settings/WallpaperEngineAdapter.ts",
   );
+  const { resolvePropertyGroupVisibility } = await server.ssrLoadModule(
+    "/src/settings/propertyGroupVisibility.ts",
+  );
   assert.equal(DEFAULT_SETTINGS_VERSION, 1);
+  assert.deepEqual(resolvePropertyGroupVisibility(DEFAULT_SETTINGS), {
+    qualityCustom: false,
+    positionCustom: false,
+    interactionCustom: false,
+    interactionChildren: false,
+    dialogueControls: true,
+    dialogueCustom: false,
+    subtitleLanguage: false,
+    bgmVolume: true,
+  });
+  assert.deepEqual(
+    resolvePropertyGroupVisibility({
+      ...DEFAULT_SETTINGS,
+      qualityPreset: "custom",
+      positionPreset: "custom",
+      interactionPreset: "custom",
+      dialogueLanguagePreset: "custom",
+    }),
+    {
+      qualityCustom: true,
+      positionCustom: true,
+      interactionCustom: true,
+      interactionChildren: true,
+      dialogueControls: true,
+      dialogueCustom: true,
+      subtitleLanguage: true,
+      bgmVolume: true,
+    },
+  );
+  assert.deepEqual(
+    resolvePropertyGroupVisibility({
+      ...DEFAULT_SETTINGS,
+      interactionPreset: "custom",
+      interactionsEnabled: false,
+      dialogueLanguagePreset: "custom",
+      bgmEnabled: false,
+    }),
+    {
+      qualityCustom: false,
+      positionCustom: false,
+      interactionCustom: true,
+      interactionChildren: false,
+      dialogueControls: false,
+      dialogueCustom: false,
+      subtitleLanguage: false,
+      bgmVolume: false,
+    },
+  );
   assert.deepEqual(
     {
       modelScale: DEFAULT_SETTINGS.modelScale,
@@ -219,6 +270,74 @@ try {
   listener.applyGeneralProperties({ fps: 60 });
   assert.equal(adapter.current.fpsLimit, 60);
   listener.applyUserProperties({ bgmvolume: { value: 50 } });
+
+  adapter.setUserPropertiesForDebug({ positionpreset: "default" });
+  assert.deepEqual(
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
+    [0.8, 0, 0],
+  );
+  adapter.setUserPropertiesForDebug({ positionpreset: "custom" });
+  assert.deepEqual(
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
+    [0.92, 140, -80],
+  );
+  adapter.setUserPropertiesForDebug({ modelscale: 1.05, modelx: -210 });
+  adapter.setUserPropertiesForDebug({ positionpreset: "default" });
+  adapter.setUserPropertiesForDebug({ positionpreset: "custom" });
+  assert.deepEqual(
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
+    [1.05, -210, -80],
+  );
+
+  adapter.setUserPropertiesForDebug({ interactionpreset: "default" });
+  assert.equal(adapter.current.introAnimation, true);
+  assert.equal(adapter.current.mouseTracking, true);
+  assert.equal(adapter.current.voiceEnabled, true);
+  adapter.setUserPropertiesForDebug({ interactionpreset: "custom" });
+  assert.equal(adapter.current.introAnimation, false);
+  assert.equal(adapter.current.mouseTracking, false);
+  assert.equal(adapter.current.voiceEnabled, false);
+  adapter.setUserPropertiesForDebug({ voicelines: true, headpatting: true });
+  adapter.setUserPropertiesForDebug({ interactionpreset: "default" });
+  adapter.setUserPropertiesForDebug({ interactionpreset: "custom" });
+  assert.equal(adapter.current.voiceEnabled, true);
+  assert.equal(adapter.current.headPatting, true);
+
+  adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "ko" });
+  assert.equal(adapter.current.voiceLocale, "ko");
+  assert.equal(adapter.current.subtitlesEnabled, true);
+  assert.equal(adapter.current.subtitleLocale, "zh-cn");
+  adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "custom" });
+  assert.equal(adapter.current.voiceLocale, "ja");
+  assert.equal(adapter.current.subtitlesEnabled, false);
+  assert.equal(adapter.current.subtitleLocale, "ja");
+
+  adapter.setUserPropertiesForDebug({ qualitypreset: "maximum" });
+  assert.equal(adapter.current.renderResolution, "2160p");
+  assert.equal(adapter.current.modelResolution, "8k");
+  assert.equal(adapter.current.fpsLimit, 60);
+  adapter.setUserPropertiesForDebug({ qualitypreset: "custom" });
+  assert.equal(adapter.current.renderResolution, "1440p");
+  assert.equal(adapter.current.modelResolution, "4k");
+  adapter.setUserPropertiesForDebug({
+    renderresolution: "720p",
+    modelresolution: "2k",
+    fpslimit: 45,
+  });
+  adapter.setUserPropertiesForDebug({ qualitypreset: "default" });
+  adapter.setUserPropertiesForDebug({ qualitypreset: "custom" });
+  assert.equal(adapter.current.renderResolution, "720p");
+  assert.equal(adapter.current.modelResolution, "2k");
+  assert.equal(adapter.current.fpsLimit, 45);
+
+  adapter.clearSessionOverrides();
+  assert.deepEqual(
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
+    [0.92, 140, -80],
+  );
+  assert.equal(adapter.current.qualityPreset, "custom");
+  assert.equal(adapter.current.renderResolution, "1440p");
+  assert.equal(adapter.current.modelResolution, "4k");
 
   adapter.setFpsLimitForDebug(120);
   adapter.setUserPropertiesForDebug({ bgmvolume: 63 });

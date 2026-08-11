@@ -155,6 +155,18 @@ export class WallpaperEngineAdapter {
     drawHitboxes: DEFAULT_SETTINGS.drawHitboxes,
     panelLocale: DEFAULT_SETTINGS.panelLocale,
   };
+  private sessionCustomQualitySettings: QualityPresetSettings = {
+    ...this.customQualitySettings,
+  };
+  private sessionCustomPositionSettings: PositionPresetSettings = {
+    ...this.customPositionSettings,
+  };
+  private sessionCustomInteractionSettings: InteractionPresetSettings = {
+    ...this.customInteractionSettings,
+  };
+  private sessionCustomDialogueLanguageSettings: DialogueLanguagePresetSettings = {
+    ...this.customDialogueLanguageSettings,
+  };
 
   constructor() {
     window.wallpaperPropertyListener = {
@@ -180,9 +192,7 @@ export class WallpaperEngineAdapter {
   }
 
   setFpsLimitForDebug(fps: number) {
-    this.patchSession({
-      fpsLimit: this.resolveFpsLimit(clamp(fps, 30, 160)),
-    });
+    this.setUserPropertiesForDebug({ fpslimit: clamp(fps, 15, 160) });
   }
 
   setUserPropertiesForDebug(
@@ -193,6 +203,39 @@ export class WallpaperEngineAdapter {
         Object.entries(properties).map(([key, value]) => [key, { value }]),
       ),
     );
+    this.captureSessionCustomSettings(patch);
+    if (patch.positionPreset !== undefined) {
+      Object.assign(
+        patch,
+        patch.positionPreset === "custom"
+          ? this.sessionCustomPositionSettings
+          : POSITION_PRESETS[patch.positionPreset],
+      );
+    }
+    if (patch.interactionPreset !== undefined) {
+      Object.assign(
+        patch,
+        patch.interactionPreset === "custom"
+          ? this.sessionCustomInteractionSettings
+          : INTERACTION_PRESETS[patch.interactionPreset],
+      );
+    }
+    if (patch.dialogueLanguagePreset !== undefined) {
+      Object.assign(
+        patch,
+        patch.dialogueLanguagePreset === "custom"
+          ? this.sessionCustomDialogueLanguageSettings
+          : DIALOGUE_LANGUAGE_PRESETS[patch.dialogueLanguagePreset],
+      );
+    }
+    if (patch.qualityPreset !== undefined) {
+      Object.assign(
+        patch,
+        patch.qualityPreset === "custom"
+          ? this.sessionCustomQualitySettings
+          : QUALITY_PRESETS[patch.qualityPreset],
+      );
+    }
     if (patch.fpsLimit !== undefined) {
       patch.fpsLimit = this.resolveFpsLimit(patch.fpsLimit);
     }
@@ -202,6 +245,7 @@ export class WallpaperEngineAdapter {
   clearSessionOverrides() {
     if (Object.keys(this.sessionOverrides).length === 0) return;
     this.sessionOverrides = {};
+    this.resetSessionCustomSettings();
     this.publish();
   }
 
@@ -272,6 +316,7 @@ export class WallpaperEngineAdapter {
     if (patch.fpsLimit !== undefined) {
       this.customQualitySettings.fpsLimit = patch.fpsLimit;
     }
+    this.captureSessionCustomSettings(patch);
 
     const positionPreset = patch.positionPreset ?? this.hostSettings.positionPreset;
     if (positionPreset === "custom") {
@@ -421,6 +466,58 @@ export class WallpaperEngineAdapter {
     }
 
     return patch;
+  }
+
+  private captureSessionCustomSettings(patch: Partial<WallpaperSettings>) {
+    if (patch.modelScale !== undefined) {
+      this.sessionCustomPositionSettings.modelScale = patch.modelScale;
+    }
+    if (patch.modelX !== undefined) this.sessionCustomPositionSettings.modelX = patch.modelX;
+    if (patch.modelY !== undefined) this.sessionCustomPositionSettings.modelY = patch.modelY;
+    if (patch.introAnimation !== undefined) {
+      this.sessionCustomInteractionSettings.introAnimation = patch.introAnimation;
+    }
+    if (patch.interactionsEnabled !== undefined) {
+      this.sessionCustomInteractionSettings.interactionsEnabled =
+        patch.interactionsEnabled;
+    }
+    if (patch.mouseTracking !== undefined) {
+      this.sessionCustomInteractionSettings.mouseTracking = patch.mouseTracking;
+    }
+    if (patch.headPatting !== undefined) {
+      this.sessionCustomInteractionSettings.headPatting = patch.headPatting;
+    }
+    if (patch.voiceEnabled !== undefined) {
+      this.sessionCustomInteractionSettings.voiceEnabled = patch.voiceEnabled;
+    }
+    if (patch.voiceLocale !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.voiceLocale = patch.voiceLocale;
+    }
+    if (patch.subtitlesEnabled !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.subtitlesEnabled =
+        patch.subtitlesEnabled;
+    }
+    if (patch.subtitleLocale !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.subtitleLocale = patch.subtitleLocale;
+    }
+    if (patch.renderResolution !== undefined) {
+      this.sessionCustomQualitySettings.renderResolution = patch.renderResolution;
+    }
+    if (patch.modelResolution !== undefined) {
+      this.sessionCustomQualitySettings.modelResolution = patch.modelResolution;
+    }
+    if (patch.fpsLimit !== undefined) {
+      this.sessionCustomQualitySettings.fpsLimit = patch.fpsLimit;
+    }
+  }
+
+  private resetSessionCustomSettings() {
+    this.sessionCustomQualitySettings = { ...this.customQualitySettings };
+    this.sessionCustomPositionSettings = { ...this.customPositionSettings };
+    this.sessionCustomInteractionSettings = { ...this.customInteractionSettings };
+    this.sessionCustomDialogueLanguageSettings = {
+      ...this.customDialogueLanguageSettings,
+    };
   }
 
   private resolveFpsLimit(projectFpsLimit = this.projectFpsLimit) {

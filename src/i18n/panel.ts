@@ -15,8 +15,27 @@ export interface PanelText {
   fpsLimit: string;
   viewport: string;
   renderStatus: string;
+  visualQuality: string;
+  preset: string;
+  defaultPreset: string;
+  maximumPreset: string;
+  customPreset: string;
   renderResolution: string;
   modelResolution: string;
+  positionAndScale: string;
+  modelScale: string;
+  modelX: string;
+  modelY: string;
+  animationAndInteractions: string;
+  introAnimation: string;
+  interactiveActions: string;
+  mouseTracking: string;
+  headPatting: string;
+  dialogue: string;
+  dialogueLanguage: string;
+  showSubtitles: string;
+  subtitleLanguage: string;
+  bgmEnabled: string;
   replay: string;
   skipToIdle: string;
   nextDialogue: string;
@@ -57,8 +76,27 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     fpsLimit: "FPS 上限",
     viewport: "视口",
     renderStatus: "渲染",
+    visualQuality: "画面质量",
+    preset: "预设",
+    defaultPreset: "默认",
+    maximumPreset: "最高",
+    customPreset: "自定义",
     renderResolution: "渲染分辨率",
     modelResolution: "模型纹理",
+    positionAndScale: "位置与缩放",
+    modelScale: "模型缩放",
+    modelX: "模型 X",
+    modelY: "模型 Y",
+    animationAndInteractions: "动画与互动",
+    introAnimation: "入场动画",
+    interactiveActions: "交互动作",
+    mouseTracking: "鼠标跟随",
+    headPatting: "摸头",
+    dialogue: "对话",
+    dialogueLanguage: "对话语言",
+    showSubtitles: "显示字幕",
+    subtitleLanguage: "字幕语言",
+    bgmEnabled: "背景音乐",
     replay: "完整重播",
     skipToIdle: "切到待机",
     nextDialogue: "下一组对话",
@@ -97,8 +135,27 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     fpsLimit: "FPS limit",
     viewport: "Viewport",
     renderStatus: "Render",
+    visualQuality: "Visual Quality",
+    preset: "Preset",
+    defaultPreset: "Default",
+    maximumPreset: "Maximum",
+    customPreset: "Custom",
     renderResolution: "Render resolution",
     modelResolution: "Model texture",
+    positionAndScale: "Position & Scale",
+    modelScale: "Model scale",
+    modelX: "Model X",
+    modelY: "Model Y",
+    animationAndInteractions: "Animation & Interactions",
+    introAnimation: "Intro animation",
+    interactiveActions: "Interactive actions",
+    mouseTracking: "Mouse tracking",
+    headPatting: "Head patting",
+    dialogue: "Dialogue",
+    dialogueLanguage: "Dialogue Language",
+    showSubtitles: "Show subtitles",
+    subtitleLanguage: "Subtitle language",
+    bgmEnabled: "Background music",
     replay: "Full replay",
     skipToIdle: "Skip to idle",
     nextDialogue: "Next dialogue",
@@ -114,7 +171,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     bgmVolume: "BGM volume",
     frameRate: "Frame rate",
     panelLanguage: "Panel language",
-    simplifiedChinese: "简体中文",
+    simplifiedChinese: "Simplified Chinese",
     english: "English",
     loadingSpine: "Loading Spine assets…",
     unlimited: "Unlimited",

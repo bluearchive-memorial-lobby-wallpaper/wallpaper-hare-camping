@@ -29,46 +29,16 @@
           <div><dt data-panel-text="viewport">视口</dt><dd id="status-viewport">—</dd></div>
           <div><dt data-panel-text="renderStatus">渲染</dt><dd id="status-render-resolution">—</dd></div>
         </dl>
-        <div id="debug-controls" class="status-panel__actions" aria-label="壁纸调试控制" data-panel-aria="controlsAria">
-          <button id="debug-replay-intro" type="button" data-panel-text="replay">完整重播</button>
-          <button id="debug-skip-idle" type="button" data-panel-text="skipToIdle">切到待机</button>
-          <button id="debug-dialogue" type="button" data-panel-text="nextDialogue">下一组对话</button>
-          <button id="debug-hitboxes" type="button">显示命中区</button>
-          <button id="debug-bgm-toggle" type="button">BGM 开关</button>
-          <button id="debug-restore-host-settings" type="button" data-panel-text="restoreHostSettings">恢复 WE 设置</button>
-
-          <div class="status-panel__control-group">
-            <label class="status-panel__control-label" for="debug-fps">
-              <span data-panel-text="frameRate">帧率</span>
-              <output id="debug-fps-output" for="debug-fps">60 FPS</output>
-            </label>
-            <input id="debug-fps" type="range" min="30" max="160" step="1" value="60" />
+        <div id="debug-controls" class="status-panel__controls" aria-label="壁纸调试控制" data-panel-aria="controlsAria">
+          <div class="status-panel__toolbar">
+            <button id="debug-replay-intro" type="button" data-panel-text="replay">完整重播</button>
+            <button id="debug-skip-idle" type="button" data-panel-text="skipToIdle">切到待机</button>
+            <button id="debug-dialogue" type="button" data-panel-text="nextDialogue">下一组对话</button>
+            <button id="debug-hitboxes" type="button">显示命中区</button>
+            <button id="debug-restore-host-settings" type="button" data-panel-text="restoreHostSettings">恢复 WE 设置</button>
           </div>
 
-          <div class="status-panel__control-group">
-            <label class="status-panel__control-label" for="debug-render-resolution">
-              <span data-panel-text="renderResolution">渲染分辨率</span>
-            </label>
-            <select id="debug-render-resolution">
-              <option value="720p">720P</option>
-              <option value="1080p" selected>1080P</option>
-              <option value="1440p">2K</option>
-              <option value="2160p">4K</option>
-            </select>
-          </div>
-
-          <div class="status-panel__control-group">
-            <label class="status-panel__control-label" for="debug-model-resolution">
-              <span data-panel-text="modelResolution">模型纹理</span>
-            </label>
-            <select id="debug-model-resolution">
-              <option value="2k">2K</option>
-              <option value="4k" selected>4K</option>
-              <option value="8k">8K</option>
-            </select>
-          </div>
-
-          <div class="status-panel__control-group">
+          <div class="status-panel__control-group status-panel__panel-language">
             <label class="status-panel__control-label" for="debug-panel-language">
               <span data-panel-text="panelLanguage">面板语言</span>
             </label>
@@ -78,29 +48,188 @@
             </select>
           </div>
 
-          <div class="status-panel__control-group">
-            <span class="status-panel__control-label" data-panel-text="voiceLanguage">对话语音</span>
-            <div class="status-panel__language-buttons" role="group" aria-label="对话语音语言" data-panel-aria="voiceLanguageAria">
-              <button id="debug-language-zh" type="button" aria-pressed="true" data-panel-text="chinese">中文</button>
-              <button id="debug-language-ja" type="button" aria-pressed="false" data-panel-text="japanese">日文</button>
-              <button id="debug-language-ko" type="button" aria-pressed="false" data-panel-text="korean">韩文</button>
+          <div class="status-panel__property-groups">
+            <fieldset class="status-panel__property-group">
+              <legend data-panel-text="visualQuality">画面质量</legend>
+              <div class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-quality-preset">
+                  <span data-panel-text="preset">预设</span>
+                </label>
+                <select id="debug-quality-preset">
+                  <option value="default" data-panel-text="defaultPreset" selected>默认</option>
+                  <option value="2k">2K</option>
+                  <option value="4k">4K</option>
+                  <option value="maximum" data-panel-text="maximumPreset">最高</option>
+                  <option value="custom" data-panel-text="customPreset">自定义</option>
+                </select>
+              </div>
+              <div id="debug-quality-custom" class="status-panel__nested-controls" hidden>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-render-resolution">
+                    <span data-panel-text="renderResolution">渲染分辨率</span>
+                  </label>
+                  <select id="debug-render-resolution">
+                    <option value="720p">720P</option>
+                    <option value="1080p" selected>1080P</option>
+                    <option value="1440p">2K</option>
+                    <option value="2160p">4K</option>
+                  </select>
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-model-resolution">
+                    <span data-panel-text="modelResolution">模型纹理</span>
+                  </label>
+                  <select id="debug-model-resolution">
+                    <option value="2k" selected>2K</option>
+                    <option value="4k">4K</option>
+                    <option value="8k">8K</option>
+                  </select>
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-fps">
+                    <span data-panel-text="fpsLimit">FPS 上限</span>
+                    <output id="debug-fps-output" for="debug-fps">60 FPS</output>
+                  </label>
+                  <input id="debug-fps" type="range" min="15" max="160" step="1" value="60" />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="status-panel__property-group">
+              <legend data-panel-text="positionAndScale">位置与缩放</legend>
+              <div class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-position-preset">
+                  <span data-panel-text="preset">预设</span>
+                </label>
+                <select id="debug-position-preset">
+                  <option value="default" data-panel-text="defaultPreset" selected>默认</option>
+                  <option value="custom" data-panel-text="customPreset">自定义</option>
+                </select>
+              </div>
+              <div id="debug-position-custom" class="status-panel__nested-controls" hidden>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-model-scale">
+                    <span data-panel-text="modelScale">模型缩放</span>
+                    <output id="debug-model-scale-output" for="debug-model-scale">0.80</output>
+                  </label>
+                  <input id="debug-model-scale" type="range" min="0.6" max="1.4" step="0.01" value="0.8" />
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-model-x">
+                    <span data-panel-text="modelX">模型 X</span>
+                    <output id="debug-model-x-output" for="debug-model-x">0</output>
+                  </label>
+                  <input id="debug-model-x" type="range" min="-1000" max="1000" step="1" value="0" />
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-model-y">
+                    <span data-panel-text="modelY">模型 Y</span>
+                    <output id="debug-model-y-output" for="debug-model-y">0</output>
+                  </label>
+                  <input id="debug-model-y" type="range" min="-1000" max="1000" step="1" value="0" />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="status-panel__property-group">
+              <legend data-panel-text="animationAndInteractions">动画与互动</legend>
+              <div class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-interaction-preset">
+                  <span data-panel-text="preset">预设</span>
+                </label>
+                <select id="debug-interaction-preset">
+                  <option value="default" data-panel-text="defaultPreset" selected>默认</option>
+                  <option value="custom" data-panel-text="customPreset">自定义</option>
+                </select>
+              </div>
+              <div id="debug-interaction-custom" class="status-panel__nested-controls" hidden>
+                <label class="status-panel__checkbox">
+                  <span data-panel-text="introAnimation">入场动画</span>
+                  <input id="debug-intro-animation" type="checkbox" checked />
+                </label>
+                <label class="status-panel__checkbox">
+                  <span data-panel-text="interactiveActions">交互动作</span>
+                  <input id="debug-interactions-enabled" type="checkbox" checked />
+                </label>
+                <div id="debug-interaction-dependent" class="status-panel__nested-controls">
+                  <label class="status-panel__checkbox">
+                    <span data-panel-text="mouseTracking">鼠标跟随</span>
+                    <input id="debug-mouse-tracking" type="checkbox" checked />
+                  </label>
+                  <label class="status-panel__checkbox">
+                    <span data-panel-text="headPatting">摸头</span>
+                    <input id="debug-head-patting" type="checkbox" checked />
+                  </label>
+                  <label class="status-panel__checkbox">
+                    <span data-panel-text="dialogue">对话</span>
+                    <input id="debug-voice-enabled" type="checkbox" checked />
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div id="debug-voice-volume-control" class="status-panel__control-group status-panel__standalone-property">
+              <label class="status-panel__control-label" for="debug-voice-volume">
+                <span data-panel-text="voiceVolume">对话音量</span>
+                <output id="debug-voice-volume-output" for="debug-voice-volume">70%</output>
+              </label>
+              <input id="debug-voice-volume" type="range" min="0" max="100" step="1" value="70" />
             </div>
-          </div>
 
-          <div class="status-panel__control-group">
-            <label class="status-panel__control-label" for="debug-voice-volume">
-              <span data-panel-text="voiceVolume">对话音量</span>
-              <output id="debug-voice-volume-output" for="debug-voice-volume">70%</output>
-            </label>
-            <input id="debug-voice-volume" type="range" min="0" max="100" step="1" value="70" />
-          </div>
+            <fieldset id="debug-dialogue-language-group" class="status-panel__property-group">
+              <legend data-panel-text="dialogueLanguage">对话语言</legend>
+              <div class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-dialogue-language-preset">
+                  <span data-panel-text="preset">预设</span>
+                </label>
+                <select id="debug-dialogue-language-preset">
+                  <option value="zh-cn" data-panel-text="simplifiedChinese" selected>简体中文</option>
+                  <option value="ja" data-panel-text="japanese">日文</option>
+                  <option value="ko" data-panel-text="korean">韩文</option>
+                  <option value="custom" data-panel-text="customPreset">自定义</option>
+                </select>
+              </div>
+              <div id="debug-dialogue-custom" class="status-panel__nested-controls" hidden>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-voice-language">
+                    <span data-panel-text="voiceLanguage">对话语音</span>
+                  </label>
+                  <select id="debug-voice-language">
+                    <option value="zh-cn" data-panel-text="simplifiedChinese" selected>简体中文</option>
+                    <option value="ja" data-panel-text="japanese">日文</option>
+                    <option value="ko" data-panel-text="korean">韩文</option>
+                  </select>
+                </div>
+                <label class="status-panel__checkbox">
+                  <span data-panel-text="showSubtitles">显示字幕</span>
+                  <input id="debug-show-subtitles" type="checkbox" checked />
+                </label>
+                <div id="debug-subtitle-language-control" class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-subtitle-language">
+                    <span data-panel-text="subtitleLanguage">字幕语言</span>
+                  </label>
+                  <select id="debug-subtitle-language">
+                    <option value="zh-cn" data-panel-text="simplifiedChinese" selected>简体中文</option>
+                    <option value="ja" data-panel-text="japanese">日文</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
 
-          <div class="status-panel__control-group">
-            <label class="status-panel__control-label" for="debug-bgm-volume">
-              <span data-panel-text="bgmVolume">BGM 音量</span>
-              <output id="debug-bgm-volume-output" for="debug-bgm-volume">50%</output>
-            </label>
-            <input id="debug-bgm-volume" type="range" min="0" max="100" step="1" value="50" />
+            <fieldset class="status-panel__property-group">
+              <legend>BGM</legend>
+              <label class="status-panel__checkbox">
+                <span data-panel-text="bgmEnabled">背景音乐</span>
+                <input id="debug-bgm-enabled" type="checkbox" checked />
+              </label>
+              <div id="debug-bgm-volume-control" class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-bgm-volume">
+                  <span data-panel-text="bgmVolume">BGM 音量</span>
+                  <output id="debug-bgm-volume-output" for="debug-bgm-volume">50%</output>
+                </label>
+                <input id="debug-bgm-volume" type="range" min="0" max="100" step="1" value="50" />
+              </div>
+            </fieldset>
           </div>
         </div>
         <p id="status-error" class="status-panel__error" hidden></p>

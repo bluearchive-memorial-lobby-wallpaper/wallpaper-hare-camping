@@ -32,8 +32,8 @@
 ## 3. 最终产物
 
 - 文件：`release/hare-camping-we-offline-v1.0.0.zip`
-- 大小：113,465,313 B
-- SHA-256：`9ddfe26bda81517f8af2cf9a8ed5d9a84130f244aea153f6345537b701899ba4`
+- 大小：113,467,899 B
+- SHA-256：`c3e0bf5c9f802ca4c903c4f001cd46a0d71d8a7bcac46004f267327dd25badfb`
 - 外部校验文件：`release/hare-camping-we-offline-v1.0.0.zip.sha256`
 - 包内清单：`MANIFEST.sha256`
 - 包内文件：54 个（53 个清单覆盖文件，加清单自身）

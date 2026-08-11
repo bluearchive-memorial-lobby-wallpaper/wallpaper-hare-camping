@@ -10,6 +10,7 @@ import {
 } from "../settings/WallpaperEngineAdapter";
 import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import { MODEL_RESOLUTIONS } from "../settings/modelResolution";
+import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
 import { FrameLimiter } from "../render/FrameLimiter";
 import {
   SpineRenderer,
@@ -40,11 +41,36 @@ export class App {
   private readonly replayIntroButton: HTMLButtonElement;
   private readonly skipIdleButton: HTMLButtonElement;
   private readonly dialogueButton: HTMLButtonElement;
-  private readonly chineseButton: HTMLButtonElement;
-  private readonly japaneseButton: HTMLButtonElement;
-  private readonly koreanButton: HTMLButtonElement;
+  private readonly qualityPresetSelect: HTMLSelectElement;
+  private readonly qualityCustomControls: HTMLElement;
+  private readonly positionPresetSelect: HTMLSelectElement;
+  private readonly positionCustomControls: HTMLElement;
+  private readonly modelScaleSlider: HTMLInputElement;
+  private readonly modelScaleOutput: HTMLOutputElement;
+  private readonly modelXSlider: HTMLInputElement;
+  private readonly modelXOutput: HTMLOutputElement;
+  private readonly modelYSlider: HTMLInputElement;
+  private readonly modelYOutput: HTMLOutputElement;
+  private readonly interactionPresetSelect: HTMLSelectElement;
+  private readonly interactionCustomControls: HTMLElement;
+  private readonly interactionDependentControls: HTMLElement;
+  private readonly introAnimationCheckbox: HTMLInputElement;
+  private readonly interactionsEnabledCheckbox: HTMLInputElement;
+  private readonly mouseTrackingCheckbox: HTMLInputElement;
+  private readonly headPattingCheckbox: HTMLInputElement;
+  private readonly voiceEnabledCheckbox: HTMLInputElement;
+  private readonly voiceVolumeControl: HTMLElement;
   private readonly voiceVolumeSlider: HTMLInputElement;
   private readonly voiceVolumeOutput: HTMLOutputElement;
+  private readonly dialogueLanguageGroup: HTMLElement;
+  private readonly dialogueLanguagePresetSelect: HTMLSelectElement;
+  private readonly dialogueCustomControls: HTMLElement;
+  private readonly voiceLanguageSelect: HTMLSelectElement;
+  private readonly showSubtitlesCheckbox: HTMLInputElement;
+  private readonly subtitleLanguageControl: HTMLElement;
+  private readonly subtitleLanguageSelect: HTMLSelectElement;
+  private readonly bgmEnabledCheckbox: HTMLInputElement;
+  private readonly bgmVolumeControl: HTMLElement;
   private readonly bgmVolumeSlider: HTMLInputElement;
   private readonly bgmVolumeOutput: HTMLOutputElement;
   private readonly fpsSlider: HTMLInputElement;
@@ -53,7 +79,6 @@ export class App {
   private readonly modelResolutionSelect: HTMLSelectElement;
   private readonly panelLanguageSelect: HTMLSelectElement;
   private readonly hitboxesButton: HTMLButtonElement;
-  private readonly bgmToggleButton: HTMLButtonElement;
   private readonly restoreHostSettingsButton: HTMLButtonElement;
   private readonly adapter = new WallpaperEngineAdapter();
   private readonly subtitle: SubtitlePresenter;
@@ -116,14 +141,93 @@ export class App {
     this.replayIntroButton = this.getElement("debug-replay-intro", HTMLButtonElement);
     this.skipIdleButton = this.getElement("debug-skip-idle", HTMLButtonElement);
     this.dialogueButton = this.getElement("debug-dialogue", HTMLButtonElement);
-    this.chineseButton = this.getElement("debug-language-zh", HTMLButtonElement);
-    this.japaneseButton = this.getElement("debug-language-ja", HTMLButtonElement);
-    this.koreanButton = this.getElement("debug-language-ko", HTMLButtonElement);
+    this.qualityPresetSelect = this.getElement(
+      "debug-quality-preset",
+      HTMLSelectElement,
+    );
+    this.qualityCustomControls = this.getElement("debug-quality-custom", HTMLElement);
+    this.positionPresetSelect = this.getElement(
+      "debug-position-preset",
+      HTMLSelectElement,
+    );
+    this.positionCustomControls = this.getElement(
+      "debug-position-custom",
+      HTMLElement,
+    );
+    this.modelScaleSlider = this.getElement("debug-model-scale", HTMLInputElement);
+    this.modelScaleOutput = this.getElement(
+      "debug-model-scale-output",
+      HTMLOutputElement,
+    );
+    this.modelXSlider = this.getElement("debug-model-x", HTMLInputElement);
+    this.modelXOutput = this.getElement("debug-model-x-output", HTMLOutputElement);
+    this.modelYSlider = this.getElement("debug-model-y", HTMLInputElement);
+    this.modelYOutput = this.getElement("debug-model-y-output", HTMLOutputElement);
+    this.interactionPresetSelect = this.getElement(
+      "debug-interaction-preset",
+      HTMLSelectElement,
+    );
+    this.interactionCustomControls = this.getElement(
+      "debug-interaction-custom",
+      HTMLElement,
+    );
+    this.interactionDependentControls = this.getElement(
+      "debug-interaction-dependent",
+      HTMLElement,
+    );
+    this.introAnimationCheckbox = this.getElement(
+      "debug-intro-animation",
+      HTMLInputElement,
+    );
+    this.interactionsEnabledCheckbox = this.getElement(
+      "debug-interactions-enabled",
+      HTMLInputElement,
+    );
+    this.mouseTrackingCheckbox = this.getElement(
+      "debug-mouse-tracking",
+      HTMLInputElement,
+    );
+    this.headPattingCheckbox = this.getElement("debug-head-patting", HTMLInputElement);
+    this.voiceEnabledCheckbox = this.getElement("debug-voice-enabled", HTMLInputElement);
+    this.voiceVolumeControl = this.getElement(
+      "debug-voice-volume-control",
+      HTMLElement,
+    );
     this.voiceVolumeSlider = this.getElement("debug-voice-volume", HTMLInputElement);
     this.voiceVolumeOutput = this.getElement(
       "debug-voice-volume-output",
       HTMLOutputElement,
     );
+    this.dialogueLanguageGroup = this.getElement(
+      "debug-dialogue-language-group",
+      HTMLElement,
+    );
+    this.dialogueLanguagePresetSelect = this.getElement(
+      "debug-dialogue-language-preset",
+      HTMLSelectElement,
+    );
+    this.dialogueCustomControls = this.getElement(
+      "debug-dialogue-custom",
+      HTMLElement,
+    );
+    this.voiceLanguageSelect = this.getElement(
+      "debug-voice-language",
+      HTMLSelectElement,
+    );
+    this.showSubtitlesCheckbox = this.getElement(
+      "debug-show-subtitles",
+      HTMLInputElement,
+    );
+    this.subtitleLanguageControl = this.getElement(
+      "debug-subtitle-language-control",
+      HTMLElement,
+    );
+    this.subtitleLanguageSelect = this.getElement(
+      "debug-subtitle-language",
+      HTMLSelectElement,
+    );
+    this.bgmEnabledCheckbox = this.getElement("debug-bgm-enabled", HTMLInputElement);
+    this.bgmVolumeControl = this.getElement("debug-bgm-volume-control", HTMLElement);
     this.bgmVolumeSlider = this.getElement("debug-bgm-volume", HTMLInputElement);
     this.bgmVolumeOutput = this.getElement(
       "debug-bgm-volume-output",
@@ -144,7 +248,6 @@ export class App {
       HTMLSelectElement,
     );
     this.hitboxesButton = this.getElement("debug-hitboxes", HTMLButtonElement);
-    this.bgmToggleButton = this.getElement("debug-bgm-toggle", HTMLButtonElement);
     this.restoreHostSettingsButton = this.getElement(
       "debug-restore-host-settings",
       HTMLButtonElement,
@@ -362,12 +465,83 @@ export class App {
     this.replayIntroButton.addEventListener("click", () => this.replaySession());
     this.skipIdleButton.addEventListener("click", () => this.renderer?.playIdle());
     this.dialogueButton.addEventListener("click", () => this.playNextDialogue());
-    this.chineseButton.addEventListener("click", () => this.setVoiceLocale("zh-cn"));
-    this.japaneseButton.addEventListener("click", () => this.setVoiceLocale("ja"));
-    this.koreanButton.addEventListener("click", () => this.setVoiceLocale("ko"));
+    this.qualityPresetSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        qualitypreset: this.qualityPresetSelect.value,
+      }),
+    );
+    this.positionPresetSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        positionpreset: this.positionPresetSelect.value,
+      }),
+    );
+    this.modelScaleSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        modelscale: Number(this.modelScaleSlider.value),
+      }),
+    );
+    this.modelXSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({ modelx: Number(this.modelXSlider.value) }),
+    );
+    this.modelYSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({ modely: Number(this.modelYSlider.value) }),
+    );
+    this.interactionPresetSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        interactionpreset: this.interactionPresetSelect.value,
+      }),
+    );
+    this.introAnimationCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        introanimation: this.introAnimationCheckbox.checked,
+      }),
+    );
+    this.interactionsEnabledCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        interactions: this.interactionsEnabledCheckbox.checked,
+      }),
+    );
+    this.mouseTrackingCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        mousetracking: this.mouseTrackingCheckbox.checked,
+      }),
+    );
+    this.headPattingCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        headpatting: this.headPattingCheckbox.checked,
+      }),
+    );
+    this.voiceEnabledCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        voicelines: this.voiceEnabledCheckbox.checked,
+      }),
+    );
     this.voiceVolumeSlider.addEventListener("input", () =>
       this.adapter.setUserPropertiesForDebug({
         voicevolume: Number(this.voiceVolumeSlider.value),
+      }),
+    );
+    this.dialogueLanguagePresetSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        dialoguelanguagepreset: this.dialogueLanguagePresetSelect.value,
+      }),
+    );
+    this.voiceLanguageSelect.addEventListener("change", () =>
+      this.setVoiceLocale(this.voiceLanguageSelect.value as VoiceLocale),
+    );
+    this.showSubtitlesCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        showsubtitles: this.showSubtitlesCheckbox.checked,
+      }),
+    );
+    this.subtitleLanguageSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        subtitlelanguage: this.subtitleLanguageSelect.value,
+      }),
+    );
+    this.bgmEnabledCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        bgmenabled: this.bgmEnabledCheckbox.checked,
       }),
     );
     this.bgmVolumeSlider.addEventListener("input", () =>
@@ -376,7 +550,9 @@ export class App {
       }),
     );
     this.fpsSlider.addEventListener("input", () =>
-      this.adapter.setFpsLimitForDebug(Number(this.fpsSlider.value)),
+      this.adapter.setUserPropertiesForDebug({
+        fpslimit: Number(this.fpsSlider.value),
+      }),
     );
     this.renderResolutionSelect.addEventListener("change", () =>
       this.adapter.setUserPropertiesForDebug({
@@ -398,11 +574,6 @@ export class App {
         drawhitboxes: !this.settings.drawHitboxes,
       }),
     );
-    this.bgmToggleButton.addEventListener("click", () =>
-      this.adapter.setUserPropertiesForDebug({
-        bgmenabled: !this.settings.bgmEnabled,
-      }),
-    );
     this.restoreHostSettingsButton.addEventListener("click", () =>
       this.adapter.clearSessionOverrides(),
     );
@@ -418,7 +589,7 @@ export class App {
     const target = event.target;
     if (
       target instanceof Element &&
-      target.closest("#debug-bgm-toggle, #debug-replay-intro")
+      target.closest("#debug-bgm-enabled, #debug-replay-intro")
     ) {
       return;
     }
@@ -458,11 +629,40 @@ export class App {
   }
 
   private syncDebugControls(settings: Readonly<WallpaperSettings>) {
+    const visibility = resolvePropertyGroupVisibility(settings);
     const voiceVolume = Math.round(settings.voiceVolume * 100);
     const bgmVolume = Math.round(settings.bgmVolume * 100);
-    const panelFps = Math.min(Math.max(settings.fpsLimit || 30, 30), 160);
+    const panelFps = Math.min(Math.max(settings.fpsLimit || 15, 15), 160);
+    this.qualityPresetSelect.value = settings.qualityPreset;
+    this.qualityCustomControls.hidden = !visibility.qualityCustom;
+    this.positionPresetSelect.value = settings.positionPreset;
+    this.positionCustomControls.hidden = !visibility.positionCustom;
+    this.modelScaleSlider.value = String(settings.modelScale);
+    this.modelScaleOutput.value = settings.modelScale.toFixed(2);
+    this.modelXSlider.value = String(settings.modelX);
+    this.modelXOutput.value = String(settings.modelX);
+    this.modelYSlider.value = String(settings.modelY);
+    this.modelYOutput.value = String(settings.modelY);
+    this.interactionPresetSelect.value = settings.interactionPreset;
+    this.interactionCustomControls.hidden = !visibility.interactionCustom;
+    this.introAnimationCheckbox.checked = settings.introAnimation;
+    this.interactionsEnabledCheckbox.checked = settings.interactionsEnabled;
+    this.mouseTrackingCheckbox.checked = settings.mouseTracking;
+    this.headPattingCheckbox.checked = settings.headPatting;
+    this.voiceEnabledCheckbox.checked = settings.voiceEnabled;
+    this.interactionDependentControls.hidden = !visibility.interactionChildren;
+    this.voiceVolumeControl.hidden = !visibility.dialogueControls;
     this.voiceVolumeSlider.value = String(voiceVolume);
     this.voiceVolumeOutput.value = `${voiceVolume}%`;
+    this.dialogueLanguageGroup.hidden = !visibility.dialogueControls;
+    this.dialogueLanguagePresetSelect.value = settings.dialogueLanguagePreset;
+    this.dialogueCustomControls.hidden = !visibility.dialogueCustom;
+    this.voiceLanguageSelect.value = settings.voiceLocale;
+    this.showSubtitlesCheckbox.checked = settings.subtitlesEnabled;
+    this.subtitleLanguageControl.hidden = !visibility.subtitleLanguage;
+    this.subtitleLanguageSelect.value = settings.subtitleLocale;
+    this.bgmEnabledCheckbox.checked = settings.bgmEnabled;
+    this.bgmVolumeControl.hidden = !visibility.bgmVolume;
     this.bgmVolumeSlider.value = String(bgmVolume);
     this.bgmVolumeOutput.value = `${bgmVolume}%`;
     this.fpsSlider.value = String(panelFps);
@@ -470,27 +670,12 @@ export class App {
     this.renderResolutionSelect.value = settings.renderResolution;
     this.modelResolutionSelect.value = settings.modelResolution;
     this.panelLanguageSelect.value = settings.panelLocale;
-    this.chineseButton.setAttribute(
-      "aria-pressed",
-      String(settings.voiceLocale === "zh-cn"),
-    );
-    this.japaneseButton.setAttribute(
-      "aria-pressed",
-      String(settings.voiceLocale === "ja"),
-    );
-    this.koreanButton.setAttribute(
-      "aria-pressed",
-      String(settings.voiceLocale === "ko"),
-    );
     const text = this.panelText;
     this.fpsLabel.textContent =
       settings.fpsLimit === 0 ? text.unlimited : String(settings.fpsLimit);
     this.hitboxesButton.textContent = settings.drawHitboxes
       ? text.hideHitboxes
       : text.showHitboxes;
-    this.bgmToggleButton.textContent = settings.bgmEnabled
-      ? text.disableBgm
-      : text.enableBgm;
     this.restoreHostSettingsButton.disabled = !this.adapter.hasSessionOverrides;
   }
 

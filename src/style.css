@@ -135,7 +135,7 @@ body {
   z-index: 2;
   top: 1.25rem;
   left: 1.25rem;
-  width: min(22rem, calc(100vw - 2.5rem));
+  width: min(24rem, calc(100vw - 2.5rem));
   max-height: calc(100vh - 2.5rem);
   padding: 1rem 1.1rem;
   border: 1px solid rgba(159, 190, 236, 0.2);
@@ -244,16 +244,19 @@ body {
   border-top: 1px solid rgba(255, 150, 150, 0.2);
 }
 
-.status-panel__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+.status-panel__controls {
   margin-top: 0.85rem;
   padding-top: 0.75rem;
   border-top: 1px solid rgba(159, 190, 236, 0.16);
 }
 
-.status-panel__actions button {
+.status-panel__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.status-panel__controls button {
   padding: 0.38rem 0.58rem;
   color: rgba(239, 246, 255, 0.88);
   font: inherit;
@@ -264,29 +267,78 @@ body {
   cursor: pointer;
 }
 
-.status-panel__actions button:hover,
-.status-panel__actions button:focus-visible {
+.status-panel__controls button:hover,
+.status-panel__controls button:focus-visible {
   border-color: rgba(159, 200, 255, 0.55);
   background: rgba(103, 150, 216, 0.24);
   outline: none;
 }
 
-.status-panel__actions button[aria-pressed="true"] {
+.status-panel__controls button[aria-pressed="true"] {
   color: #ffffff;
   border-color: rgba(159, 200, 255, 0.72);
   background: rgba(103, 150, 216, 0.42);
 }
 
-.status-panel__actions button:disabled {
+.status-panel__controls button:disabled {
   opacity: 0.42;
   cursor: not-allowed;
 }
 
 .status-panel__control-group {
   display: grid;
-  flex: 1 0 100%;
   gap: 0.38rem;
   margin-top: 0.15rem;
+}
+
+.status-panel__control-group[hidden],
+.status-panel__nested-controls[hidden],
+.status-panel__property-group[hidden] {
+  display: none;
+}
+
+.status-panel__panel-language {
+  margin-top: 0.7rem;
+}
+
+.status-panel__property-groups {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.75rem;
+}
+
+.status-panel__property-group {
+  display: grid;
+  min-inline-size: 0;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.65rem 0.7rem 0.72rem;
+  border: 1px solid rgba(159, 190, 236, 0.18);
+  border-radius: 0.65rem;
+  background: rgba(52, 82, 130, 0.08);
+}
+
+.status-panel__property-group legend {
+  padding: 0 0.35rem;
+  color: #a9cffd;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.status-panel__nested-controls {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.55rem 0 0 0.55rem;
+  border-left: 1px solid rgba(159, 190, 236, 0.2);
+}
+
+.status-panel__standalone-property {
+  margin: 0;
+  padding: 0.65rem 0.7rem 0.72rem;
+  border: 1px solid rgba(159, 190, 236, 0.18);
+  border-radius: 0.65rem;
+  background: rgba(52, 82, 130, 0.08);
 }
 
 .status-panel__control-label {
@@ -302,10 +354,21 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.status-panel__language-buttons {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.4rem;
+.status-panel__checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgba(224, 235, 251, 0.72);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.status-panel__checkbox input {
+  width: 0.92rem;
+  height: 0.92rem;
+  margin: 0;
+  accent-color: #85b8f5;
 }
 
 .status-panel__control-group input[type="range"] {
