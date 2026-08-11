@@ -16,6 +16,7 @@ export interface PanelText {
   fpsLimit: string;
   viewport: string;
   renderStatus: string;
+  debugPanelVisibilityHint: string;
   visualQuality: string;
   preset: string;
   defaultPreset: string;
@@ -39,7 +40,9 @@ export interface PanelText {
   dialogueAutoPlay: string;
   dialogueLanguage: string;
   showSubtitles: string;
-  subtitleLanguage: string;
+  primarySubtitleLanguage: string;
+  showSecondarySubtitles: string;
+  secondarySubtitleLanguage: string;
   replay: string;
   skipToIdle: string;
   nextDialogue: string;
@@ -79,6 +82,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     fpsLimit: "FPS 上限",
     viewport: "视口",
     renderStatus: "渲染",
+    debugPanelVisibilityHint:
+      "要切换调试面板的可见性，点击壁纸右上角的“显示/隐藏调试面板”按钮",
     visualQuality: "画面质量",
     preset: "预设",
     defaultPreset: "默认",
@@ -102,7 +107,9 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     dialogueAutoPlay: "自动播放",
     dialogueLanguage: "对话语言",
     showSubtitles: "显示字幕",
-    subtitleLanguage: "字幕语言",
+    primarySubtitleLanguage: "主字幕语言",
+    showSecondarySubtitles: "显示副字幕",
+    secondarySubtitleLanguage: "副字幕语言",
     replay: "完整重播",
     skipToIdle: "切到待机",
     nextDialogue: "下一组对话",
@@ -140,6 +147,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     fpsLimit: "FPS limit",
     viewport: "Viewport",
     renderStatus: "Render",
+    debugPanelVisibilityHint:
+      'To toggle the debug panel, click the "Show/Hide Debug Panel" button in the top-right corner of the wallpaper.',
     visualQuality: "Visual Quality",
     preset: "Preset",
     defaultPreset: "Default",
@@ -163,7 +172,9 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     dialogueAutoPlay: "Auto play",
     dialogueLanguage: "Dialogue Language",
     showSubtitles: "Show subtitles",
-    subtitleLanguage: "Subtitle language",
+    primarySubtitleLanguage: "Primary subtitle language",
+    showSecondarySubtitles: "Show secondary subtitles",
+    secondarySubtitleLanguage: "Secondary subtitle language",
     replay: "Full replay",
     skipToIdle: "Skip to idle",
     nextDialogue: "Next dialogue",

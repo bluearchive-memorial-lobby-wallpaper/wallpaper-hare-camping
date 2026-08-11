@@ -241,12 +241,32 @@
           { "label": "Japanese", "value": "ja" }
         ],
         "order": 44,
-        "text": "Subtitle Language",
+        "text": "Primary Subtitle Language",
         "type": "combo",
         "value": "zh-cn"
       },
-      "debugpreset": {
+      "showsecondarysubtitles": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
         "index": 23,
+        "order": 45,
+        "text": "Show Secondary Subtitles",
+        "type": "bool",
+        "value": false
+      },
+      "secondarysubtitlelanguage": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && showsecondarysubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+        "index": 24,
+        "options": [
+          { "label": "Simplified Chinese", "value": "zh-cn" },
+          { "label": "Japanese", "value": "ja" }
+        ],
+        "order": 46,
+        "text": "Secondary Subtitle Language",
+        "type": "combo",
+        "value": "ja"
+      },
+      "debugpreset": {
+        "index": 25,
         "options": [
           { "label": "Off", "value": "off" },
           { "label": "Debug Panel Only", "value": "panel" },
@@ -260,7 +280,7 @@
       },
       "drawhitboxes": {
         "condition": "debugpreset.value == 'custom'",
-        "index": 24,
+        "index": 26,
         "order": 51,
         "text": "Show Interactive Areas",
         "type": "bool",
@@ -268,7 +288,7 @@
       },
       "debugpanelenabled": {
         "condition": "debugpreset.value == 'custom'",
-        "index": 25,
+        "index": 27,
         "order": 52,
         "text": "Enable Debug Panel",
         "type": "bool",
@@ -276,7 +296,7 @@
       },
       "panellanguage": {
         "condition": "debugpreset.value == 'custom' && debugpanelenabled.value == true",
-        "index": 26,
+        "index": 28,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "English", "value": "en" }

@@ -23,7 +23,9 @@ export interface InteractionPresetSettings {
 export interface DialogueLanguagePresetSettings {
   voiceLocale: VoiceLocale;
   subtitlesEnabled: boolean;
-  subtitleLocale: SubtitleLocale;
+  primarySubtitleLocale: SubtitleLocale;
+  secondarySubtitlesEnabled: boolean;
+  secondarySubtitleLocale: SubtitleLocale;
 }
 
 export interface DebugPresetSettings {
@@ -53,17 +55,23 @@ export const DIALOGUE_LANGUAGE_PRESETS: Record<
   "zh-cn": {
     voiceLocale: "zh-cn",
     subtitlesEnabled: true,
-    subtitleLocale: "zh-cn",
+    primarySubtitleLocale: "zh-cn",
+    secondarySubtitlesEnabled: false,
+    secondarySubtitleLocale: "ja",
   },
   ja: {
     voiceLocale: "ja",
     subtitlesEnabled: true,
-    subtitleLocale: "ja",
+    primarySubtitleLocale: "ja",
+    secondarySubtitlesEnabled: false,
+    secondarySubtitleLocale: "zh-cn",
   },
   ko: {
     voiceLocale: "ko",
     subtitlesEnabled: true,
-    subtitleLocale: "zh-cn",
+    primarySubtitleLocale: "zh-cn",
+    secondarySubtitlesEnabled: false,
+    secondarySubtitleLocale: "ja",
   },
 };
 

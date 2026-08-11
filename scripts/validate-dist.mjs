@@ -86,6 +86,10 @@ if (
   frozenDefaults?.muted?.value !== false ||
   frozenDefaults?.dialogueautoplay?.value !== false ||
   frozenDefaults?.dialoguelanguagepreset?.value !== "zh-cn" ||
+  frozenDefaults?.showsubtitles?.value !== true ||
+  frozenDefaults?.subtitlelanguage?.value !== "zh-cn" ||
+  frozenDefaults?.showsecondarysubtitles?.value !== false ||
+  frozenDefaults?.secondarysubtitlelanguage?.value !== "ja" ||
   frozenDefaults?.debugpreset?.value !== "off" ||
   frozenDefaults?.renderresolution?.value !== "1080p" ||
   frozenDefaults?.modelresolution?.value !== "2k" ||
@@ -135,6 +139,8 @@ const expectedPropertyOrder = [
   "voicelanguage",
   "showsubtitles",
   "subtitlelanguage",
+  "showsecondarysubtitles",
+  "secondarysubtitlelanguage",
   "debugpreset",
   "drawhitboxes",
   "debugpanelenabled",
@@ -158,6 +164,8 @@ const expectedGroupOptions = {
   interactionpreset: ["default", "custom"],
   dialoguelanguagepreset: ["zh-cn", "ja", "ko", "custom"],
   debugpreset: ["off", "panel", "all", "custom"],
+  subtitlelanguage: ["zh-cn", "ja"],
+  secondarysubtitlelanguage: ["zh-cn", "ja"],
 };
 for (const [key, values] of Object.entries(expectedGroupOptions)) {
   if (
@@ -191,7 +199,9 @@ const expectedPropertyLabels = {
   dialoguelanguagepreset: "Dialogue Language",
   voicelanguage: "Voice Language",
   showsubtitles: "Show Subtitles",
-  subtitlelanguage: "Subtitle Language",
+  subtitlelanguage: "Primary Subtitle Language",
+  showsecondarysubtitles: "Show Secondary Subtitles",
+  secondarysubtitlelanguage: "Secondary Subtitle Language",
   debugpreset: "Debug",
   drawhitboxes: "Show Interactive Areas",
   debugpanelenabled: "Enable Debug Panel",
@@ -224,6 +234,10 @@ const expectedConditions = {
     "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
   subtitlelanguage:
     "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  showsecondarysubtitles:
+    "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  secondarysubtitlelanguage:
+    "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && showsecondarysubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
   drawhitboxes: "debugpreset.value == 'custom'",
   debugpanelenabled: "debugpreset.value == 'custom'",
   panellanguage: "debugpreset.value == 'custom' && debugpanelenabled.value == true",
@@ -420,6 +434,9 @@ const expectedDebugPanelLayout = [
   "debug-voice-volume-control",
   "debug-dialogue-autoplay",
   "debug-dialogue-language-preset",
+  "debug-primary-subtitle-language",
+  "debug-show-secondary-subtitles",
+  "debug-secondary-subtitle-language",
 ];
 let previousDebugGroupIndex = -1;
 for (const id of expectedDebugPanelLayout) {
@@ -437,6 +454,12 @@ if (
   throw new Error(
     "Debug panel must omit Theme Color and the WE Debug preset while retaining tools",
   );
+}
+if (
+  !builtHtml.includes("要切换调试面板的可见性") ||
+  !builtHtml.includes('data-panel-text="debugPanelVisibilityHint"')
+) {
+  throw new Error("Debug panel visibility hint is missing from the status area");
 }
 
 console.log("Validated offline 1.0 dist: preview, metadata, notices, 2K/4K/8K model tiers, 30 voices, BGM, Runtime, and checksums.");

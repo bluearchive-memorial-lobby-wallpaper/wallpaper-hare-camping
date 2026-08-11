@@ -80,8 +80,10 @@ body {
   max-width: min(72vw, 58rem);
   margin: 0;
   padding: 0.72rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   color: rgba(250, 252, 255, 0.98);
-  font-size: clamp(0.95rem, 1.25vw, 1.35rem);
   font-weight: 550;
   line-height: 1.55;
   text-align: center;
@@ -95,7 +97,26 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.subtitle__primary,
+.subtitle__secondary {
+  margin: 0;
+}
+
+.subtitle__primary {
+  font-size: clamp(1.05rem, 1.4vw, 1.5rem);
+}
+
+.subtitle__secondary {
+  margin-top: 0.22rem;
+  color: rgba(231, 239, 252, 0.88);
+  font-size: clamp(0.82rem, 1vw, 1.1rem);
+}
+
 .subtitle[hidden] {
+  display: none;
+}
+
+.subtitle__secondary[hidden] {
   display: none;
 }
 
@@ -235,6 +256,15 @@ body {
   white-space: nowrap;
 }
 
+.status-panel__visibility-hint {
+  margin: 0.75rem 0 0;
+  padding-top: 0.65rem;
+  color: rgba(224, 235, 251, 0.66);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  border-top: 1px solid rgba(159, 190, 236, 0.16);
+}
+
 .status-panel__error {
   margin: 0.8rem 0 0;
   padding-top: 0.75rem;
@@ -245,9 +275,7 @@ body {
 }
 
 .status-panel__controls {
-  margin-top: 0.85rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(159, 190, 236, 0.16);
+  margin-top: 0.75rem;
 }
 
 .status-panel__toolbar {

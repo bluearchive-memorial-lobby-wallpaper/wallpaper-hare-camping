@@ -18,6 +18,7 @@ import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import { MODEL_RESOLUTIONS } from "../settings/modelResolution";
 import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
 import { FrameLimiter } from "../render/FrameLimiter";
+import { resolveDebugPanelExpanded } from "./debugPanelVisibility";
 import {
   SpineRenderer,
   type InteractionMode,
@@ -75,8 +76,12 @@ export class App {
   private readonly dialogueCustomControls: HTMLElement;
   private readonly voiceLanguageSelect: HTMLSelectElement;
   private readonly showSubtitlesCheckbox: HTMLInputElement;
-  private readonly subtitleLanguageControl: HTMLElement;
-  private readonly subtitleLanguageSelect: HTMLSelectElement;
+  private readonly primarySubtitleLanguageControl: HTMLElement;
+  private readonly primarySubtitleLanguageSelect: HTMLSelectElement;
+  private readonly showSecondarySubtitlesControl: HTMLElement;
+  private readonly showSecondarySubtitlesCheckbox: HTMLInputElement;
+  private readonly secondarySubtitleLanguageControl: HTMLElement;
+  private readonly secondarySubtitleLanguageSelect: HTMLSelectElement;
   private readonly bgmVolumeControl: HTMLElement;
   private readonly bgmVolumeSlider: HTMLInputElement;
   private readonly bgmVolumeOutput: HTMLOutputElement;
@@ -230,12 +235,28 @@ export class App {
       "debug-show-subtitles",
       HTMLInputElement,
     );
-    this.subtitleLanguageControl = this.getElement(
-      "debug-subtitle-language-control",
+    this.primarySubtitleLanguageControl = this.getElement(
+      "debug-primary-subtitle-language-control",
       HTMLElement,
     );
-    this.subtitleLanguageSelect = this.getElement(
-      "debug-subtitle-language",
+    this.primarySubtitleLanguageSelect = this.getElement(
+      "debug-primary-subtitle-language",
+      HTMLSelectElement,
+    );
+    this.showSecondarySubtitlesControl = this.getElement(
+      "debug-show-secondary-subtitles-control",
+      HTMLElement,
+    );
+    this.showSecondarySubtitlesCheckbox = this.getElement(
+      "debug-show-secondary-subtitles",
+      HTMLInputElement,
+    );
+    this.secondarySubtitleLanguageControl = this.getElement(
+      "debug-secondary-subtitle-language-control",
+      HTMLElement,
+    );
+    this.secondarySubtitleLanguageSelect = this.getElement(
+      "debug-secondary-subtitle-language",
       HTMLSelectElement,
     );
     this.bgmVolumeControl = this.getElement("debug-bgm-volume-control", HTMLElement);
@@ -263,7 +284,11 @@ export class App {
       "debug-restore-host-settings",
       HTMLButtonElement,
     );
-    this.subtitle = new SubtitlePresenter(this.getElement("subtitle", HTMLElement));
+    this.subtitle = new SubtitlePresenter(
+      this.getElement("subtitle", HTMLElement),
+      this.getElement("subtitle-primary", HTMLElement),
+      this.getElement("subtitle-secondary", HTMLElement),
+    );
     this.voice = new VoicePlayer({
       onEnded: (eventId) => this.subtitle.hide(eventId),
       onError: (message) => {
@@ -349,6 +374,12 @@ export class App {
       previousSettings,
       settings,
     );
+    this.debugPanelExpanded = resolveDebugPanelExpanded(
+      this.debugPanelExpanded,
+      previousSettings.debugPanelEnabled,
+      settings.debugPanelEnabled,
+      this.debugFromQuery,
+    );
     this.settings = settings;
     this.syncPanelText();
     this.renderer?.applySettings(settings);
@@ -370,7 +401,12 @@ export class App {
     this.voice.configure(settings.voiceEnabled && !settings.muted, settings.voiceVolume);
     this.bgm.configure(!settings.muted, settings.bgmVolume);
     this.updateBgmLabel(this.bgm.getSnapshot().status);
-    this.subtitle.configure(settings.subtitlesEnabled, settings.subtitleLocale);
+    this.subtitle.configure(
+      settings.subtitlesEnabled,
+      settings.primarySubtitleLocale,
+      settings.secondarySubtitlesEnabled,
+      settings.secondarySubtitleLocale,
+    );
     this.syncDebugControls(settings);
     this.updateViewportLabel();
     this.syncDebugPanelVisibility();
@@ -590,9 +626,19 @@ export class App {
         showsubtitles: this.showSubtitlesCheckbox.checked,
       }),
     );
-    this.subtitleLanguageSelect.addEventListener("change", () =>
+    this.primarySubtitleLanguageSelect.addEventListener("change", () =>
       this.adapter.setUserPropertiesForDebug({
-        subtitlelanguage: this.subtitleLanguageSelect.value,
+        subtitlelanguage: this.primarySubtitleLanguageSelect.value,
+      }),
+    );
+    this.showSecondarySubtitlesCheckbox.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        showsecondarysubtitles: this.showSecondarySubtitlesCheckbox.checked,
+      }),
+    );
+    this.secondarySubtitleLanguageSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        secondarysubtitlelanguage: this.secondarySubtitleLanguageSelect.value,
       }),
     );
     this.bgmVolumeSlider.addEventListener("input", () =>
@@ -710,8 +756,15 @@ export class App {
     this.dialogueCustomControls.hidden = !visibility.dialogueCustom;
     this.voiceLanguageSelect.value = settings.voiceLocale;
     this.showSubtitlesCheckbox.checked = settings.subtitlesEnabled;
-    this.subtitleLanguageControl.hidden = !visibility.subtitleLanguage;
-    this.subtitleLanguageSelect.value = settings.subtitleLocale;
+    this.primarySubtitleLanguageControl.hidden =
+      !visibility.primarySubtitleLanguage;
+    this.primarySubtitleLanguageSelect.value = settings.primarySubtitleLocale;
+    this.showSecondarySubtitlesControl.hidden = !visibility.secondarySubtitles;
+    this.showSecondarySubtitlesCheckbox.checked =
+      settings.secondarySubtitlesEnabled;
+    this.secondarySubtitleLanguageControl.hidden =
+      !visibility.secondarySubtitleLanguage;
+    this.secondarySubtitleLanguageSelect.value = settings.secondarySubtitleLocale;
     this.bgmVolumeControl.hidden = !visibility.bgmVolume;
     this.bgmVolumeSlider.value = String(bgmVolume);
     this.bgmVolumeOutput.value = `${bgmVolume}%`;

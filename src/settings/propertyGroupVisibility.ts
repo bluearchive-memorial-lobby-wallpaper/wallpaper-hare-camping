@@ -8,7 +8,9 @@ export interface PropertyGroupVisibility {
   dialogueControls: boolean;
   voiceVolume: boolean;
   dialogueCustom: boolean;
-  subtitleLanguage: boolean;
+  primarySubtitleLanguage: boolean;
+  secondarySubtitles: boolean;
+  secondarySubtitleLanguage: boolean;
   bgmVolume: boolean;
 }
 
@@ -30,7 +32,12 @@ export function resolvePropertyGroupVisibility(
     dialogueControls,
     voiceVolume: !settings.muted && dialogueControls,
     dialogueCustom,
-    subtitleLanguage: dialogueCustom && settings.subtitlesEnabled,
+    primarySubtitleLanguage: dialogueCustom && settings.subtitlesEnabled,
+    secondarySubtitles: dialogueCustom && settings.subtitlesEnabled,
+    secondarySubtitleLanguage:
+      dialogueCustom &&
+      settings.subtitlesEnabled &&
+      settings.secondarySubtitlesEnabled,
     bgmVolume: !settings.muted,
   };
 }

@@ -50,7 +50,9 @@ export interface WallpaperSettings {
   dialogueAutoPlay: boolean;
   dialogueLanguagePreset: DialogueLanguagePreset;
   subtitlesEnabled: boolean;
-  subtitleLocale: SubtitleLocale;
+  primarySubtitleLocale: SubtitleLocale;
+  secondarySubtitlesEnabled: boolean;
+  secondarySubtitleLocale: SubtitleLocale;
   bgmVolume: number;
   qualityPreset: QualityPreset;
   renderResolution: RenderResolution;
@@ -66,7 +68,7 @@ export interface WallpaperSettings {
 type SettingsListener = (settings: Readonly<WallpaperSettings>) => void;
 type PauseListener = (paused: boolean) => void;
 
-export const DEFAULT_SETTINGS_VERSION = 2;
+export const DEFAULT_SETTINGS_VERSION = 3;
 
 export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   positionPreset: "default",
@@ -85,7 +87,9 @@ export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   dialogueAutoPlay: false,
   dialogueLanguagePreset: "zh-cn",
   subtitlesEnabled: true,
-  subtitleLocale: "zh-cn",
+  primarySubtitleLocale: "zh-cn",
+  secondarySubtitlesEnabled: false,
+  secondarySubtitleLocale: "ja",
   bgmVolume: 0.5,
   qualityPreset: "default",
   renderResolution: "1080p",
@@ -150,7 +154,9 @@ export class WallpaperEngineAdapter {
   private customDialogueLanguageSettings: DialogueLanguagePresetSettings = {
     voiceLocale: DEFAULT_SETTINGS.voiceLocale,
     subtitlesEnabled: DEFAULT_SETTINGS.subtitlesEnabled,
-    subtitleLocale: DEFAULT_SETTINGS.subtitleLocale,
+    primarySubtitleLocale: DEFAULT_SETTINGS.primarySubtitleLocale,
+    secondarySubtitlesEnabled: DEFAULT_SETTINGS.secondarySubtitlesEnabled,
+    secondarySubtitleLocale: DEFAULT_SETTINGS.secondarySubtitleLocale,
   };
   private customDebugSettings: DebugPresetSettings = {
     debugPanelEnabled: DEFAULT_SETTINGS.debugPanelEnabled,
@@ -297,8 +303,17 @@ export class WallpaperEngineAdapter {
     if (patch.subtitlesEnabled !== undefined) {
       this.customDialogueLanguageSettings.subtitlesEnabled = patch.subtitlesEnabled;
     }
-    if (patch.subtitleLocale !== undefined) {
-      this.customDialogueLanguageSettings.subtitleLocale = patch.subtitleLocale;
+    if (patch.primarySubtitleLocale !== undefined) {
+      this.customDialogueLanguageSettings.primarySubtitleLocale =
+        patch.primarySubtitleLocale;
+    }
+    if (patch.secondarySubtitlesEnabled !== undefined) {
+      this.customDialogueLanguageSettings.secondarySubtitlesEnabled =
+        patch.secondarySubtitlesEnabled;
+    }
+    if (patch.secondarySubtitleLocale !== undefined) {
+      this.customDialogueLanguageSettings.secondarySubtitleLocale =
+        patch.secondarySubtitleLocale;
     }
     if (patch.debugPanelEnabled !== undefined) {
       this.customDebugSettings.debugPanelEnabled = patch.debugPanelEnabled;
@@ -434,7 +449,18 @@ export class WallpaperEngineAdapter {
       patch.subtitlesEnabled = Boolean(properties.showsubtitles.value);
     }
     if (properties.subtitlelanguage && isSubtitleLocale(properties.subtitlelanguage.value)) {
-      patch.subtitleLocale = properties.subtitlelanguage.value;
+      patch.primarySubtitleLocale = properties.subtitlelanguage.value;
+    }
+    if (properties.showsecondarysubtitles) {
+      patch.secondarySubtitlesEnabled = Boolean(
+        properties.showsecondarysubtitles.value,
+      );
+    }
+    if (
+      properties.secondarysubtitlelanguage &&
+      isSubtitleLocale(properties.secondarysubtitlelanguage.value)
+    ) {
+      patch.secondarySubtitleLocale = properties.secondarysubtitlelanguage.value;
     }
     if (properties.bgmvolume) {
       patch.bgmVolume = clamp(Number(properties.bgmvolume.value) / 100, 0, 1);
@@ -502,8 +528,17 @@ export class WallpaperEngineAdapter {
       this.sessionCustomDialogueLanguageSettings.subtitlesEnabled =
         patch.subtitlesEnabled;
     }
-    if (patch.subtitleLocale !== undefined) {
-      this.sessionCustomDialogueLanguageSettings.subtitleLocale = patch.subtitleLocale;
+    if (patch.primarySubtitleLocale !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.primarySubtitleLocale =
+        patch.primarySubtitleLocale;
+    }
+    if (patch.secondarySubtitlesEnabled !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.secondarySubtitlesEnabled =
+        patch.secondarySubtitlesEnabled;
+    }
+    if (patch.secondarySubtitleLocale !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.secondarySubtitleLocale =
+        patch.secondarySubtitleLocale;
     }
     if (patch.renderResolution !== undefined) {
       this.sessionCustomQualitySettings.renderResolution = patch.renderResolution;
