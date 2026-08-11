@@ -1,204 +1,290 @@
 {
   "contentrating": "Everyone",
-  "description": "Local M3 configuration and quality test build for Hare (Camping). Not a publishable Workshop package.",
+  "description": "Hare (Camping) interactive wallpaper — private offline edition. Includes five dialogue sequences, Chinese/Japanese/Korean voices, Chinese/Japanese subtitles, head patting, mouse tracking, BGM, and selectable render/texture quality.\n\n小钩晴（露营）互动壁纸私人离线版：包含五组对话、中日韩语音、中日字幕、摸头、视线跟随、BGM，以及可选渲染和纹理画质。",
   "file": "index.html",
   "general": {
     "properties": {
-      "schemecolor": {
-        "order": 0,
-        "text": "ui_browse_properties_scheme_color",
-        "type": "color",
-        "value": "0.035 0.055 0.11"
-      },
-      "introanimation": {
+      "qualitypreset": {
         "index": 0,
-        "order": 100,
-        "text": "Intro Animation",
-        "type": "bool",
-        "value": true
+        "options": [
+          { "label": "Default (1080P / 2K / 60 FPS)", "value": "default" },
+          { "label": "2K (1440P / 4K / 60 FPS)", "value": "2k" },
+          { "label": "4K (2160P / 4K / 60 FPS)", "value": "4k" },
+          { "label": "Maximum (2160P / 8K / 160 FPS)", "value": "maximum" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "order": 0,
+        "text": "Visual Quality",
+        "type": "combo",
+        "value": "default"
       },
-      "modelscale": {
-        "fraction": true,
+      "schemecolor": {
         "index": 1,
-        "max": 1.4,
-        "min": 0.6,
-        "order": 101,
-        "precision": 2,
-        "step": 0.01,
-        "text": "Model Scale",
-        "type": "slider",
-        "value": 1
-      },
-      "modelx": {
-        "fraction": false,
-        "index": 2,
-        "max": 1000,
-        "min": -1000,
-        "order": 102,
-        "text": "Model X",
-        "type": "slider",
-        "value": 0
-      },
-      "modely": {
-        "fraction": false,
-        "index": 3,
-        "max": 1000,
-        "min": -1000,
-        "order": 103,
-        "text": "Model Y",
-        "type": "slider",
-        "value": 0
-      },
-      "interactions": {
-        "index": 4,
-        "order": 104,
-        "text": "Interactive Actions",
-        "type": "bool",
-        "value": true
-      },
-      "mousetracking": {
-        "condition": "interactions.value == true",
-        "index": 5,
-        "order": 105,
-        "text": "Mouse Tracking",
-        "type": "bool",
-        "value": true
-      },
-      "headpatting": {
-        "condition": "interactions.value == true",
-        "index": 6,
-        "order": 106,
-        "text": "Head Patting",
-        "type": "bool",
-        "value": true
-      },
-      "voicelines": {
-        "condition": "interactions.value == true",
-        "index": 7,
-        "order": 107,
-        "text": "Voice Lines",
-        "type": "bool",
-        "value": true
-      },
-      "voicelanguage": {
-        "condition": "interactions.value == true && voicelines.value == true",
-        "index": 8,
-        "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" },
-          { "label": "Korean", "value": "ko" }
-        ],
-        "order": 108,
-        "text": "Voice Language",
-        "type": "combo",
-        "value": "zh-cn"
-      },
-      "voicevolume": {
-        "condition": "interactions.value == true && voicelines.value == true",
-        "fraction": false,
-        "index": 9,
-        "max": 100,
-        "min": 0,
-        "order": 109,
-        "text": "Voice Volume",
-        "type": "slider",
-        "value": 70
-      },
-      "showsubtitles": {
-        "condition": "interactions.value == true",
-        "index": 10,
-        "order": 110,
-        "text": "Show Subtitles",
-        "type": "bool",
-        "value": true
-      },
-      "subtitlelanguage": {
-        "condition": "interactions.value == true && showsubtitles.value == true",
-        "index": 11,
-        "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" }
-        ],
-        "order": 111,
-        "text": "Subtitle Language",
-        "type": "combo",
-        "value": "zh-cn"
-      },
-      "bgmenabled": {
-        "index": 12,
-        "order": 112,
-        "text": "Background Music",
-        "type": "bool",
-        "value": true
-      },
-      "bgmvolume": {
-        "condition": "bgmenabled.value == true",
-        "fraction": false,
-        "index": 13,
-        "max": 100,
-        "min": 0,
-        "order": 113,
-        "text": "BGM Volume",
-        "type": "slider",
-        "value": 25
-      },
-      "drawhitboxes": {
-        "condition": "interactions.value == true",
-        "index": 14,
-        "order": 114,
-        "text": "Interactive Areas",
-        "type": "bool",
-        "value": false
-      },
-      "debugpanelenabled": {
-        "index": 15,
-        "order": 115,
-        "text": "Enable Debug Panel",
-        "type": "bool",
-        "value": false
+        "order": 1,
+        "text": "Theme Color",
+        "type": "color",
+        "value": "0.054902 0.305882 0.674510"
       },
       "renderresolution": {
-        "index": 16,
+        "condition": "qualitypreset.value == 'custom'",
+        "index": 2,
         "options": [
           { "label": "720P", "value": "720p" },
           { "label": "1080P", "value": "1080p" },
           { "label": "2K", "value": "1440p" },
           { "label": "4K", "value": "2160p" }
         ],
-        "order": 116,
+        "order": 2,
         "text": "Render Resolution",
         "type": "combo",
         "value": "1080p"
       },
-      "panellanguage": {
-        "index": 17,
-        "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "English", "value": "en" }
-        ],
-        "order": 117,
-        "text": "Panel Language",
-        "type": "combo",
-        "value": "zh-cn"
-      },
       "modelresolution": {
-        "index": 18,
+        "condition": "qualitypreset.value == 'custom'",
+        "index": 3,
         "options": [
           { "label": "2K", "value": "2k" },
           { "label": "4K", "value": "4k" },
           { "label": "8K", "value": "8k" }
         ],
-        "order": 118,
+        "order": 3,
         "text": "Model Texture Resolution",
         "type": "combo",
-        "value": "4k"
+        "value": "2k"
+      },
+      "fpslimit": {
+        "condition": "qualitypreset.value == 'custom'",
+        "fraction": false,
+        "index": 4,
+        "max": 160,
+        "min": 15,
+        "order": 4,
+        "step": 1,
+        "text": "FPS Limit",
+        "type": "slider",
+        "value": 60
+      },
+      "positionpreset": {
+        "index": 5,
+        "options": [
+          { "label": "Default", "value": "default" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "order": 10,
+        "text": "Position & Scale",
+        "type": "combo",
+        "value": "default"
+      },
+      "modelscale": {
+        "condition": "positionpreset.value == 'custom'",
+        "fraction": true,
+        "index": 6,
+        "max": 1.4,
+        "min": 0.6,
+        "order": 11,
+        "precision": 2,
+        "step": 0.01,
+        "text": "Model Scale",
+        "type": "slider",
+        "value": 0.8
+      },
+      "modelx": {
+        "condition": "positionpreset.value == 'custom'",
+        "fraction": false,
+        "index": 7,
+        "max": 1000,
+        "min": -1000,
+        "order": 12,
+        "text": "Model X",
+        "type": "slider",
+        "value": 0
+      },
+      "modely": {
+        "condition": "positionpreset.value == 'custom'",
+        "fraction": false,
+        "index": 8,
+        "max": 1000,
+        "min": -1000,
+        "order": 13,
+        "text": "Model Y",
+        "type": "slider",
+        "value": 0
+      },
+      "interactionpreset": {
+        "index": 9,
+        "options": [
+          { "label": "Default", "value": "default" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "order": 20,
+        "text": "Animation & Interactions",
+        "type": "combo",
+        "value": "default"
+      },
+      "introanimation": {
+        "condition": "interactionpreset.value == 'custom'",
+        "index": 10,
+        "order": 21,
+        "text": "Intro Animation",
+        "type": "bool",
+        "value": true
+      },
+      "interactions": {
+        "condition": "interactionpreset.value == 'custom'",
+        "index": 11,
+        "order": 22,
+        "text": "Interactive Actions",
+        "type": "bool",
+        "value": true
+      },
+      "mousetracking": {
+        "condition": "interactionpreset.value == 'custom' && interactions.value == true",
+        "index": 12,
+        "order": 23,
+        "text": "Mouse Tracking",
+        "type": "bool",
+        "value": true
+      },
+      "headpatting": {
+        "condition": "interactionpreset.value == 'custom' && interactions.value == true",
+        "index": 13,
+        "order": 24,
+        "text": "Head Patting",
+        "type": "bool",
+        "value": true
+      },
+      "voicelines": {
+        "condition": "interactionpreset.value == 'custom' && interactions.value == true",
+        "index": 14,
+        "order": 25,
+        "text": "Dialogue",
+        "type": "bool",
+        "value": true
+      },
+      "voicevolume": {
+        "condition": "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
+        "fraction": false,
+        "index": 15,
+        "max": 100,
+        "min": 0,
+        "order": 30,
+        "text": "Dialogue Volume",
+        "type": "slider",
+        "value": 70
+      },
+      "dialoguelanguagepreset": {
+        "condition": "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
+        "index": 16,
+        "options": [
+          { "label": "Simplified Chinese", "value": "zh-cn" },
+          { "label": "Japanese", "value": "ja" },
+          { "label": "Korean", "value": "ko" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "order": 31,
+        "text": "Dialogue Language",
+        "type": "combo",
+        "value": "zh-cn"
+      },
+      "voicelanguage": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+        "index": 17,
+        "options": [
+          { "label": "Simplified Chinese", "value": "zh-cn" },
+          { "label": "Japanese", "value": "ja" },
+          { "label": "Korean", "value": "ko" }
+        ],
+        "order": 32,
+        "text": "Voice Language",
+        "type": "combo",
+        "value": "zh-cn"
+      },
+      "showsubtitles": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+        "index": 18,
+        "order": 33,
+        "text": "Show Subtitles",
+        "type": "bool",
+        "value": true
+      },
+      "subtitlelanguage": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+        "index": 19,
+        "options": [
+          { "label": "Simplified Chinese", "value": "zh-cn" },
+          { "label": "Japanese", "value": "ja" }
+        ],
+        "order": 34,
+        "text": "Subtitle Language",
+        "type": "combo",
+        "value": "zh-cn"
+      },
+      "bgmenabled": {
+        "index": 20,
+        "order": 40,
+        "text": "BGM",
+        "type": "bool",
+        "value": true
+      },
+      "bgmvolume": {
+        "condition": "bgmenabled.value == true",
+        "fraction": false,
+        "index": 21,
+        "max": 100,
+        "min": 0,
+        "order": 41,
+        "text": "BGM Volume",
+        "type": "slider",
+        "value": 50
+      },
+      "debugpreset": {
+        "index": 22,
+        "options": [
+          { "label": "Off", "value": "off" },
+          { "label": "Debug Panel Only", "value": "panel" },
+          { "label": "All", "value": "all" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "order": 50,
+        "text": "Debug",
+        "type": "combo",
+        "value": "off"
+      },
+      "drawhitboxes": {
+        "condition": "debugpreset.value == 'custom'",
+        "index": 23,
+        "order": 51,
+        "text": "Show Interactive Areas",
+        "type": "bool",
+        "value": false
+      },
+      "debugpanelenabled": {
+        "condition": "debugpreset.value == 'custom'",
+        "index": 24,
+        "order": 52,
+        "text": "Enable Debug Panel",
+        "type": "bool",
+        "value": false
+      },
+      "panellanguage": {
+        "condition": "debugpreset.value == 'custom' && debugpanelenabled.value == true",
+        "index": 25,
+        "options": [
+          { "label": "Simplified Chinese", "value": "zh-cn" },
+          { "label": "English", "value": "en" }
+        ],
+        "order": 53,
+        "text": "Panel Language",
+        "type": "combo",
+        "value": "zh-cn"
       }
     }
   },
+  "preview": "preview.gif",
   "ratingsex": "none",
   "ratingviolence": "none",
   "tags": ["Anime"],
-  "title": "Blue Archive - Hare (Camping) [M3 Local Test]",
+  "title": "Blue Archive - Hare (Camping) [Offline Edition]",
   "type": "web",
   "version": 2,
   "visibility": "private"

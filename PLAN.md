@@ -1,7 +1,7 @@
 # Hare (Camping) Wallpaper Engine 项目计划
 
-> 状态：M0、M1、M2、M3 已完成，M4 进行中（当前禁止发布）
-> 最后核对：2026-08-10
+> 状态：M0、M1、M2、M3、M4 已完成；私人离线版 `1.0.0` 已通过发行门槛
+> 最后核对：2026-08-11
 > 目标角色：小钩晴（露营） / Hare (Camping)
 > 游戏内部资源标识：`CH0233`，记忆大厅资源前缀 `CH0233_home`
 
@@ -16,7 +16,7 @@
 - 提供 Wallpaper Engine 管理页属性，控制 BGM、语音、字幕、语言、模型缩放、位置、画质和交互开关；
 - 在常见宽高比及离线环境下稳定运行，并服从 Wallpaper Engine 的全局 FPS 限制。
 
-本阶段不制作角色合集，不修改现有创意工坊订阅目录，也不把下载到的游戏二进制资源直接提交到 Git。能否把游戏素材、语音、BGM 和 Spine Runtime 随创意工坊项目再发布，必须在发布前分别完成许可确认。
+本项目不制作角色合集，不修改现有创意工坊订阅目录，也不把下载到的游戏二进制资源直接提交到 Git。最终交付仅为项目所有者私人使用的完整离线 ZIP，不上传创意工坊；若未来改变为公开分发，需另行恢复素材与 Runtime 的公开发布审查。
 
 ## 2. 已知调研基线
 
@@ -124,7 +124,7 @@ loading → intro → idle
 ### 4.2 可选增强
 
 - [x] 2K 原始纹理与 Real-CUGAN 生成的 4K/8K 派生档，面板明确标注为纹理档位；
-- [ ] 用户自选 BGM 文件，作为不随包分发游戏 BGM 的替代方案；
+- [ ] 用户自选 BGM 文件；
 - [ ] 说话时 BGM 自动降低；
 - [ ] 对话框主题、透明度与淡入淡出；
 - [x] 默认关闭的桌面调试面板：状态、命中区域、FPS、分辨率、语言和音量实时调整；
@@ -133,10 +133,10 @@ loading → intro → idle
 - [ ] 随机台词和避免连续重复模式；
 - [x] WebGL 上下文丢失后重建 GPU/Spine 资源并恢复动画、对话和音频状态。
 
-### 4.3 发布后更新
+### 4.3 后续可选更新
 
-- 字幕位置和缩放属性不属于首发及 M3/M4 门槛，不阻塞首发；
-- 在首发后的更新版本中提供字幕位置与缩放，并补充超宽屏、双屏和高 DPI 下的布局回归测试。
+- 字幕位置和缩放属性不属于 `1.0.0` 的 M3/M4 门槛；
+- 后续若提供字幕位置与缩放，应补充超宽屏、双屏和高 DPI 下的布局回归测试。
 
 ## 5. API 与数据契约清单
 
@@ -145,37 +145,43 @@ loading → intro → idle
 | 接口 | 用途 | 注意事项 |
 | --- | --- | --- |
 | `window.wallpaperPropertyListener.applyUserProperties(properties)` | 接收壁纸自定义属性 | 事件可能只包含本次变化的键；每个键独立判空；监听器需尽早挂到全局 |
-| `window.wallpaperPropertyListener.applyGeneralProperties(properties)` | 读取应用全局配置 | 使用 `properties.fps`，优先服从 Wallpaper Engine 全局 FPS，不另造重复的 FPS 属性 |
+| `window.wallpaperPropertyListener.applyGeneralProperties(properties)` | 读取应用全局配置 | 使用 `properties.fps`，实际上限取 WE 全局值与项目 `fpslimit` 的较低值 |
 | `window.wallpaperPropertyListener.setPaused(paused)` | 响应宿主暂停/恢复 | 同步暂停渲染、语音与 BGM；恢复时重置帧时间基准，避免动画突然加速 |
 | `requestAnimationFrame(callback)` | 驱动更新和绘制 | 用时间累积器执行 FPS 限流；背景暂停后的大 `dt` 需要截断 |
 
-当前用户属性键只使用英文和数字：
+当前用户属性键只使用英文和数字，属性页可见标签与选项保持英文且不带分组序号：
 
 | 键 | 类型 | 默认值 | 作用 |
 | --- | --- | --- | --- |
-| `introanimation` | bool | `true` | 入场动画 |
-| `modelscale` | slider | `1.0` | 人物/整体缩放 |
+| `qualitypreset` | combo | `default` | `Default`/`2K`/`4K`/`Maximum`/`Custom` 画质预设 |
+| `schemecolor` | color | `0.054902 0.305882 0.674510` | 主题/清屏色 `#0e4eac` |
+| `renderresolution` | combo | `1080p` | 自定义画质的 720P/1080P/2K/4K WebGL 内部渲染高度 |
+| `modelresolution` | combo | `2k` | 自定义画质的 2K/4K/8K 模型纹理档位 |
+| `fpslimit` | slider | `60` | 自定义画质的项目 FPS 上限；不超过 WE 全局 FPS 上限 |
+| `positionpreset` | combo | `default` | `Default` 固定缩放与 X/Y；`Custom` 显示并恢复三个子属性 |
+| `modelscale` | slider | `0.8` | 人物/整体缩放；4K 16:9 实机默认构图 |
 | `modelx` / `modely` | slider | `0` | 构图偏移 |
+| `interactionpreset` | combo | `default` | `Default` 固定启用全部动画与互动；`Custom` 显示并恢复子开关 |
+| `introanimation` | bool | `true` | 入场动画 |
 | `interactions` | bool | `true` | 交互总开关 |
 | `mousetracking` | bool | `true` | 视线跟随 |
 | `headpatting` | bool | `true` | 头部互动 |
-| `voicelines` | bool | `true` | 角色语音 |
-| `voicelanguage` | combo | `zh-cn` | 中文/日文/韩文语音 |
-| `voicevolume` | slider | `70` | 语音音量 |
-| `showsubtitles` | bool | `true` | 显示字幕 |
-| `subtitlelanguage` | combo | `zh-cn` | 简体中文/日文字幕 |
-| `bgmenabled` | bool | `true` | 本地测试构建的 BGM 开关；发布包仍受授权门槛约束 |
-| `bgmvolume` | slider | `25` | BGM 音量 |
-| `drawhitboxes` | bool | `false` | 显示交互命中区域 |
-| `debugpanelenabled` | bool | `false` | 允许桌面调试面板及其显示/隐藏按钮；默认关闭 |
-| `renderresolution` | combo | `1080p` | 720P/1080P/2K/4K WebGL 内部渲染高度 |
-| `panellanguage` | combo | `zh-cn` | 桌面调试面板的简体中文/英文界面 |
-| `modelresolution` | combo | `4k` | 2K/4K/8K 模型纹理档位 |
-| `schemecolor` | color | `0.035 0.055 0.11` | 背景颜色 |
+| `voicelines` | bool | `true` | 对话开关 |
+| `voicevolume` | slider | `70` | 对话启用时显示的对话音量 |
+| `dialoguelanguagepreset` | combo | `zh-cn` | 中/日/韩固定对话预设或 `Custom`；韩语字幕回退简体中文 |
+| `voicelanguage` | combo | `zh-cn` | 自定义对话的中文/日文/韩文语音 |
+| `showsubtitles` | bool | `true` | 自定义对话的字幕开关 |
+| `subtitlelanguage` | combo | `zh-cn` | 自定义对话的简体中文/日文字幕 |
+| `bgmenabled` | bool | `true` | 离线版随包 BGM 开关 |
+| `bgmvolume` | slider | `50` | BGM 音量 |
+| `debugpreset` | combo | `off` | `Off`/`Debug Panel Only`/`All`/`Custom` 调试预设 |
+| `drawhitboxes` | bool | `false` | 自定义调试中的交互命中区域开关 |
+| `debugpanelenabled` | bool | `false` | 自定义调试中的桌面面板及其切换按钮开关 |
+| `panellanguage` | combo | `zh-cn` | 面板启用后显示的简体中文/英文界面选项 |
 
 桌面调试面板的 FPS、分辨率、语言和音量修改只作为当前实例的临时覆盖，不写回 WE 管理页；管理页更新某个键时清除该键的临时覆盖，“恢复 WE 设置”清除全部临时覆盖。浏览器开发可用 `?debug=1` 显示面板，真实宿主必须先启用 `debugpanelenabled`。
 
-首发前尚未加入的候选属性为视线跟随强度和用户自选 BGM 文件；字幕位置/缩放已明确移至发布后更新。实现 `file` 属性时需按 Wallpaper Engine 的本地路径规则转换为 `file:///` URL，并处理空值和不可播放格式。
+后续可选属性为视线跟随强度、用户自选 BGM 文件和字幕位置/缩放。实现 `file` 属性时需按 Wallpaper Engine 的本地路径规则转换为 `file:///` URL，并处理空值和不可播放格式；这些增强不属于 `1.0.0` 离线发行门槛。
 
 ### 5.2 Spine Runtime API
 
@@ -245,9 +251,15 @@ Hare(Camping)/
 │  ├─ inspect-spine.mjs
 │  ├─ generate-model-textures.mjs
 │  ├─ generate-checksums.mjs
+│  ├─ package-offline.ps1
 │  ├─ prepare-assets.mjs
 │  ├─ test-settings-adapter.mjs
 │  └─ validate-dist.mjs
+├─ public/
+│  ├─ OFFLINE-README.txt
+│  ├─ THIRD-PARTY-NOTICES.txt
+│  ├─ preview.gif
+│  └─ project.json
 ├─ research/
 │  ├─ M0-REPORT.md
 │  ├─ M1-REPORT.md
@@ -262,7 +274,7 @@ Hare(Camping)/
    └─ original/
 ```
 
-`dist/` 是给 Wallpaper Engine 载入的最小离线产物，不作为唯一备份。`release/hare-camping-we-offline-test-v0.3.0-m3.zip` 只封装 `dist/` 内容，压缩包根目录直接包含 `project.json` 和 `index.html`，用于跨电脑私有测试，不是创意工坊发布包。
+`dist/` 是给 Wallpaper Engine 载入的最小离线产物，不作为唯一备份。`npm run package:offline` 生成 `release/hare-camping-we-offline-v1.0.0.zip`；压缩包根目录直接包含 `project.json`、`index.html` 和逐文件 `MANIFEST.sha256`，并在 `release/` 生成整个 ZIP 的 `.sha256`。所有 ZIP 条目使用固定时间戳并在写入后回读哈希，重复构建结果一致。
 
 ## 7. 公开资源清单
 
@@ -310,7 +322,7 @@ StuArchive 对自有脚本、文档和结构的许可不自动覆盖其镜像的
 - 数据中给出的文件：`https://static.kivo.wiki/musics/Theme_193.ogg`；
 - 用途字段包含 Hare (Camping) 记忆大厅。
 
-BGM 权利风险高于单纯的代码依赖。架构必须允许“不随包附带 BGM”和“用户自选本地 BGM”两种发布方案，最终取决于权利确认。
+私人离线版包含固定的无损 BGM，并由构建脚本校验文件头和 SHA-256。用户自选本地 BGM 仍可作为后续增强，但不再是离线发行的替代依赖。
 
 ### 7.4 Spine Web Runtime
 
@@ -340,7 +352,7 @@ BGM 权利风险高于单纯的代码依赖。架构必须允许“不随包附�
 2. 下载命令必须由开发者显式运行，生产构建不得联网，也不得依赖 CDN。
 3. 原始文件进入 `local-assets/original/`，保持文件名和字节不变；任何转换产物进入 `generated-assets/` 或 `public/assets/`。
 4. 每个输入记录：来源 URL、上游仓库和提交 SHA、获取日期、原始文件名、字节数、SHA-256、权利/许可说明、处理工具和参数。
-5. 权利状态不明确的二进制默认不进入 Git，也不进入创意工坊包。
+5. 二进制素材不进入 Git；私人离线 ZIP 由本机固定输入生成，创意工坊上传不在当前流程内。
 
 ### 8.2 模型处理
 
@@ -363,8 +375,8 @@ BGM 权利风险高于单纯的代码依赖。架构必须允许“不随包附�
 ### 8.4 BGM 处理
 
 1. 固定 `252.json` 的提交 SHA并核对 `Theme_193` 元数据。
-2. 默认先实现 BGM 控制能力，用开发者本地占位音频测试。
-3. 只有发布许可确认后才把官方 BGM 加入最终公开发布包；否则发布候选移除随包 BGM，并评估加入 `bgmfile` 用户自选入口。
+2. 离线版固定使用已记录哈希的 `Starry Confession.flac`，构建时验证文件头和内容哈希。
+3. 若未来产生公开发行变体，再决定移除随包 BGM或加入 `bgmfile` 用户自选入口。
 4. BGM 循环点需通过音频内容实测，不任意裁剪原始文件覆盖保存。
 
 ### 8.5 构建与导入
@@ -375,8 +387,8 @@ BGM 权利风险高于单纯的代码依赖。架构必须允许“不随包附�
 4. `dist/project.json` 与 `dist/index.html` 保持在同一项目根目录；将整个 `dist/` 内容复制到 WE 的 `projects/myprojects/<项目目录>/`；
 5. 新 `project.json` 不预填或复制任何现有 `workshopid`；
 6. 在 Wallpaper Engine 真实宿主里核对用户属性、暂停/恢复、自动播放和多显示器行为，并把属性定义维护在 `public/project.json`；
-7. 跨电脑测试包仅包含 `dist/` 的 50 个运行文件，创建后必须解压回验逐文件 SHA-256；
-8. 创意工坊发布前另存源代码和素材出处记录，不能把创意工坊上传当备份。
+7. 正式离线包包含 53 个清单覆盖文件和清单自身，创建后必须回读 ZIP 并再次解压回验逐文件 SHA-256；
+8. 离线 ZIP 不是源代码或原始素材备份；源码、固定输入和出处记录继续独立保存。
 
 ## 9. 验证清单
 
@@ -400,21 +412,21 @@ BGM 权利风险高于单纯的代码依赖。架构必须允许“不随包附�
 - 取消“播放开场动画”后，当前开场立即结束，后续完整重播和重新载入直接进入待机；
 - 音量为 0、无 BGM、无对应语言文件时都有明确回退；
 - 1920×1080、2560×1440、3840×2160、1920×1200、3440×1440 和高 DPI 下检查裁切；
-- 全局 FPS 15/30/60/无限制下检查速度一致性和资源占用；
+- 全局 FPS 15/30/60/160/无限制下检查速度一致性和资源占用；
 - 断网、壁纸暂停/恢复、显示器尺寸切换和 WebGL context lost 恢复后行为可接受。
 
-### 9.3 发布前硬门槛
+### 9.3 私人离线发行硬门槛
 
-- [ ] 游戏模型/纹理可在 Steam 创意工坊全球再分发；
-- [ ] 每种语音和字幕文本可再分发；
-- [ ] BGM 可再分发，或最终包不含 BGM；
-- [ ] Spine Runtime 版本匹配且集成/分发许可满足；
-- [x] 未复制无授权的第三方壁纸代码、预览或描述；
-- [ ] 预览图、标题、说明、标签、分级和署名完整；
-- [x] 无旧 `workshopid`，首次发布会创建新项目；
-- [ ] 最终 diff、离线构建、文件清单、校验和与 Wallpaper Engine 实测全部通过。
+- [x] 游戏模型、2K/4K/8K 纹理和 skeleton 固定哈希、尺寸与格式全部通过；
+- [x] 三语 30 条语音、双语字幕 ID 与事件映射完整；
+- [x] 固定 BGM 文件头、哈希、开关、音量和暂停恢复通过；
+- [x] Spine Runtime 与 skeleton 均为 3.8.99，固定 Runtime 和许可文本随包；
+- [x] 未复制其他第三方壁纸代码、预览或描述；
+- [x] 真实渲染预览、正式标题/双语说明、标签、分级、离线说明和第三方通知完整；
+- [x] 无 `workshopid` / `workshopurl`，无远程运行依赖；
+- [x] 最终 diff、构建、确定性 ZIP、文件清单、逐文件校验和与 Wallpaper Engine 解压实测全部通过。
 
-2026-08-10 首轮逐项审查结果见 [`research/M4-GATE-REVIEW.md`](research/M4-GATE-REVIEW.md)：通过 2 项、待补证 1 项、阻塞发布 3 项、未完成 2 项。模型/纹理、语音与字幕的技术来源符合计划，但这不等于取得全球再分发授权；当前 `dist/` 还包含手动加入的官方 OST Vol.6 无损 BGM，因此不得上传创意工坊。
+2026-08-11 最终逐项审查结果见 [`research/M4-GATE-REVIEW.md`](research/M4-GATE-REVIEW.md)：通过 8 项、未完成 0 项、阻塞 0 项，私人离线发行结论为 **GO**。创意工坊上传不在当前交付范围内。
 
 ## 10. 实施里程碑
 
@@ -428,7 +440,7 @@ BGM 权利风险高于单纯的代码依赖。架构必须允许“不随包附�
 
 完成标准：无需从游戏解包即可证明资源技术上完整，并且对每类发布资产有明确的“允许 / 不包含 / 待书面确认”结论。若公开镜像缺文件，只能在适用条款允许且来源合法的前提下另行研究解包；解包不是当前默认路线。
 
-执行结果见 [`research/M0-REPORT.md`](research/M0-REPORT.md)、[`research/PROVENANCE.md`](research/PROVENANCE.md)、[`research/spine-inspection.json`](research/spine-inspection.json) 和 [`research/checksums.sha256`](research/checksums.sha256)。M0 已证明公开镜像在技术上足够，不需要从游戏包再次解包；但游戏素材的创意工坊再分发授权仍未获得，因此公开发布候选默认排除这些二进制。当前含本地素材的离线压缩包只用于私有跨电脑测试。
+执行结果见 [`research/M0-REPORT.md`](research/M0-REPORT.md)、[`research/PROVENANCE.md`](research/PROVENANCE.md)、[`research/spine-inspection.json`](research/spine-inspection.json) 和 [`research/checksums.sha256`](research/checksums.sha256)。M0 已证明公开镜像在技术上足够，不需要从游戏包再次解包；当时的公开发布权利结论保留为历史风险记录。当前范围已固定为私人离线 ZIP，因此 M4 只验证技术完整性、归属说明和离线包装。
 
 ### M1：最小可运行原型
 
@@ -448,30 +460,29 @@ BGM 权利风险高于单纯的代码依赖。架构必须允许“不随包附�
 
 ### M3：配置与质量
 
-- [x] WE 属性：入场、构图、交互、三语语音、双语字幕、BGM、命中区、渲染/纹理分辨率和面板语言；
+- [x] WE 属性：入场、构图、交互、三语语音、双语字幕、BGM、FPS 上限、命中区、渲染/纹理分辨率和面板语言；
 - [x] 默认禁用的桌面调试面板、透明角落开关、当前实例临时覆盖和“恢复 WE 设置”；
 - [x] 语音/BGM 音量、30–160 FPS 调试滑块、720P–4K 渲染档与 2K/4K/8K 纹理档；
 - [x] 材质切换保持动画/对话/音频状态，语音语言切换从下一句生效；
 - [x] 入场开关在启动、运行中关闭和完整重播路径一致生效；
 - [x] TypeScript、设置优先级和离线产物自动校验；
 - [x] 生成并逐文件回验跨电脑离线测试压缩包；
-- [x] 15/30/60/无限制 FPS、16:10/21:9/双宽视口、1.75× 高 DPI 与尺寸热切换矩阵；
+- [x] 15/30/60/160/无限制 FPS、16:10/21:9/双宽视口、1.75× 高 DPI 与尺寸热切换矩阵；
 - [x] 4K 渲染与 8K 纹理性能/显存基线；
 - [x] WebGL 上下文丢失恢复，并覆盖入场和对话/音频进行中两种状态。
 
 执行结果见 [`research/M3-REPORT.md`](research/M3-REPORT.md)。本机只有一块实际显示器，因此物理双屏作为跨电脑测试的补充样本；渲染层已通过双宽等效视口和动态尺寸切换，M3 不因此继续阻塞。
 
-### M4：发布候选
+### M4：私人离线发行候选
 
-- [ ] 权利与 Runtime 许可复核；技术出处已核对，游戏素材/语音授权和制作者 Spine 许可仍待补证；
-- [ ] 预览、说明、署名和第三方通知；当前仍为 M3 本地测试元数据且无预览；
-- [ ] 干净离线包实测；当前 M3 包和 `dist/` 含不可作为发布证据的官方 OST 无损文件；
-- [ ] 通过 Wallpaper Engine 编辑器首次发布，不沿用任何已有项目 ID；已确认无旧 ID，但仅在其余硬门槛全部通过后执行。
+- [x] 固定并自动验证模型、纹理、三语语音、双语字幕、BGM 和 Spine Runtime；
+- [x] 生成真实 WE 渲染的方形动态预览，完整呈现角色面部，完成正式元数据、分级、署名、离线说明和第三方通知；
+- [x] 建立 `1.0.0` 构建与确定性打包命令，生成包内文件清单和包外 ZIP 校验和；
+- [x] 从最终 ZIP 临时解压，逐文件回验并由 Wallpaper Engine 独立窗口成功载入；
+- [x] 保持私人离线范围，不创建或沿用任何创意工坊项目 ID。
 
-M4 首轮门槛审查已完成并维持 **NO-GO**。审查记录、证据和每项关闭条件见 [`research/M4-GATE-REVIEW.md`](research/M4-GATE-REVIEW.md)。
+M4 已完成并达到私人离线发行 **GO**。审查记录、证据和最终产物见 [`research/M4-GATE-REVIEW.md`](research/M4-GATE-REVIEW.md)。
 
-## 11. 下一步
+## 11. 后续可选增强
 
-M4 已开始，当前优先关闭发布权利门槛：取得游戏模型/纹理、三语语音和字幕的全球再分发确认；决定 BGM 不随包分发或取得明确许可；确认制作者在集成 Runtime 时持有有效 Spine Editor 许可。字幕位置与缩放不属于首发前工作，仍移至发布后更新。
-
-当前 `release/hare-camping-we-offline-test-v0.3.0-m3.zip` 及 `dist/` 仅用于私有跨电脑测试，其中的官方 OST Vol.6 无损 BGM 不得作为创意工坊发布资产。完成授权、Git 基线、预览、正式元数据、署名和第三方通知后，才能生成与 M3 测试包明确区分的 M4 发布候选并执行最终实测；在全部八项硬门槛通过前不得上传创意工坊。
+`release/hare-camping-we-offline-v1.0.0.zip` 是当前正式离线版。之后可独立评估用户自选 BGM、对话时 BGM ducking、字幕位置/缩放、字幕主题与淡入淡出、随机且避免连续重复的台词模式，以及更完整的动画/骨骼检查器。这些项目不影响 `1.0.0` 的离线发行结论。

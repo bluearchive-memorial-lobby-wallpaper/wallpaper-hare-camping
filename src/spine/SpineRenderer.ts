@@ -2,6 +2,7 @@ import { DIALOGUES, MODEL } from "../config";
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import type { ModelResolution } from "../settings/modelResolution";
+import { calculateViewportLayout } from "./viewportLayout";
 
 export type InteractionMode = "intro" | "idle" | "dialogue" | "look" | "pat" | "cooldown";
 export type HitRegion = "head" | "body" | "background";
@@ -566,40 +567,31 @@ export class SpineRenderer {
     const cssWidth = Math.max(this.canvas.clientWidth, 1);
     const cssHeight = Math.max(this.canvas.clientHeight, 1);
     const preset = this.settings?.renderResolution ?? "1080p";
-    const requestedHeight = RENDER_RESOLUTIONS[preset].height;
-    const cssAspect = cssWidth / cssHeight;
-    let pixelHeight = requestedHeight;
-    let pixelWidth = Math.max(Math.round(pixelHeight * cssAspect), 1);
     const maximumViewport = this.gl.getParameter(this.gl.MAX_VIEWPORT_DIMS) as Int32Array;
-    const downscale = Math.min(
-      1,
-      (maximumViewport[0] ?? pixelWidth) / pixelWidth,
-      (maximumViewport[1] ?? pixelHeight) / pixelHeight,
-    );
-    if (downscale < 1) {
-      pixelWidth = Math.max(Math.floor(pixelWidth * downscale), 1);
-      pixelHeight = Math.max(Math.floor(pixelHeight * downscale), 1);
-    }
-    const pixelRatio = pixelHeight / cssHeight;
+    const layout = calculateViewportLayout({
+      cssWidth,
+      cssHeight,
+      requestedHeight: RENDER_RESOLUTIONS[preset].height,
+      maximumWidth: maximumViewport[0] ?? Number.MAX_SAFE_INTEGER,
+      maximumHeight: maximumViewport[1] ?? Number.MAX_SAFE_INTEGER,
+      modelScale: this.settings?.modelScale ?? 1,
+      modelX: this.settings?.modelX ?? 0,
+      modelY: this.settings?.modelY ?? 0,
+      designViewport: MODEL.designViewport,
+    });
+    const { pixelWidth, pixelHeight, pixelRatio, worldRect } = layout;
 
     if (this.canvas.width !== pixelWidth || this.canvas.height !== pixelHeight) {
       this.canvas.width = pixelWidth;
       this.canvas.height = pixelHeight;
     }
 
-    const scale = this.settings?.modelScale ?? 1;
-    const aspect = pixelWidth / pixelHeight;
-    const designAspect = MODEL.designViewport.width / MODEL.designViewport.height;
-    let worldWidth = MODEL.designViewport.width / scale;
-    let worldHeight = MODEL.designViewport.height / scale;
-    if (aspect > designAspect) worldHeight = worldWidth / aspect;
-    else if (aspect < designAspect) worldWidth = worldHeight * aspect;
-
-    const centerX = MODEL.designViewport.centerX + (this.settings?.modelX ?? 0);
-    const centerY = MODEL.designViewport.centerY + (this.settings?.modelY ?? 0);
-    const left = centerX - worldWidth / 2;
-    const bottom = centerY - worldHeight / 2;
-    this.mvp.ortho2d(left, bottom, worldWidth, worldHeight);
+    this.mvp.ortho2d(
+      worldRect.left,
+      worldRect.bottom,
+      worldRect.width,
+      worldRect.height,
+    );
     this.gl.viewport(0, 0, pixelWidth, pixelHeight);
     this.viewport = {
       width: cssWidth,
@@ -609,7 +601,7 @@ export class SpineRenderer {
       renderHeight: pixelHeight,
       preset,
     };
-    this.worldRect = { left, bottom, width: worldWidth, height: worldHeight };
+    this.worldRect = worldRect;
   }
 
   getSnapshot() {

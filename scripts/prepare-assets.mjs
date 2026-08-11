@@ -160,4 +160,4 @@ for (const runtime of runtimeFiles) {
   await copyFile(runtime.source, runtime.target);
 }
 
-console.log("Prepared verified local-only M3 model tiers, voice, BGM, and Spine 3.8 runtime assets.");
+console.log("Prepared verified offline 1.0 model tiers, voice, BGM, and Spine 3.8 runtime assets.");

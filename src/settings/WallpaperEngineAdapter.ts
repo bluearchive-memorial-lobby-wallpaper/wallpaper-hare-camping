@@ -8,25 +8,54 @@ import {
   isModelResolution,
   type ModelResolution,
 } from "./modelResolution";
+import {
+  isQualityPreset,
+  QUALITY_PRESETS,
+  type QualityPreset,
+  type QualityPresetSettings,
+} from "./qualityPreset";
+import {
+  DEBUG_PRESETS,
+  DIALOGUE_LANGUAGE_PRESETS,
+  INTERACTION_PRESETS,
+  isDebugPreset,
+  isDialogueLanguagePreset,
+  isInteractionPreset,
+  isPositionPreset,
+  POSITION_PRESETS,
+  type DebugPreset,
+  type DebugPresetSettings,
+  type DialogueLanguagePreset,
+  type DialogueLanguagePresetSettings,
+  type InteractionPreset,
+  type InteractionPresetSettings,
+  type PositionPreset,
+  type PositionPresetSettings,
+} from "./propertyGroupPresets";
 
 export interface WallpaperSettings {
+  positionPreset: PositionPreset;
   introAnimation: boolean;
   modelScale: number;
   modelX: number;
   modelY: number;
+  interactionPreset: InteractionPreset;
   interactionsEnabled: boolean;
   mouseTracking: boolean;
   headPatting: boolean;
   voiceEnabled: boolean;
   voiceLocale: VoiceLocale;
   voiceVolume: number;
+  dialogueLanguagePreset: DialogueLanguagePreset;
   subtitlesEnabled: boolean;
   subtitleLocale: SubtitleLocale;
   bgmEnabled: boolean;
   bgmVolume: number;
+  qualityPreset: QualityPreset;
   renderResolution: RenderResolution;
   modelResolution: ModelResolution;
   panelLocale: PanelLocale;
+  debugPreset: DebugPreset;
   drawHitboxes: boolean;
   debugPanelEnabled: boolean;
   backgroundColor: [number, number, number];
@@ -36,29 +65,36 @@ export interface WallpaperSettings {
 type SettingsListener = (settings: Readonly<WallpaperSettings>) => void;
 type PauseListener = (paused: boolean) => void;
 
-const DEFAULT_SETTINGS: WallpaperSettings = {
+export const DEFAULT_SETTINGS_VERSION = 1;
+
+export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
+  positionPreset: "default",
   introAnimation: true,
-  modelScale: 1,
+  modelScale: 0.8,
   modelX: 0,
   modelY: 0,
+  interactionPreset: "default",
   interactionsEnabled: true,
   mouseTracking: true,
   headPatting: true,
   voiceEnabled: true,
   voiceLocale: "zh-cn",
   voiceVolume: 0.7,
+  dialogueLanguagePreset: "zh-cn",
   subtitlesEnabled: true,
   subtitleLocale: "zh-cn",
   bgmEnabled: true,
-  bgmVolume: 0.25,
+  bgmVolume: 0.5,
+  qualityPreset: "default",
   renderResolution: "1080p",
-  modelResolution: "4k",
+  modelResolution: "2k",
   panelLocale: "zh-cn",
+  debugPreset: "off",
   drawHitboxes: false,
   debugPanelEnabled: false,
-  backgroundColor: [0.035, 0.055, 0.11],
+  backgroundColor: [14 / 255, 78 / 255, 172 / 255] as [number, number, number],
   fpsLimit: 60,
-};
+});
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(Math.max(value, minimum), maximum);
@@ -90,6 +126,35 @@ export class WallpaperEngineAdapter {
   private hostSettings: WallpaperSettings = { ...DEFAULT_SETTINGS };
   private sessionOverrides: Partial<WallpaperSettings> = {};
   private effectiveSettings: WallpaperSettings = { ...DEFAULT_SETTINGS };
+  private projectFpsLimit = DEFAULT_SETTINGS.fpsLimit;
+  private engineFpsLimit = 0;
+  private customQualitySettings: QualityPresetSettings = {
+    renderResolution: DEFAULT_SETTINGS.renderResolution,
+    modelResolution: DEFAULT_SETTINGS.modelResolution,
+    fpsLimit: DEFAULT_SETTINGS.fpsLimit,
+  };
+  private customPositionSettings: PositionPresetSettings = {
+    modelScale: DEFAULT_SETTINGS.modelScale,
+    modelX: DEFAULT_SETTINGS.modelX,
+    modelY: DEFAULT_SETTINGS.modelY,
+  };
+  private customInteractionSettings: InteractionPresetSettings = {
+    introAnimation: DEFAULT_SETTINGS.introAnimation,
+    interactionsEnabled: DEFAULT_SETTINGS.interactionsEnabled,
+    mouseTracking: DEFAULT_SETTINGS.mouseTracking,
+    headPatting: DEFAULT_SETTINGS.headPatting,
+    voiceEnabled: DEFAULT_SETTINGS.voiceEnabled,
+  };
+  private customDialogueLanguageSettings: DialogueLanguagePresetSettings = {
+    voiceLocale: DEFAULT_SETTINGS.voiceLocale,
+    subtitlesEnabled: DEFAULT_SETTINGS.subtitlesEnabled,
+    subtitleLocale: DEFAULT_SETTINGS.subtitleLocale,
+  };
+  private customDebugSettings: DebugPresetSettings = {
+    debugPanelEnabled: DEFAULT_SETTINGS.debugPanelEnabled,
+    drawHitboxes: DEFAULT_SETTINGS.drawHitboxes,
+    panelLocale: DEFAULT_SETTINGS.panelLocale,
+  };
 
   constructor() {
     window.wallpaperPropertyListener = {
@@ -115,19 +180,23 @@ export class WallpaperEngineAdapter {
   }
 
   setFpsLimitForDebug(fps: number) {
-    this.patchSession({ fpsLimit: clamp(fps, 30, 160) });
+    this.patchSession({
+      fpsLimit: this.resolveFpsLimit(clamp(fps, 30, 160)),
+    });
   }
 
   setUserPropertiesForDebug(
     properties: Record<string, boolean | number | string>,
   ) {
-    this.patchSession(
-      this.parseUserProperties(
-        Object.fromEntries(
-          Object.entries(properties).map(([key, value]) => [key, { value }]),
-        ),
+    const patch = this.parseUserProperties(
+      Object.fromEntries(
+        Object.entries(properties).map(([key, value]) => [key, { value }]),
       ),
     );
+    if (patch.fpsLimit !== undefined) {
+      patch.fpsLimit = this.resolveFpsLimit(patch.fpsLimit);
+    }
+    this.patchSession(patch);
   }
 
   clearSessionOverrides() {
@@ -150,19 +219,133 @@ export class WallpaperEngineAdapter {
 
   private applyGeneralProperties(properties: { fps?: number }) {
     if (typeof properties.fps !== "number" || !Number.isFinite(properties.fps)) return;
-    this.patchHost({ fpsLimit: clamp(properties.fps, 0, 240) });
+    this.engineFpsLimit = clamp(properties.fps, 0, 240);
+    this.patchHost({ fpsLimit: this.resolveFpsLimit() });
   }
 
   private applyUserProperties(
     properties: Record<string, { value: boolean | number | string }>,
   ) {
-    this.patchHost(this.parseUserProperties(properties));
+    const patch = this.parseUserProperties(properties);
+    if (patch.modelScale !== undefined) this.customPositionSettings.modelScale = patch.modelScale;
+    if (patch.modelX !== undefined) this.customPositionSettings.modelX = patch.modelX;
+    if (patch.modelY !== undefined) this.customPositionSettings.modelY = patch.modelY;
+    if (patch.introAnimation !== undefined) {
+      this.customInteractionSettings.introAnimation = patch.introAnimation;
+    }
+    if (patch.interactionsEnabled !== undefined) {
+      this.customInteractionSettings.interactionsEnabled = patch.interactionsEnabled;
+    }
+    if (patch.mouseTracking !== undefined) {
+      this.customInteractionSettings.mouseTracking = patch.mouseTracking;
+    }
+    if (patch.headPatting !== undefined) {
+      this.customInteractionSettings.headPatting = patch.headPatting;
+    }
+    if (patch.voiceEnabled !== undefined) {
+      this.customInteractionSettings.voiceEnabled = patch.voiceEnabled;
+    }
+    if (patch.voiceLocale !== undefined) {
+      this.customDialogueLanguageSettings.voiceLocale = patch.voiceLocale;
+    }
+    if (patch.subtitlesEnabled !== undefined) {
+      this.customDialogueLanguageSettings.subtitlesEnabled = patch.subtitlesEnabled;
+    }
+    if (patch.subtitleLocale !== undefined) {
+      this.customDialogueLanguageSettings.subtitleLocale = patch.subtitleLocale;
+    }
+    if (patch.debugPanelEnabled !== undefined) {
+      this.customDebugSettings.debugPanelEnabled = patch.debugPanelEnabled;
+    }
+    if (patch.drawHitboxes !== undefined) {
+      this.customDebugSettings.drawHitboxes = patch.drawHitboxes;
+    }
+    if (patch.panelLocale !== undefined) {
+      this.customDebugSettings.panelLocale = patch.panelLocale;
+    }
+    if (patch.renderResolution !== undefined) {
+      this.customQualitySettings.renderResolution = patch.renderResolution;
+    }
+    if (patch.modelResolution !== undefined) {
+      this.customQualitySettings.modelResolution = patch.modelResolution;
+    }
+    if (patch.fpsLimit !== undefined) {
+      this.customQualitySettings.fpsLimit = patch.fpsLimit;
+    }
+
+    const positionPreset = patch.positionPreset ?? this.hostSettings.positionPreset;
+    if (positionPreset === "custom") {
+      if (patch.positionPreset === "custom") Object.assign(patch, this.customPositionSettings);
+    } else {
+      Object.assign(patch, POSITION_PRESETS[positionPreset]);
+    }
+
+    const interactionPreset =
+      patch.interactionPreset ?? this.hostSettings.interactionPreset;
+    if (interactionPreset === "custom") {
+      if (patch.interactionPreset === "custom") {
+        Object.assign(patch, this.customInteractionSettings);
+      }
+    } else {
+      Object.assign(patch, INTERACTION_PRESETS[interactionPreset]);
+    }
+
+    const dialogueLanguagePreset =
+      patch.dialogueLanguagePreset ?? this.hostSettings.dialogueLanguagePreset;
+    if (dialogueLanguagePreset === "custom") {
+      if (patch.dialogueLanguagePreset === "custom") {
+        Object.assign(patch, this.customDialogueLanguageSettings);
+      }
+    } else {
+      Object.assign(patch, DIALOGUE_LANGUAGE_PRESETS[dialogueLanguagePreset]);
+    }
+
+    const debugPreset = patch.debugPreset ?? this.hostSettings.debugPreset;
+    if (debugPreset === "custom") {
+      if (patch.debugPreset === "custom") Object.assign(patch, this.customDebugSettings);
+    } else {
+      Object.assign(patch, DEBUG_PRESETS[debugPreset]);
+    }
+
+    const qualityPreset = patch.qualityPreset ?? this.hostSettings.qualityPreset;
+    if (qualityPreset === "custom") {
+      if (patch.qualityPreset === "custom") {
+        Object.assign(patch, this.customQualitySettings);
+      }
+    } else {
+      Object.assign(patch, QUALITY_PRESETS[qualityPreset]);
+    }
+
+    if (patch.fpsLimit !== undefined) {
+      this.projectFpsLimit = patch.fpsLimit;
+      patch.fpsLimit = this.resolveFpsLimit();
+    }
+    this.patchHost(patch);
   }
 
   private parseUserProperties(
     properties: Record<string, { value: boolean | number | string }>,
   ) {
     const patch: Partial<WallpaperSettings> = {};
+
+    if (properties.positionpreset && isPositionPreset(properties.positionpreset.value)) {
+      patch.positionPreset = properties.positionpreset.value;
+    }
+    if (
+      properties.interactionpreset &&
+      isInteractionPreset(properties.interactionpreset.value)
+    ) {
+      patch.interactionPreset = properties.interactionpreset.value;
+    }
+    if (
+      properties.dialoguelanguagepreset &&
+      isDialogueLanguagePreset(properties.dialoguelanguagepreset.value)
+    ) {
+      patch.dialogueLanguagePreset = properties.dialoguelanguagepreset.value;
+    }
+    if (properties.debugpreset && isDebugPreset(properties.debugpreset.value)) {
+      patch.debugPreset = properties.debugpreset.value;
+    }
 
     if (properties.introanimation) {
       patch.introAnimation = Boolean(properties.introanimation.value);
@@ -206,6 +389,12 @@ export class WallpaperEngineAdapter {
     if (properties.bgmvolume) {
       patch.bgmVolume = clamp(Number(properties.bgmvolume.value) / 100, 0, 1);
     }
+    if (properties.qualitypreset && isQualityPreset(properties.qualitypreset.value)) {
+      patch.qualityPreset = properties.qualitypreset.value;
+    }
+    if (properties.fpslimit) {
+      patch.fpsLimit = clamp(Number(properties.fpslimit.value), 15, 160);
+    }
     if (
       properties.renderresolution &&
       isRenderResolution(properties.renderresolution.value)
@@ -232,6 +421,11 @@ export class WallpaperEngineAdapter {
     }
 
     return patch;
+  }
+
+  private resolveFpsLimit(projectFpsLimit = this.projectFpsLimit) {
+    if (this.engineFpsLimit <= 0) return projectFpsLimit;
+    return Math.min(projectFpsLimit, this.engineFpsLimit);
   }
 
   private setPaused(paused: boolean) {

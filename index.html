@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
-    <title>Hare (Camping) — M3 Local Test</title>
-    <script src="./vendor/spine-webgl-3.8.js"></script>
+    <title>Blue Archive — Hare (Camping)</title>
+    <script vite-ignore src="./vendor/spine-webgl-3.8.js"></script>
   </head>
   <body>
     <main id="app" data-phase="booting">
@@ -15,7 +15,7 @@
       <p id="subtitle" class="subtitle" aria-live="polite" hidden></p>
 
       <section id="status-panel" class="status-panel" aria-live="polite" aria-label="Hare（露营）状态与控制面板" data-panel-aria="panelAria">
-        <p class="status-panel__eyebrow">M3 LOCAL TEST</p>
+        <p class="status-panel__eyebrow">OFFLINE EDITION · 1.0</p>
         <h1>Hare (Camping)</h1>
         <dl>
           <div><dt data-panel-text="status">状态</dt><dd id="status-phase">启动中</dd></div>
@@ -98,9 +98,9 @@
           <div class="status-panel__control-group">
             <label class="status-panel__control-label" for="debug-bgm-volume">
               <span data-panel-text="bgmVolume">BGM 音量</span>
-              <output id="debug-bgm-volume-output" for="debug-bgm-volume">25%</output>
+              <output id="debug-bgm-volume-output" for="debug-bgm-volume">50%</output>
             </label>
-            <input id="debug-bgm-volume" type="range" min="0" max="100" step="1" value="25" />
+            <input id="debug-bgm-volume" type="range" min="0" max="100" step="1" value="50" />
           </div>
         </div>
         <p id="status-error" class="status-panel__error" hidden></p>

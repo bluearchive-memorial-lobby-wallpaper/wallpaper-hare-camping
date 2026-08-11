@@ -7,6 +7,9 @@ const dist = path.join(root, "dist");
 const required = [
   "index.html",
   "project.json",
+  "preview.gif",
+  "OFFLINE-README.txt",
+  "THIRD-PARTY-NOTICES.txt",
   "vendor/spine-webgl-3.8.js",
   "vendor/SPINE-RUNTIMES-LICENSE.txt",
   "assets/hare-camping/model/CH0233_home.skel",
@@ -43,14 +46,186 @@ const project = JSON.parse(await readFile(path.join(dist, "project.json"), "utf8
 if (project.type !== "web" || project.file !== "index.html") {
   throw new Error("project.json is not a web wallpaper with index.html entry");
 }
-if (project.version !== 2 || !project.title.includes("M3 Local Test")) {
-  throw new Error("project.json does not identify the M3 local test build");
+if (
+  project.version !== 2 ||
+  project.title !== "Blue Archive - Hare (Camping) [Offline Edition]" ||
+  !project.description?.toLowerCase().includes("offline")
+) {
+  throw new Error("project.json does not identify the offline 1.0 edition");
+}
+if (project.preview !== "preview.gif") {
+  throw new Error("Offline edition preview metadata is missing");
+}
+if (
+  project.contentrating !== "Everyone" ||
+  project.ratingsex !== "none" ||
+  project.ratingviolence !== "none" ||
+  project.visibility !== "private" ||
+  !Array.isArray(project.tags) ||
+  !project.tags.includes("Anime")
+) {
+  throw new Error("Offline edition rating, visibility, or tags are incomplete");
 }
 if (Object.hasOwn(project, "workshopid") || Object.hasOwn(project, "workshopurl")) {
   throw new Error("Local project.json must not contain Workshop identity fields");
 }
-if (project.general?.properties?.modelresolution?.value !== "4k") {
+if (project.general?.properties?.modelresolution?.value !== "2k") {
   throw new Error("Model texture default is missing");
+}
+const frozenDefaults = project.general?.properties;
+if (
+  frozenDefaults?.modelscale?.value !== 0.8 ||
+  frozenDefaults?.modelx?.value !== 0 ||
+  frozenDefaults?.modely?.value !== 0 ||
+  frozenDefaults?.bgmvolume?.value !== 50 ||
+  frozenDefaults?.voicevolume?.value !== 70 ||
+  frozenDefaults?.fpslimit?.value !== 60 ||
+  frozenDefaults?.qualitypreset?.value !== "default" ||
+  frozenDefaults?.positionpreset?.value !== "default" ||
+  frozenDefaults?.interactionpreset?.value !== "default" ||
+  frozenDefaults?.dialoguelanguagepreset?.value !== "zh-cn" ||
+  frozenDefaults?.debugpreset?.value !== "off" ||
+  frozenDefaults?.renderresolution?.value !== "1080p" ||
+  frozenDefaults?.modelresolution?.value !== "2k" ||
+  frozenDefaults?.schemecolor?.value !== "0.054902 0.305882 0.674510"
+) {
+  throw new Error("Frozen default preset v1 does not match the approved values");
+}
+const expectedQualityPresets = [
+  ["default", "Default (1080P / 2K / 60 FPS)"],
+  ["2k", "2K (1440P / 4K / 60 FPS)"],
+  ["4k", "4K (2160P / 4K / 60 FPS)"],
+  ["maximum", "Maximum (2160P / 8K / 160 FPS)"],
+  ["custom", "Custom"],
+];
+if (
+  frozenDefaults.qualitypreset.type !== "combo" ||
+  JSON.stringify(
+    frozenDefaults.qualitypreset.options.map(({ value, label }) => [value, label]),
+  ) !== JSON.stringify(expectedQualityPresets) ||
+  frozenDefaults.renderresolution.condition !== "qualitypreset.value == 'custom'" ||
+  frozenDefaults.modelresolution.condition !== "qualitypreset.value == 'custom'" ||
+  frozenDefaults.fpslimit.condition !== "qualitypreset.value == 'custom'"
+) {
+  throw new Error("Quality preset schema or custom-property conditions are invalid");
+}
+const expectedPropertyOrder = [
+  "qualitypreset",
+  "schemecolor",
+  "renderresolution",
+  "modelresolution",
+  "fpslimit",
+  "positionpreset",
+  "modelscale",
+  "modelx",
+  "modely",
+  "interactionpreset",
+  "introanimation",
+  "interactions",
+  "mousetracking",
+  "headpatting",
+  "voicelines",
+  "voicevolume",
+  "dialoguelanguagepreset",
+  "voicelanguage",
+  "showsubtitles",
+  "subtitlelanguage",
+  "bgmenabled",
+  "bgmvolume",
+  "debugpreset",
+  "drawhitboxes",
+  "debugpanelenabled",
+  "panellanguage",
+];
+const actualPropertyOrder = Object.entries(frozenDefaults)
+  .sort(([, left], [, right]) => left.order - right.order)
+  .map(([key]) => key);
+if (JSON.stringify(actualPropertyOrder) !== JSON.stringify(expectedPropertyOrder)) {
+  throw new Error("Grouped property order does not match the approved layout");
+}
+const expectedGroupOptions = {
+  positionpreset: ["default", "custom"],
+  interactionpreset: ["default", "custom"],
+  dialoguelanguagepreset: ["zh-cn", "ja", "ko", "custom"],
+  debugpreset: ["off", "panel", "all", "custom"],
+};
+for (const [key, values] of Object.entries(expectedGroupOptions)) {
+  if (
+    frozenDefaults[key].type !== "combo" ||
+    JSON.stringify(frozenDefaults[key].options.map(({ value }) => value)) !==
+      JSON.stringify(values)
+  ) {
+    throw new Error(`Invalid grouped property options: ${key}`);
+  }
+}
+const expectedPropertyLabels = {
+  qualitypreset: "Visual Quality",
+  schemecolor: "Theme Color",
+  renderresolution: "Render Resolution",
+  modelresolution: "Model Texture Resolution",
+  fpslimit: "FPS Limit",
+  positionpreset: "Position & Scale",
+  modelscale: "Model Scale",
+  modelx: "Model X",
+  modely: "Model Y",
+  interactionpreset: "Animation & Interactions",
+  introanimation: "Intro Animation",
+  interactions: "Interactive Actions",
+  mousetracking: "Mouse Tracking",
+  headpatting: "Head Patting",
+  voicelines: "Dialogue",
+  voicevolume: "Dialogue Volume",
+  dialoguelanguagepreset: "Dialogue Language",
+  voicelanguage: "Voice Language",
+  showsubtitles: "Show Subtitles",
+  subtitlelanguage: "Subtitle Language",
+  bgmenabled: "BGM",
+  bgmvolume: "BGM Volume",
+  debugpreset: "Debug",
+  drawhitboxes: "Show Interactive Areas",
+  debugpanelenabled: "Enable Debug Panel",
+  panellanguage: "Panel Language",
+};
+for (const [key, label] of Object.entries(expectedPropertyLabels)) {
+  if (frozenDefaults[key].text !== label || /^\d/.test(frozenDefaults[key].text)) {
+    throw new Error(`Invalid English property label: ${key}`);
+  }
+}
+const expectedConditions = {
+  modelscale: "positionpreset.value == 'custom'",
+  modelx: "positionpreset.value == 'custom'",
+  modely: "positionpreset.value == 'custom'",
+  introanimation: "interactionpreset.value == 'custom'",
+  interactions: "interactionpreset.value == 'custom'",
+  mousetracking: "interactionpreset.value == 'custom' && interactions.value == true",
+  headpatting: "interactionpreset.value == 'custom' && interactions.value == true",
+  voicelines: "interactionpreset.value == 'custom' && interactions.value == true",
+  voicevolume:
+    "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
+  dialoguelanguagepreset:
+    "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
+  voicelanguage:
+    "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  showsubtitles:
+    "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  subtitlelanguage:
+    "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  bgmvolume: "bgmenabled.value == true",
+  drawhitboxes: "debugpreset.value == 'custom'",
+  debugpanelenabled: "debugpreset.value == 'custom'",
+  panellanguage: "debugpreset.value == 'custom' && debugpanelenabled.value == true",
+};
+for (const [key, condition] of Object.entries(expectedConditions)) {
+  if (frozenDefaults[key].condition !== condition) {
+    throw new Error(`Invalid grouped property condition: ${key}`);
+  }
+}
+if (
+  frozenDefaults.fpslimit.min !== 15 ||
+  frozenDefaults.fpslimit.max !== 160 ||
+  frozenDefaults.fpslimit.step !== 1
+) {
+  throw new Error("FPS limit property range is invalid");
 }
 if (project.general?.properties?.debugpanelenabled?.value !== false) {
   throw new Error("Debug panel must be disabled by default");
@@ -67,6 +242,66 @@ function pngDimensions(bytes, relative) {
     throw new Error(`Invalid PNG file: ${relative}`);
   }
   return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+}
+
+function gifMetadata(bytes, relative) {
+  const signature = bytes.subarray(0, 6).toString("ascii");
+  if (signature !== "GIF87a" && signature !== "GIF89a") {
+    throw new Error(`Invalid GIF file: ${relative}`);
+  }
+
+  const width = bytes.readUInt16LE(6);
+  const height = bytes.readUInt16LE(8);
+  const packed = bytes[10];
+  let offset = 13 + ((packed & 0x80) ? 3 * (2 ** ((packed & 0x07) + 1)) : 0);
+  let frames = 0;
+
+  const skipSubBlocks = () => {
+    while (offset < bytes.length) {
+      const length = bytes[offset];
+      offset += 1;
+      if (length === 0) return;
+      offset += length;
+    }
+    throw new Error(`Truncated GIF data: ${relative}`);
+  };
+
+  while (offset < bytes.length) {
+    const marker = bytes[offset];
+    offset += 1;
+    if (marker === 0x3b) break;
+    if (marker === 0x21) {
+      offset += 1;
+      skipSubBlocks();
+      continue;
+    }
+    if (marker !== 0x2c || offset + 9 > bytes.length) {
+      throw new Error(`Invalid GIF block: ${relative}`);
+    }
+    frames += 1;
+    const imagePacked = bytes[offset + 8];
+    offset += 9;
+    if (imagePacked & 0x80) offset += 3 * (2 ** ((imagePacked & 0x07) + 1));
+    offset += 1;
+    skipSubBlocks();
+  }
+
+  return { width, height, frames };
+}
+
+const preview = await readFile(path.join(dist, "preview.gif"));
+const previewMetadata = gifMetadata(preview, "preview.gif");
+if (
+  previewMetadata.width !== 256 ||
+  previewMetadata.height !== 256 ||
+  previewMetadata.frames < 2 ||
+  preview.length > 500_000
+) {
+  throw new Error(
+    `Preview must be an animated 256x256 GIF below 500 KB, got ` +
+      `${previewMetadata.width}x${previewMetadata.height}, ${previewMetadata.frames} frames, ` +
+      `and ${preview.length} bytes`,
+  );
 }
 
 for (const [tier, scale] of [["model-4k", 2], ["model-8k", 4]]) {
@@ -145,4 +380,23 @@ for (const file of await walk(dist)) {
   }
 }
 
-console.log("Validated M3 dist: offline 2K/4K/8K model tiers, 30 voices, BGM, project identity, and checksums.");
+const [offlineReadme, thirdPartyNotices, builtHtml] = await Promise.all([
+  readFile(path.join(dist, "OFFLINE-README.txt"), "utf8"),
+  readFile(path.join(dist, "THIRD-PARTY-NOTICES.txt"), "utf8"),
+  readFile(path.join(dist, "index.html"), "utf8"),
+]);
+if (!offlineReadme.includes("Version 1.0.0") || !offlineReadme.includes("MANIFEST.sha256")) {
+  throw new Error("Offline installation and integrity instructions are incomplete");
+}
+if (
+  !thirdPartyNotices.includes("Spine 3.8.99") ||
+  !thirdPartyNotices.includes("Blue Archive assets") ||
+  !thirdPartyNotices.includes("Real-CUGAN")
+) {
+  throw new Error("Third-party notices are incomplete");
+}
+if (/M3\s+LOCAL\s+TEST/i.test(builtHtml)) {
+  throw new Error("Built HTML still contains M3 test labeling");
+}
+
+console.log("Validated offline 1.0 dist: preview, metadata, notices, 2K/4K/8K model tiers, 30 voices, BGM, Runtime, and checksums.");

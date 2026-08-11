@@ -14,9 +14,9 @@ try {
   const { FrameLimiter } = await server.ssrLoadModule(
     "/src/render/FrameLimiter.ts",
   );
-  const sourceFps = 120;
+  const sourceFps = 240;
   const seconds = 10;
-  for (const fpsLimit of [15, 30, 60, 0]) {
+  for (const fpsLimit of [15, 30, 60, 160, 0]) {
     const limiter = new FrameLimiter();
     let frames = 0;
     let animationTime = 0;
@@ -41,7 +41,7 @@ try {
   assert.equal(limiter.advance(1 / 120, 30), null);
   limiter.reset();
   assert.equal(limiter.advance(1 / 120, 30), null);
-  console.log("Validated 15/30/60/unlimited FPS timing and reset behavior.");
+  console.log("Validated 15/30/60/160/unlimited FPS timing and reset behavior.");
 } finally {
   await server.close();
 }

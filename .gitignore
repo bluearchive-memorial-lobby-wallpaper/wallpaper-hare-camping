@@ -13,7 +13,7 @@ coverage/
 .idea/
 .vscode/
 
-# Downloaded or generated game assets are local-only until the rights review passes.
+# Downloaded and generated binary assets remain local build inputs and never enter Git.
 .cache/
 local-assets/
 generated-assets/

@@ -1,0 +1,28 @@
+THIRD-PARTY NOTICES
+Blue Archive - Hare (Camping) [Offline Edition] 1.0.0
+
+Blue Archive assets
+-------------------
+Character model, animation, textures, dialogue audio, dialogue text, and music
+are derived from or reproduce content from Blue Archive. Blue Archive and the
+included game content are the property of their respective rights holders,
+including NEXON Games and Yostar. This private offline project is unofficial
+and is not affiliated with or endorsed by those companies.
+
+Spine Runtime
+-------------
+The package includes the Spine 3.8.99 WebGL Runtime from Esoteric Software.
+The accompanying terms are included at:
+vendor/SPINE-RUNTIMES-LICENSE.txt
+
+Texture processing
+------------------
+The optional 4K and 8K texture tiers were generated from the original atlas
+pages with Real-CUGAN. Atlas coordinates were scaled to match without changing
+the model skeleton, animations, slots, or UV topology.
+
+Project implementation
+----------------------
+The TypeScript, CSS, build scripts, configuration, and interaction integration
+in this package were created for this project. No code, preview, or description
+from another Wallpaper Engine wallpaper is included.
