@@ -14,8 +14,9 @@ interface BgmPlayerCallbacks {
 }
 
 export class BgmPlayer {
-  private readonly audio = new Audio(BGM.path);
+  private readonly audio = new Audio();
   private readonly callbacks: BgmPlayerCallbacks;
+  private sourceAssigned = false;
   private enabled = true;
   private pausedByHost = false;
   private status: BgmStatus = "loading";
@@ -55,6 +56,7 @@ export class BgmPlayer {
 
   async retryFromUserGesture() {
     if (!this.enabled || this.pausedByHost) return false;
+    this.ensureSource();
     if (this.status === "playing" && !this.audio.paused) return true;
     this.cancelPlaybackAttempt();
     this.audio.pause();
@@ -63,6 +65,7 @@ export class BgmPlayer {
 
   async restartFromUserGesture() {
     if (!this.enabled || this.pausedByHost) return false;
+    this.ensureSource();
     this.rewind();
     return this.requestPlayback();
   }
@@ -89,6 +92,7 @@ export class BgmPlayer {
     this.audio.pause();
     this.audio.removeAttribute("src");
     this.audio.load();
+    this.sourceAssigned = false;
   }
 
   getSnapshot() {
@@ -107,6 +111,7 @@ export class BgmPlayer {
 
   private async requestPlayback() {
     if (!this.enabled || this.pausedByHost) return false;
+    this.ensureSource();
     if (this.status === "playing" && !this.audio.paused) return true;
     if (this.playbackPending) return false;
     const attempt = ++this.playbackAttempt;
@@ -135,6 +140,12 @@ export class BgmPlayer {
   private cancelPlaybackAttempt() {
     this.playbackAttempt += 1;
     this.playbackPending = false;
+  }
+
+  private ensureSource() {
+    if (this.sourceAssigned) return;
+    this.audio.src = BGM.path;
+    this.sourceAssigned = true;
   }
 
   private setStatus(status: BgmStatus) {
