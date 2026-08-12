@@ -222,6 +222,8 @@
                     <option value="ko" data-panel-text="korean">韩文</option>
                   </select>
                 </div>
+                <div id="debug-subtitle-settings" class="status-panel__nested-controls status-panel__subtitle-settings">
+                  <p class="status-panel__subgroup-title" data-panel-text="subtitleSettings">字幕</p>
                 <label class="status-panel__checkbox">
                   <span data-panel-text="showSubtitles">显示字幕</span>
                   <input id="debug-show-subtitles" type="checkbox" checked />
@@ -247,6 +249,45 @@
                     <option value="zh-cn" data-panel-text="simplifiedChinese">简体中文</option>
                     <option value="ja" data-panel-text="japanese" selected>日文</option>
                   </select>
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-subtitle-alignment">
+                    <span data-panel-text="subtitleAlignment">字幕对齐</span>
+                  </label>
+                  <select id="debug-subtitle-alignment">
+                    <option value="center" data-panel-text="subtitleAlignCenter" selected>居中对齐</option>
+                    <option value="left" data-panel-text="subtitleAlignLeft">左对齐</option>
+                    <option value="right" data-panel-text="subtitleAlignRight">右对齐</option>
+                  </select>
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-subtitle-position">
+                    <span data-panel-text="subtitlePosition">字幕位置</span>
+                  </label>
+                  <select id="debug-subtitle-position">
+                    <option value="bottom-center" data-panel-text="subtitlePositionBottomCenter" selected>底部中央</option>
+                    <option value="top-center" data-panel-text="subtitlePositionTopCenter">顶部中央</option>
+                    <option value="screen-center" data-panel-text="subtitlePositionScreenCenter">屏幕中心</option>
+                    <option value="bottom-left" data-panel-text="subtitlePositionBottomLeft">底部左侧</option>
+                    <option value="custom" data-panel-text="customPreset">自定义</option>
+                  </select>
+                </div>
+                <div id="debug-subtitle-custom-position" class="status-panel__nested-controls" hidden>
+                  <div class="status-panel__control-group">
+                    <label class="status-panel__control-label" for="debug-subtitle-x">
+                      <span data-panel-text="subtitleX">字幕 X</span>
+                      <output id="debug-subtitle-x-output" for="debug-subtitle-x">0</output>
+                    </label>
+                    <input id="debug-subtitle-x" type="range" min="-1000" max="1000" step="1" value="0" />
+                  </div>
+                  <div class="status-panel__control-group">
+                    <label class="status-panel__control-label" for="debug-subtitle-y">
+                      <span data-panel-text="subtitleY">字幕 Y</span>
+                      <output id="debug-subtitle-y-output" for="debug-subtitle-y">0</output>
+                    </label>
+                    <input id="debug-subtitle-y" type="range" min="-1000" max="1000" step="1" value="0" />
+                  </div>
+                </div>
                 </div>
               </div>
             </fieldset>

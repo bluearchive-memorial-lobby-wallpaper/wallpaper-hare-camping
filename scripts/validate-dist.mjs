@@ -90,6 +90,10 @@ if (
   frozenDefaults?.subtitlelanguage?.value !== "zh-cn" ||
   frozenDefaults?.showsecondarysubtitles?.value !== false ||
   frozenDefaults?.secondarysubtitlelanguage?.value !== "ja" ||
+  frozenDefaults?.subtitlealignment?.value !== "center" ||
+  frozenDefaults?.subtitleposition?.value !== "bottom-center" ||
+  frozenDefaults?.subtitlex?.value !== 0 ||
+  frozenDefaults?.subtitley?.value !== 0 ||
   frozenDefaults?.debugpreset?.value !== "off" ||
   frozenDefaults?.renderresolution?.value !== "1080p" ||
   frozenDefaults?.modelresolution?.value !== "2k" ||
@@ -141,6 +145,10 @@ const expectedPropertyOrder = [
   "subtitlelanguage",
   "showsecondarysubtitles",
   "secondarysubtitlelanguage",
+  "subtitlealignment",
+  "subtitleposition",
+  "subtitlex",
+  "subtitley",
   "debugpreset",
   "drawhitboxes",
   "debugpanelenabled",
@@ -166,6 +174,14 @@ const expectedGroupOptions = {
   debugpreset: ["off", "panel", "all", "custom"],
   subtitlelanguage: ["zh-cn", "ja"],
   secondarysubtitlelanguage: ["zh-cn", "ja"],
+  subtitlealignment: ["center", "left", "right"],
+  subtitleposition: [
+    "bottom-center",
+    "top-center",
+    "screen-center",
+    "bottom-left",
+    "custom",
+  ],
 };
 for (const [key, values] of Object.entries(expectedGroupOptions)) {
   if (
@@ -202,6 +218,10 @@ const expectedPropertyLabels = {
   subtitlelanguage: "Primary Subtitle Language",
   showsecondarysubtitles: "Show Secondary Subtitles",
   secondarysubtitlelanguage: "Secondary Subtitle Language",
+  subtitlealignment: "Subtitle Alignment",
+  subtitleposition: "Subtitle Position",
+  subtitlex: "Subtitle X",
+  subtitley: "Subtitle Y",
   debugpreset: "Debug",
   drawhitboxes: "Show Interactive Areas",
   debugpanelenabled: "Enable Debug Panel",
@@ -238,6 +258,14 @@ const expectedConditions = {
     "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
   secondarysubtitlelanguage:
     "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && showsecondarysubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  subtitlealignment:
+    "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  subtitleposition:
+    "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  subtitlex:
+    "dialoguelanguagepreset.value == 'custom' && subtitleposition.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+  subtitley:
+    "dialoguelanguagepreset.value == 'custom' && subtitleposition.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
   drawhitboxes: "debugpreset.value == 'custom'",
   debugpanelenabled: "debugpreset.value == 'custom'",
   panellanguage: "debugpreset.value == 'custom' && debugpanelenabled.value == true",
@@ -253,6 +281,15 @@ if (
   frozenDefaults.fpslimit.step !== 1
 ) {
   throw new Error("FPS limit property range is invalid");
+}
+for (const key of ["subtitlex", "subtitley"]) {
+  if (
+    frozenDefaults[key].min !== -1000 ||
+    frozenDefaults[key].max !== 1000 ||
+    frozenDefaults[key].type !== "slider"
+  ) {
+    throw new Error(`Subtitle custom position range is invalid: ${key}`);
+  }
 }
 if (project.general?.properties?.debugpanelenabled?.value !== false) {
   throw new Error("Debug panel must be disabled by default");
@@ -412,6 +449,11 @@ const [offlineReadme, thirdPartyNotices, builtHtml] = await Promise.all([
   readFile(path.join(dist, "THIRD-PARTY-NOTICES.txt"), "utf8"),
   readFile(path.join(dist, "index.html"), "utf8"),
 ]);
+const builtCssName = (await readdir(path.join(dist, "assets"))).find((name) =>
+  name.endsWith(".css"),
+);
+if (!builtCssName) throw new Error("Built CSS bundle is missing");
+const builtCss = await readFile(path.join(dist, "assets", builtCssName), "utf8");
 if (!offlineReadme.includes("Version 1.0.0") || !offlineReadme.includes("MANIFEST.sha256")) {
   throw new Error("Offline installation and integrity instructions are incomplete");
 }
@@ -425,6 +467,19 @@ if (
 if (/M3\s+LOCAL\s+TEST/i.test(builtHtml)) {
   throw new Error("Built HTML still contains M3 test labeling");
 }
+for (const marker of [
+  "data-alignment=right",
+  "data-position=top-center",
+  "data-position=screen-center",
+  "data-position=bottom-left",
+  "data-position=custom",
+  "--subtitle-x",
+  "--subtitle-y",
+]) {
+  if (!builtCss.includes(marker)) {
+    throw new Error(`Built subtitle layout CSS is missing: ${marker}`);
+  }
+}
 const expectedDebugPanelLayout = [
   "debug-quality-preset",
   "debug-position-preset",
@@ -434,9 +489,14 @@ const expectedDebugPanelLayout = [
   "debug-voice-volume-control",
   "debug-dialogue-autoplay",
   "debug-dialogue-language-preset",
+  "debug-voice-language",
+  "debug-subtitle-settings",
   "debug-primary-subtitle-language",
   "debug-show-secondary-subtitles",
   "debug-secondary-subtitle-language",
+  "debug-subtitle-alignment",
+  "debug-subtitle-position",
+  "debug-subtitle-custom-position",
 ];
 let previousDebugGroupIndex = -1;
 for (const id of expectedDebugPanelLayout) {
@@ -460,6 +520,9 @@ if (
   !builtHtml.includes('data-panel-text="debugPanelVisibilityHint"')
 ) {
   throw new Error("Debug panel visibility hint is missing from the status area");
+}
+if (!builtHtml.includes('data-panel-text="subtitleSettings"')) {
+  throw new Error("Debug panel subtitle subgroup title is missing");
 }
 
 console.log("Validated offline 1.0 dist: preview, metadata, notices, 2K/4K/8K model tiers, 30 voices, BGM, Runtime, and checksums.");

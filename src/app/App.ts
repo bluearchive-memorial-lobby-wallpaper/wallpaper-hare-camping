@@ -82,6 +82,13 @@ export class App {
   private readonly showSecondarySubtitlesCheckbox: HTMLInputElement;
   private readonly secondarySubtitleLanguageControl: HTMLElement;
   private readonly secondarySubtitleLanguageSelect: HTMLSelectElement;
+  private readonly subtitleAlignmentSelect: HTMLSelectElement;
+  private readonly subtitlePositionSelect: HTMLSelectElement;
+  private readonly subtitleCustomPositionControls: HTMLElement;
+  private readonly subtitleXSlider: HTMLInputElement;
+  private readonly subtitleXOutput: HTMLOutputElement;
+  private readonly subtitleYSlider: HTMLInputElement;
+  private readonly subtitleYOutput: HTMLOutputElement;
   private readonly bgmVolumeControl: HTMLElement;
   private readonly bgmVolumeSlider: HTMLInputElement;
   private readonly bgmVolumeOutput: HTMLOutputElement;
@@ -259,6 +266,28 @@ export class App {
       "debug-secondary-subtitle-language",
       HTMLSelectElement,
     );
+    this.subtitleAlignmentSelect = this.getElement(
+      "debug-subtitle-alignment",
+      HTMLSelectElement,
+    );
+    this.subtitlePositionSelect = this.getElement(
+      "debug-subtitle-position",
+      HTMLSelectElement,
+    );
+    this.subtitleCustomPositionControls = this.getElement(
+      "debug-subtitle-custom-position",
+      HTMLElement,
+    );
+    this.subtitleXSlider = this.getElement("debug-subtitle-x", HTMLInputElement);
+    this.subtitleXOutput = this.getElement(
+      "debug-subtitle-x-output",
+      HTMLOutputElement,
+    );
+    this.subtitleYSlider = this.getElement("debug-subtitle-y", HTMLInputElement);
+    this.subtitleYOutput = this.getElement(
+      "debug-subtitle-y-output",
+      HTMLOutputElement,
+    );
     this.bgmVolumeControl = this.getElement("debug-bgm-volume-control", HTMLElement);
     this.bgmVolumeSlider = this.getElement("debug-bgm-volume", HTMLInputElement);
     this.bgmVolumeOutput = this.getElement(
@@ -406,6 +435,10 @@ export class App {
       settings.primarySubtitleLocale,
       settings.secondarySubtitlesEnabled,
       settings.secondarySubtitleLocale,
+      settings.subtitleAlignment,
+      settings.subtitlePosition,
+      settings.subtitleX,
+      settings.subtitleY,
     );
     this.syncDebugControls(settings);
     this.updateViewportLabel();
@@ -641,6 +674,26 @@ export class App {
         secondarysubtitlelanguage: this.secondarySubtitleLanguageSelect.value,
       }),
     );
+    this.subtitleAlignmentSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        subtitlealignment: this.subtitleAlignmentSelect.value,
+      }),
+    );
+    this.subtitlePositionSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        subtitleposition: this.subtitlePositionSelect.value,
+      }),
+    );
+    this.subtitleXSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        subtitlex: Number(this.subtitleXSlider.value),
+      }),
+    );
+    this.subtitleYSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        subtitley: Number(this.subtitleYSlider.value),
+      }),
+    );
     this.bgmVolumeSlider.addEventListener("input", () =>
       this.adapter.setUserPropertiesForDebug({
         bgmvolume: Number(this.bgmVolumeSlider.value),
@@ -765,6 +818,14 @@ export class App {
     this.secondarySubtitleLanguageControl.hidden =
       !visibility.secondarySubtitleLanguage;
     this.secondarySubtitleLanguageSelect.value = settings.secondarySubtitleLocale;
+    this.subtitleAlignmentSelect.value = settings.subtitleAlignment;
+    this.subtitlePositionSelect.value = settings.subtitlePosition;
+    this.subtitleCustomPositionControls.hidden =
+      !visibility.subtitleCustomPosition;
+    this.subtitleXSlider.value = String(settings.subtitleX);
+    this.subtitleXOutput.value = String(settings.subtitleX);
+    this.subtitleYSlider.value = String(settings.subtitleY);
+    this.subtitleYOutput.value = String(settings.subtitleY);
     this.bgmVolumeControl.hidden = !visibility.bgmVolume;
     this.bgmVolumeSlider.value = String(bgmVolume);
     this.bgmVolumeOutput.value = `${bgmVolume}%`;

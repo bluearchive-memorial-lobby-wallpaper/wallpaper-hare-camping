@@ -14,6 +14,11 @@ try {
   const { resolveSubtitlePresentation } = await server.ssrLoadModule(
     "/src/dialogue/SubtitlePresenter.ts",
   );
+  const {
+    applySubtitleLayout,
+    isSubtitleAlignment,
+    isSubtitlePosition,
+  } = await server.ssrLoadModule("/src/dialogue/subtitleLayout.ts");
   const eventId = "CH0233_MemorialLobby_1_1";
 
   assert.equal(
@@ -46,7 +51,29 @@ try {
     null,
   );
 
-  console.log("Validated single, dual, same-language, disabled, and missing subtitle states.");
+  const properties = new Map();
+  const element = {
+    dataset: {},
+    style: { setProperty: (key, value) => properties.set(key, value) },
+  };
+  applySubtitleLayout(element, {
+    subtitleAlignment: "right",
+    subtitlePosition: "custom",
+    subtitleX: 1000,
+    subtitleY: -1000,
+  });
+  assert.deepEqual(element.dataset, {
+    alignment: "right",
+    position: "custom",
+  });
+  assert.equal(properties.get("--subtitle-x"), "1000px");
+  assert.equal(properties.get("--subtitle-y"), "-1000px");
+  assert.equal(isSubtitleAlignment("left"), true);
+  assert.equal(isSubtitleAlignment("invalid"), false);
+  assert.equal(isSubtitlePosition("bottom-left"), true);
+  assert.equal(isSubtitlePosition("invalid"), false);
+
+  console.log("Validated subtitle text states, alignment, preset positions, and custom offsets.");
 } finally {
   await server.close();
 }

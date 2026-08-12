@@ -265,43 +265,93 @@
         "type": "combo",
         "value": "ja"
       },
-      "debugpreset": {
+      "subtitlealignment": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
         "index": 25,
+        "options": [
+          { "label": "Center", "value": "center" },
+          { "label": "Left", "value": "left" },
+          { "label": "Right", "value": "right" }
+        ],
+        "order": 47,
+        "text": "Subtitle Alignment",
+        "type": "combo",
+        "value": "center"
+      },
+      "subtitleposition": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+        "index": 26,
+        "options": [
+          { "label": "Bottom Center", "value": "bottom-center" },
+          { "label": "Top Center", "value": "top-center" },
+          { "label": "Screen Center", "value": "screen-center" },
+          { "label": "Bottom Left", "value": "bottom-left" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "order": 48,
+        "text": "Subtitle Position",
+        "type": "combo",
+        "value": "bottom-center"
+      },
+      "subtitlex": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && subtitleposition.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+        "fraction": false,
+        "index": 27,
+        "max": 1000,
+        "min": -1000,
+        "order": 49,
+        "text": "Subtitle X",
+        "type": "slider",
+        "value": 0
+      },
+      "subtitley": {
+        "condition": "dialoguelanguagepreset.value == 'custom' && subtitleposition.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
+        "fraction": false,
+        "index": 28,
+        "max": 1000,
+        "min": -1000,
+        "order": 50,
+        "text": "Subtitle Y",
+        "type": "slider",
+        "value": 0
+      },
+      "debugpreset": {
+        "index": 29,
         "options": [
           { "label": "Off", "value": "off" },
           { "label": "Debug Panel Only", "value": "panel" },
           { "label": "All", "value": "all" },
           { "label": "Custom", "value": "custom" }
         ],
-        "order": 50,
+        "order": 60,
         "text": "Debug",
         "type": "combo",
         "value": "off"
       },
       "drawhitboxes": {
         "condition": "debugpreset.value == 'custom'",
-        "index": 26,
-        "order": 51,
+        "index": 30,
+        "order": 61,
         "text": "Show Interactive Areas",
         "type": "bool",
         "value": false
       },
       "debugpanelenabled": {
         "condition": "debugpreset.value == 'custom'",
-        "index": 27,
-        "order": 52,
+        "index": 31,
+        "order": 62,
         "text": "Enable Debug Panel",
         "type": "bool",
         "value": false
       },
       "panellanguage": {
         "condition": "debugpreset.value == 'custom' && debugpanelenabled.value == true",
-        "index": 28,
+        "index": 32,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "English", "value": "en" }
         ],
-        "order": 53,
+        "order": 63,
         "text": "Panel Language",
         "type": "combo",
         "value": "zh-cn"

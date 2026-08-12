@@ -1,4 +1,9 @@
 import { findDialogueLine, type SubtitleLocale } from "../config";
+import {
+  applySubtitleLayout,
+  type SubtitleAlignment,
+  type SubtitlePosition,
+} from "./subtitleLayout";
 
 export interface SubtitlePresentation {
   primaryText: string;
@@ -30,6 +35,10 @@ export class SubtitlePresenter {
   private primaryLocale: SubtitleLocale = "zh-cn";
   private secondaryEnabled = false;
   private secondaryLocale: SubtitleLocale = "ja";
+  private subtitleAlignment: SubtitleAlignment = "center";
+  private subtitlePosition: SubtitlePosition = "bottom-center";
+  private subtitleX = 0;
+  private subtitleY = 0;
   private enabled = true;
   private eventId: string | null = null;
 
@@ -48,11 +57,25 @@ export class SubtitlePresenter {
     primaryLocale: SubtitleLocale,
     secondaryEnabled: boolean,
     secondaryLocale: SubtitleLocale,
+    subtitleAlignment: SubtitleAlignment,
+    subtitlePosition: SubtitlePosition,
+    subtitleX: number,
+    subtitleY: number,
   ) {
     this.enabled = enabled;
     this.primaryLocale = primaryLocale;
     this.secondaryEnabled = secondaryEnabled;
     this.secondaryLocale = secondaryLocale;
+    this.subtitleAlignment = subtitleAlignment;
+    this.subtitlePosition = subtitlePosition;
+    this.subtitleX = subtitleX;
+    this.subtitleY = subtitleY;
+    applySubtitleLayout(this.element, {
+      subtitleAlignment: this.subtitleAlignment,
+      subtitlePosition: this.subtitlePosition,
+      subtitleX: this.subtitleX,
+      subtitleY: this.subtitleY,
+    });
     if (this.eventId) this.show(this.eventId);
     else this.element.hidden = true;
   }
@@ -94,6 +117,10 @@ export class SubtitlePresenter {
       secondaryLocale: this.secondaryLocale,
       enabled: this.enabled,
       secondaryEnabled: this.secondaryEnabled,
+      subtitleAlignment: this.subtitleAlignment,
+      subtitlePosition: this.subtitlePosition,
+      subtitleX: this.subtitleX,
+      subtitleY: this.subtitleY,
     };
   }
 }

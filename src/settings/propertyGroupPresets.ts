@@ -1,5 +1,9 @@
 import type { SubtitleLocale, VoiceLocale } from "../config";
 import type { PanelLocale } from "../i18n/panel";
+import type {
+  SubtitleAlignment,
+  SubtitlePosition,
+} from "../dialogue/subtitleLayout";
 
 export type PositionPreset = "default" | "custom";
 export type InteractionPreset = "default" | "custom";
@@ -26,6 +30,10 @@ export interface DialogueLanguagePresetSettings {
   primarySubtitleLocale: SubtitleLocale;
   secondarySubtitlesEnabled: boolean;
   secondarySubtitleLocale: SubtitleLocale;
+  subtitleAlignment: SubtitleAlignment;
+  subtitlePosition: SubtitlePosition;
+  subtitleX: number;
+  subtitleY: number;
 }
 
 export interface DebugPresetSettings {
@@ -58,6 +66,10 @@ export const DIALOGUE_LANGUAGE_PRESETS: Record<
     primarySubtitleLocale: "zh-cn",
     secondarySubtitlesEnabled: false,
     secondarySubtitleLocale: "ja",
+    subtitleAlignment: "center",
+    subtitlePosition: "bottom-center",
+    subtitleX: 0,
+    subtitleY: 0,
   },
   ja: {
     voiceLocale: "ja",
@@ -65,6 +77,10 @@ export const DIALOGUE_LANGUAGE_PRESETS: Record<
     primarySubtitleLocale: "ja",
     secondarySubtitlesEnabled: false,
     secondarySubtitleLocale: "zh-cn",
+    subtitleAlignment: "center",
+    subtitlePosition: "bottom-center",
+    subtitleX: 0,
+    subtitleY: 0,
   },
   ko: {
     voiceLocale: "ko",
@@ -72,6 +88,10 @@ export const DIALOGUE_LANGUAGE_PRESETS: Record<
     primarySubtitleLocale: "zh-cn",
     secondarySubtitlesEnabled: false,
     secondarySubtitleLocale: "ja",
+    subtitleAlignment: "center",
+    subtitlePosition: "bottom-center",
+    subtitleX: 0,
+    subtitleY: 0,
   },
 };
 

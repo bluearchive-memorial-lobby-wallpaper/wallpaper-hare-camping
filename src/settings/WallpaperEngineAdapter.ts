@@ -1,4 +1,10 @@
 import type { SubtitleLocale, VoiceLocale } from "../config";
+import {
+  isSubtitleAlignment,
+  isSubtitlePosition,
+  type SubtitleAlignment,
+  type SubtitlePosition,
+} from "../dialogue/subtitleLayout";
 import { isPanelLocale, type PanelLocale } from "../i18n/panel";
 import {
   isRenderResolution,
@@ -53,6 +59,10 @@ export interface WallpaperSettings {
   primarySubtitleLocale: SubtitleLocale;
   secondarySubtitlesEnabled: boolean;
   secondarySubtitleLocale: SubtitleLocale;
+  subtitleAlignment: SubtitleAlignment;
+  subtitlePosition: SubtitlePosition;
+  subtitleX: number;
+  subtitleY: number;
   bgmVolume: number;
   qualityPreset: QualityPreset;
   renderResolution: RenderResolution;
@@ -68,7 +78,7 @@ export interface WallpaperSettings {
 type SettingsListener = (settings: Readonly<WallpaperSettings>) => void;
 type PauseListener = (paused: boolean) => void;
 
-export const DEFAULT_SETTINGS_VERSION = 3;
+export const DEFAULT_SETTINGS_VERSION = 4;
 
 export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   positionPreset: "default",
@@ -90,6 +100,10 @@ export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   primarySubtitleLocale: "zh-cn",
   secondarySubtitlesEnabled: false,
   secondarySubtitleLocale: "ja",
+  subtitleAlignment: "center",
+  subtitlePosition: "bottom-center",
+  subtitleX: 0,
+  subtitleY: 0,
   bgmVolume: 0.5,
   qualityPreset: "default",
   renderResolution: "1080p",
@@ -157,6 +171,10 @@ export class WallpaperEngineAdapter {
     primarySubtitleLocale: DEFAULT_SETTINGS.primarySubtitleLocale,
     secondarySubtitlesEnabled: DEFAULT_SETTINGS.secondarySubtitlesEnabled,
     secondarySubtitleLocale: DEFAULT_SETTINGS.secondarySubtitleLocale,
+    subtitleAlignment: DEFAULT_SETTINGS.subtitleAlignment,
+    subtitlePosition: DEFAULT_SETTINGS.subtitlePosition,
+    subtitleX: DEFAULT_SETTINGS.subtitleX,
+    subtitleY: DEFAULT_SETTINGS.subtitleY,
   };
   private customDebugSettings: DebugPresetSettings = {
     debugPanelEnabled: DEFAULT_SETTINGS.debugPanelEnabled,
@@ -315,6 +333,18 @@ export class WallpaperEngineAdapter {
       this.customDialogueLanguageSettings.secondarySubtitleLocale =
         patch.secondarySubtitleLocale;
     }
+    if (patch.subtitleAlignment !== undefined) {
+      this.customDialogueLanguageSettings.subtitleAlignment = patch.subtitleAlignment;
+    }
+    if (patch.subtitlePosition !== undefined) {
+      this.customDialogueLanguageSettings.subtitlePosition = patch.subtitlePosition;
+    }
+    if (patch.subtitleX !== undefined) {
+      this.customDialogueLanguageSettings.subtitleX = patch.subtitleX;
+    }
+    if (patch.subtitleY !== undefined) {
+      this.customDialogueLanguageSettings.subtitleY = patch.subtitleY;
+    }
     if (patch.debugPanelEnabled !== undefined) {
       this.customDebugSettings.debugPanelEnabled = patch.debugPanelEnabled;
     }
@@ -462,6 +492,24 @@ export class WallpaperEngineAdapter {
     ) {
       patch.secondarySubtitleLocale = properties.secondarysubtitlelanguage.value;
     }
+    if (
+      properties.subtitlealignment &&
+      isSubtitleAlignment(properties.subtitlealignment.value)
+    ) {
+      patch.subtitleAlignment = properties.subtitlealignment.value;
+    }
+    if (
+      properties.subtitleposition &&
+      isSubtitlePosition(properties.subtitleposition.value)
+    ) {
+      patch.subtitlePosition = properties.subtitleposition.value;
+    }
+    if (properties.subtitlex) {
+      patch.subtitleX = clamp(Number(properties.subtitlex.value), -1000, 1000);
+    }
+    if (properties.subtitley) {
+      patch.subtitleY = clamp(Number(properties.subtitley.value), -1000, 1000);
+    }
     if (properties.bgmvolume) {
       patch.bgmVolume = clamp(Number(properties.bgmvolume.value) / 100, 0, 1);
     }
@@ -539,6 +587,20 @@ export class WallpaperEngineAdapter {
     if (patch.secondarySubtitleLocale !== undefined) {
       this.sessionCustomDialogueLanguageSettings.secondarySubtitleLocale =
         patch.secondarySubtitleLocale;
+    }
+    if (patch.subtitleAlignment !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.subtitleAlignment =
+        patch.subtitleAlignment;
+    }
+    if (patch.subtitlePosition !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.subtitlePosition =
+        patch.subtitlePosition;
+    }
+    if (patch.subtitleX !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.subtitleX = patch.subtitleX;
+    }
+    if (patch.subtitleY !== undefined) {
+      this.sessionCustomDialogueLanguageSettings.subtitleY = patch.subtitleY;
     }
     if (patch.renderResolution !== undefined) {
       this.sessionCustomQualitySettings.renderResolution = patch.renderResolution;
