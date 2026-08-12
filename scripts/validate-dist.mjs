@@ -449,11 +449,17 @@ const [offlineReadme, thirdPartyNotices, builtHtml] = await Promise.all([
   readFile(path.join(dist, "THIRD-PARTY-NOTICES.txt"), "utf8"),
   readFile(path.join(dist, "index.html"), "utf8"),
 ]);
-const builtCssName = (await readdir(path.join(dist, "assets"))).find((name) =>
+const builtCssNames = (await readdir(path.join(dist, "assets"))).filter((name) =>
   name.endsWith(".css"),
 );
-if (!builtCssName) throw new Error("Built CSS bundle is missing");
-const builtCss = await readFile(path.join(dist, "assets", builtCssName), "utf8");
+if (builtCssNames.length === 0) throw new Error("Built CSS bundle is missing");
+const builtCss = (
+  await Promise.all(
+    builtCssNames.map((name) =>
+      readFile(path.join(dist, "assets", name), "utf8"),
+    ),
+  )
+).join("\n");
 if (!offlineReadme.includes("Version 1.0.0") || !offlineReadme.includes("MANIFEST.sha256")) {
   throw new Error("Offline installation and integrity instructions are incomplete");
 }
@@ -467,17 +473,17 @@ if (
 if (/M3\s+LOCAL\s+TEST/i.test(builtHtml)) {
   throw new Error("Built HTML still contains M3 test labeling");
 }
-for (const marker of [
-  "data-alignment=right",
-  "data-position=top-center",
-  "data-position=screen-center",
-  "data-position=bottom-left",
-  "data-position=custom",
-  "--subtitle-x",
-  "--subtitle-y",
+for (const [label, pattern] of [
+  ["right alignment", /data-alignment=(?:["']?)right(?:["']?)/],
+  ["top center position", /data-position=(?:["']?)top-center(?:["']?)/],
+  ["screen center position", /data-position=(?:["']?)screen-center(?:["']?)/],
+  ["bottom left position", /data-position=(?:["']?)bottom-left(?:["']?)/],
+  ["custom position", /data-position=(?:["']?)custom(?:["']?)/],
+  ["custom X offset", /--subtitle-x/],
+  ["custom Y offset", /--subtitle-y/],
 ]) {
-  if (!builtCss.includes(marker)) {
-    throw new Error(`Built subtitle layout CSS is missing: ${marker}`);
+  if (!pattern.test(builtCss)) {
+    throw new Error(`Built subtitle layout CSS is missing: ${label}`);
   }
 }
 const expectedDebugPanelLayout = [
