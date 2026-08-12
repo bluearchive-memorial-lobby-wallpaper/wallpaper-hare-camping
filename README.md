@@ -21,7 +21,7 @@ Wallpaper Engine 中的属性标签与选项保持英文。属性按 `Visual Qua
 
 默认参数为模型缩放 `0.80`、X/Y `0/0`、关闭静音、关闭对话自动播放、BGM 音量 `50`、对话音量 `70`、项目 FPS 上限 `60`、主题色 `#0e4eac`，以及 1080P 渲染配 2K 纹理的默认画质预设。项目 FPS 上限与 Wallpaper Engine 全局上限同时存在时取两者较低值。实机视口回归结果见 [`research/DEFAULT-PRESET-V1-REPORT.md`](research/DEFAULT-PRESET-V1-REPORT.md)。
 
-属性页可直接加载 `Default`、`2K`、`4K` 和 `Maximum` 画质预设；选择 `Custom` 后才显示独立的渲染分辨率、模型纹理和 FPS 控件。位置、互动、对话语言和调试分组也采用相同的固定预设/自定义模式。自定义对话可同时显示上下排列的主、副字幕，并可设置字幕对齐、底部/顶部/屏幕中心/底部左侧位置或自定义 X/Y；两种字幕语言相同时自动只显示主字幕，固定中/日/韩预设仍保持底部居中的单字幕。韩语对话预设开启韩语语音，并因当前没有韩语字幕而回退到简体中文字幕。2K 纹理使用游戏资源中的原始 Atlas 页面；4K 和 8K 纹理使用 Real-CUGAN 对整张页面做 2×/4× 确定性超分。8K 档占用的显存和载入时间明显更高，只在最高预设或自定义中使用。
+属性页可直接加载 `Default`、`2K`、`4K` 和 `Maximum` 画质预设；选择 `Custom` 后才显示独立的渲染分辨率、模型纹理和 FPS 控件。位置、互动、对话语言和调试分组也采用相同的固定预设/自定义模式。自定义对话可同时显示上下排列的主、副字幕，并可从简体中文、日文、韩文和英文中分别选择语言，还可设置字幕对齐、底部/顶部/屏幕中心/底部左侧位置或自定义 X/Y；两种字幕语言相同时自动只显示主字幕。固定中/日/韩预设使用对应语音和字幕；英文预设按国际服组合使用日语语音和官方英文字幕。2K 纹理使用游戏资源中的原始 Atlas 页面；4K 和 8K 纹理使用 Real-CUGAN 对整张页面做 2×/4× 确定性超分。8K 档占用的显存和载入时间明显更高，只在最高预设或自定义中使用。
 
 需要重新生成本机高清纹理时，先将 Real-CUGAN Windows 版放在脚本默认的 `.cache/realcugan/` 路径，或设置 `REALCUGAN_PATH` 与 `REALCUGAN_MODEL_PATH`，然后运行：
 
@@ -47,7 +47,7 @@ npm run package:offline
 
 ## 离线发行范围
 
-本仓库不跟踪游戏模型、纹理、音频或 Spine Runtime。`npm run prepare:assets` 会校验本地输入并准备完整离线构建；正式 ZIP 包含模型、三语语音、双语字幕、BGM、三档纹理和固定 Spine 3.8 Runtime。
+本仓库不跟踪游戏模型、纹理、音频或 Spine Runtime。`npm run prepare:assets` 会校验本地输入并准备完整离线构建；正式 ZIP 包含模型、三语语音、四语字幕、BGM、三档纹理和固定 Spine 3.8 Runtime。
 
 本项目的交付范围仅限私人离线使用，不上传创意工坊，也不创建或沿用 `workshopid`。包内安装方法见 `OFFLINE-README.txt`，素材和 Runtime 说明见 `THIRD-PARTY-NOTICES.txt` 与 `vendor/SPINE-RUNTIMES-LICENSE.txt`。M4 的八项离线发行门槛和最终验证记录见 [`research/M4-GATE-REVIEW.md`](research/M4-GATE-REVIEW.md)。
 

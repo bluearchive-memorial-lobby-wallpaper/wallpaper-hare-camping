@@ -170,10 +170,10 @@ if (
 const expectedGroupOptions = {
   positionpreset: ["default", "custom"],
   interactionpreset: ["default", "custom"],
-  dialoguelanguagepreset: ["zh-cn", "ja", "ko", "custom"],
+  dialoguelanguagepreset: ["zh-cn", "ja", "ko", "en", "custom"],
   debugpreset: ["off", "panel", "all", "custom"],
-  subtitlelanguage: ["zh-cn", "ja"],
-  secondarysubtitlelanguage: ["zh-cn", "ja"],
+  subtitlelanguage: ["zh-cn", "ja", "ko", "en"],
+  secondarysubtitlelanguage: ["zh-cn", "ja", "ko", "en"],
   subtitlealignment: ["center", "left", "right"],
   subtitleposition: [
     "bottom-center",

@@ -32,7 +32,7 @@ try {
   assert.equal(resolveDebugPanelExpanded(true, true, false, false), false);
   assert.equal(resolveDebugPanelExpanded(false, false, false, true), false);
   assert.equal(resolveDebugPanelExpanded(true, false, false, true), true);
-  assert.equal(DEFAULT_SETTINGS_VERSION, 4);
+  assert.equal(DEFAULT_SETTINGS_VERSION, 5);
   assert.deepEqual(resolvePropertyGroupVisibility(DEFAULT_SETTINGS), {
     qualityCustom: false,
     positionCustom: false,
@@ -325,15 +325,20 @@ try {
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "ko" } });
   assert.equal(adapter.current.voiceLocale, "ko");
   assert.equal(adapter.current.subtitlesEnabled, true);
-  assert.equal(adapter.current.primarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.primarySubtitleLocale, "ko");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, false);
+  listener.applyUserProperties({ dialoguelanguagepreset: { value: "en" } });
+  assert.equal(adapter.current.voiceLocale, "ja");
+  assert.equal(adapter.current.subtitlesEnabled, true);
+  assert.equal(adapter.current.primarySubtitleLocale, "en");
   assert.equal(adapter.current.secondarySubtitlesEnabled, false);
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "custom" } });
   listener.applyUserProperties({
     voicelanguage: { value: "ja" },
     showsubtitles: { value: false },
-    subtitlelanguage: { value: "ja" },
+    subtitlelanguage: { value: "ko" },
     showsecondarysubtitles: { value: true },
-    secondarysubtitlelanguage: { value: "zh-cn" },
+    secondarysubtitlelanguage: { value: "en" },
     subtitlealignment: { value: "left" },
     subtitleposition: { value: "custom" },
     subtitlex: { value: 240 },
@@ -341,9 +346,9 @@ try {
   });
   assert.equal(adapter.current.voiceLocale, "ja");
   assert.equal(adapter.current.subtitlesEnabled, false);
-  assert.equal(adapter.current.primarySubtitleLocale, "ja");
+  assert.equal(adapter.current.primarySubtitleLocale, "ko");
   assert.equal(adapter.current.secondarySubtitlesEnabled, true);
-  assert.equal(adapter.current.secondarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.secondarySubtitleLocale, "en");
   assert.equal(adapter.current.subtitleAlignment, "left");
   assert.equal(adapter.current.subtitlePosition, "custom");
   assert.equal(adapter.current.subtitleX, 240);
@@ -360,9 +365,9 @@ try {
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "custom" } });
   assert.equal(adapter.current.voiceLocale, "ja");
   assert.equal(adapter.current.subtitlesEnabled, false);
-  assert.equal(adapter.current.primarySubtitleLocale, "ja");
+  assert.equal(adapter.current.primarySubtitleLocale, "ko");
   assert.equal(adapter.current.secondarySubtitlesEnabled, true);
-  assert.equal(adapter.current.secondarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.secondarySubtitleLocale, "en");
   assert.equal(adapter.current.subtitleAlignment, "left");
   assert.equal(adapter.current.subtitlePosition, "custom");
   assert.equal(adapter.current.subtitleX, 240);
@@ -456,14 +461,19 @@ try {
   adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "ko" });
   assert.equal(adapter.current.voiceLocale, "ko");
   assert.equal(adapter.current.subtitlesEnabled, true);
-  assert.equal(adapter.current.primarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.primarySubtitleLocale, "ko");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, false);
+  adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "en" });
+  assert.equal(adapter.current.voiceLocale, "ja");
+  assert.equal(adapter.current.subtitlesEnabled, true);
+  assert.equal(adapter.current.primarySubtitleLocale, "en");
   assert.equal(adapter.current.secondarySubtitlesEnabled, false);
   adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "custom" });
   assert.equal(adapter.current.voiceLocale, "ja");
   assert.equal(adapter.current.subtitlesEnabled, false);
-  assert.equal(adapter.current.primarySubtitleLocale, "ja");
+  assert.equal(adapter.current.primarySubtitleLocale, "ko");
   assert.equal(adapter.current.secondarySubtitlesEnabled, true);
-  assert.equal(adapter.current.secondarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.secondarySubtitleLocale, "en");
   assert.equal(adapter.current.subtitleAlignment, "left");
   assert.equal(adapter.current.subtitlePosition, "custom");
   adapter.setUserPropertiesForDebug({

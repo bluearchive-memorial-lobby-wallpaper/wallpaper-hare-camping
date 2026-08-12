@@ -7,7 +7,7 @@ import type {
 
 export type PositionPreset = "default" | "custom";
 export type InteractionPreset = "default" | "custom";
-export type DialogueLanguagePreset = "zh-cn" | "ja" | "ko" | "custom";
+export type DialogueLanguagePreset = "zh-cn" | "ja" | "ko" | "en" | "custom";
 export type DebugPreset = "off" | "panel" | "all" | "custom";
 
 export interface PositionPresetSettings {
@@ -85,7 +85,18 @@ export const DIALOGUE_LANGUAGE_PRESETS: Record<
   ko: {
     voiceLocale: "ko",
     subtitlesEnabled: true,
-    primarySubtitleLocale: "zh-cn",
+    primarySubtitleLocale: "ko",
+    secondarySubtitlesEnabled: false,
+    secondarySubtitleLocale: "ja",
+    subtitleAlignment: "center",
+    subtitlePosition: "bottom-center",
+    subtitleX: 0,
+    subtitleY: 0,
+  },
+  en: {
+    voiceLocale: "ja",
+    subtitlesEnabled: true,
+    primarySubtitleLocale: "en",
     secondarySubtitlesEnabled: false,
     secondarySubtitleLocale: "ja",
     subtitleAlignment: "center",
@@ -127,7 +138,13 @@ export function isInteractionPreset(value: unknown): value is InteractionPreset 
 export function isDialogueLanguagePreset(
   value: unknown,
 ): value is DialogueLanguagePreset {
-  return value === "zh-cn" || value === "ja" || value === "ko" || value === "custom";
+  return (
+    value === "zh-cn" ||
+    value === "ja" ||
+    value === "ko" ||
+    value === "en" ||
+    value === "custom"
+  );
 }
 
 export function isDebugPreset(value: unknown): value is DebugPreset {

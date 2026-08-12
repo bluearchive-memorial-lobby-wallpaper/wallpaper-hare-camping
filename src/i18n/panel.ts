@@ -148,7 +148,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     frameRate: "帧率",
     panelLanguage: "面板语言",
     simplifiedChinese: "简体中文",
-    english: "English",
+    english: "英文",
     loadingSpine: "正在加载 Spine 资源……",
     unlimited: "无限制",
     phases: { booting: "启动中", loading: "载入中", running: "运行中", paused: "已暂停", error: "错误" },

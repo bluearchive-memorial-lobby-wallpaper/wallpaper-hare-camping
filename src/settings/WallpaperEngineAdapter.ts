@@ -78,7 +78,7 @@ export interface WallpaperSettings {
 type SettingsListener = (settings: Readonly<WallpaperSettings>) => void;
 type PauseListener = (paused: boolean) => void;
 
-export const DEFAULT_SETTINGS_VERSION = 4;
+export const DEFAULT_SETTINGS_VERSION = 5;
 
 export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   positionPreset: "default",
@@ -137,7 +137,7 @@ function isVoiceLocale(value: unknown): value is VoiceLocale {
 }
 
 function isSubtitleLocale(value: unknown): value is SubtitleLocale {
-  return value === "zh-cn" || value === "ja";
+  return value === "zh-cn" || value === "ja" || value === "ko" || value === "en";
 }
 
 export class WallpaperEngineAdapter {

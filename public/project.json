@@ -1,6 +1,6 @@
 {
   "contentrating": "Everyone",
-  "description": "Hare (Camping) interactive wallpaper — private offline edition. Includes five dialogue sequences, Chinese/Japanese/Korean voices, Chinese/Japanese subtitles, head patting, mouse tracking, BGM, and selectable render/texture quality.\n\n小钩晴（露营）互动壁纸私人离线版：包含五组对话、中日韩语音、中日字幕、摸头、视线跟随、BGM，以及可选渲染和纹理画质。",
+  "description": "Hare (Camping) interactive wallpaper — private offline edition. Includes five dialogue sequences, Chinese/Japanese/Korean voices, Chinese/Japanese/Korean/English subtitles, head patting, mouse tracking, BGM, and selectable render/texture quality.\n\n小钩晴（露营）互动壁纸私人离线版：包含五组对话、中日韩语音、中日韩英字幕、摸头、视线跟随、BGM，以及可选渲染和纹理画质。",
   "file": "index.html",
   "general": {
     "properties": {
@@ -205,6 +205,7 @@
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "Japanese", "value": "ja" },
           { "label": "Korean", "value": "ko" },
+          { "label": "English", "value": "en" },
           { "label": "Custom", "value": "custom" }
         ],
         "order": 41,
@@ -238,7 +239,9 @@
         "index": 22,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" }
+          { "label": "Japanese", "value": "ja" },
+          { "label": "Korean", "value": "ko" },
+          { "label": "English", "value": "en" }
         ],
         "order": 44,
         "text": "Primary Subtitle Language",
@@ -258,7 +261,9 @@
         "index": 24,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" }
+          { "label": "Japanese", "value": "ja" },
+          { "label": "Korean", "value": "ko" },
+          { "label": "English", "value": "en" }
         ],
         "order": 46,
         "text": "Secondary Subtitle Language",

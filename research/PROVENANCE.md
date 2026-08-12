@@ -10,6 +10,7 @@
 | --- | --- | --- |
 | [kiraio-moe/Schale-Archive](https://github.com/kiraio-moe/Schale-Archive/tree/4172f080f7bef586ad5d4225891463caf44f91b9) | `4172f080f7bef586ad5d4225891463caf44f91b9` | `CH0233_home` Spine 模型、atlas 和纹理 |
 | [QuetzalSidera/StuArchive](https://github.com/QuetzalSidera/StuArchive/tree/1e7142f1439ba14a2952b719c32d8d698769e91f) | `1e7142f1439ba14a2952b719c32d8d698769e91f` | 学生 340、音乐 252 元数据与仓库权利说明 |
+| [arisu-archive/bluearchive-data](https://github.com/arisu-archive/bluearchive-data/tree/4ba8bd56518f55c5d4d50b324a9361279a48f808) | `4ba8bd56518f55c5d4d50b324a9361279a48f808` | 全球服客户端 `CharacterDialogExcel` 的韩文、英文记忆大厅文本 |
 | [EsotericSoftware/spine-runtimes 3.8](https://github.com/EsotericSoftware/spine-runtimes/tree/8b4844bd4b193ba9e54487ed397a777993cbad56) | `8b4844bd4b193ba9e54487ed397a777993cbad56` | 与 Spine `3.8.99` 模型匹配的本地解析器 |
 
 官方网页规则没有 Git 版本，按 2026-08-10 的公开内容核对：
@@ -55,6 +56,8 @@ Schale-Archive README 明确说明这些游戏资源属于 Nexon / NEXON Games�
 
 StuArchive 的 CC 声明仅覆盖它自己的脚本、文档和结构，不自动覆盖官方模型、语音和音乐。日文原文、简中翻译及其他字幕字段还可能分别受权利方或贡献者条款约束。
 
+韩文与英文字幕补充自固定全球服客户端表 [`ExcelDB/CharacterDialogExcel.json`](https://github.com/arisu-archive/bluearchive-data/blob/4ba8bd56518f55c5d4d50b324a9361279a48f808/ExcelDB/CharacterDialogExcel.json)：筛选 `character_id = 10085`、`dialog_category = 8`、`display_order = 390..480` 后得到五组双段文本。10 条英文还与 [Blue Archive Wiki 的 Hare (Camping) 语音页](https://bluearchive.wiki/wiki/Hare_(Camping)/audio#Memorial_lobby)逐条交叉核对一致。两者均为游戏内容的社区镜像或转录，不改变官方文本的权利归属。
+
 ### 当前本地测试 BGM
 
 M1 之后实际用于本地测试的 BGM 不是上述 `Theme_193.ogg`，而是项目所有者于 2026-08-10 确认手动加入的官方 OST 无损版本：
@@ -85,8 +88,7 @@ Spine Runtime 不是 MIT/BSD 等通用宽松许可证。官方许可要求集成
 | --- | --- | --- |
 | Spine 模型、atlas、纹理 | **待权利方书面确认** | 排除 |
 | 日语、简中、韩语官方语音 | **待权利方书面确认** | 排除 |
-| 日文原文、简中字幕 | **待对应权利/贡献来源确认并准备署名** | 排除 |
-| 韩文/英文字幕 | **来源缺失** | 不提供；不得冒充官方翻译 |
+| 日文、简中、韩文、英文字幕 | **待对应权利来源确认** | 私有本地测试；公开发布前另行确认授权 |
 | `Theme_193` BGM | **不包含**，除非以后取得明确许可 | 使用用户自选本地 BGM 入口 |
 | Spine 3.8 Runtime | **条件式可分发，待制作者 Spine 许可确认** | 未确认前仅本地评估 |
 | 本项目原创 TypeScript/CSS/配置 | **可由项目作者自行授权** | 发布前选择项目许可证 |
