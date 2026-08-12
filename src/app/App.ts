@@ -16,9 +16,11 @@ import {
 } from "../settings/WallpaperEngineAdapter";
 import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import { MODEL_RESOLUTIONS } from "../settings/modelResolution";
+import { isQualityPreset } from "../settings/qualityPreset";
 import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
 import { FrameLimiter } from "../render/FrameLimiter";
 import { resolveDebugPanelExpanded } from "./debugPanelVisibility";
+import { initializeStableModelResolution } from "./initializeModelResolution";
 import {
   SpineRenderer,
   type InteractionMode,
@@ -115,6 +117,7 @@ export class App {
   private frameRequest = 0;
   private lastFrameTime = performance.now() / 1000;
   private readonly frameLimiter = new FrameLimiter();
+  private startupComplete = false;
   private hostPaused = false;
   private rendererUnavailable = false;
   private performanceWindowStartedAt = performance.now();
@@ -134,6 +137,9 @@ export class App {
   private readonly fpsTestFromQuery = Number(
     new URLSearchParams(location.search).get("testFps"),
   );
+  private readonly qualityPresetTestFromQuery = new URLSearchParams(
+    location.search,
+  ).get("testQuality");
   private debugPanelExpanded = this.debugFromQuery;
 
   constructor(root: HTMLElement) {
@@ -335,16 +341,34 @@ export class App {
   }
 
   async start() {
+    const startupStartedAt = performance.now();
     this.setPhase("loading");
-    this.adapter.subscribe((settings) => this.applySettings(settings));
     this.adapter.subscribePaused((paused) => this.setHostPaused(paused));
     if (Number.isFinite(this.fpsTestFromQuery)) {
       window.wallpaperPropertyListener?.applyGeneralProperties?.({
         fps: this.fpsTestFromQuery,
       });
     }
+    if (
+      this.qualityPresetTestFromQuery !== "custom" &&
+      isQualityPreset(this.qualityPresetTestFromQuery)
+    ) {
+      window.wallpaperPropertyListener?.applyUserProperties?.({
+        qualitypreset: { value: this.qualityPresetTestFromQuery },
+      });
+    }
 
     try {
+      const initialSettingsWaitStartedAt = performance.now();
+      const receivedInitialUserProperties =
+        await this.adapter.waitForInitialUserProperties();
+      this.root.dataset.initialSettingsSource = receivedInitialUserProperties
+        ? "wallpaper-engine"
+        : "fallback";
+      this.root.dataset.initialSettingsWaitMs = String(
+        Number((performance.now() - initialSettingsWaitStartedAt).toFixed(1)),
+      );
+      this.settings = this.adapter.current;
       this.renderer = new SpineRenderer(this.canvas, {
         onAnimationChange: (animation) => {
           this.animation = animation;
@@ -368,8 +392,20 @@ export class App {
         onContextRestored: () => this.handleRendererContextRestored(),
         onError: (error) => this.fail(error),
       });
-      await this.renderer.initialize(this.settings.modelResolution);
-      this.renderer.applySettings(this.settings);
+      const modelInitializationStartedAt = performance.now();
+      const initialModel = await initializeStableModelResolution({
+        getTargetResolution: () => this.adapter.current.modelResolution,
+        initialize: (resolution) => this.renderer!.initialize(resolution),
+        switchResolution: (resolution) =>
+          this.renderer!.setModelResolution(resolution),
+      });
+      this.root.dataset.initialModelResolution = initialModel.resolution;
+      this.root.dataset.initialModelLoadPasses = String(initialModel.loadPasses);
+      this.root.dataset.initialModelLoadMs = String(
+        Number((performance.now() - modelInitializationStartedAt).toFixed(1)),
+      );
+      this.settings = this.adapter.current;
+      this.adapter.subscribe((settings) => this.applySettings(settings));
       this.pointerController = new PointerInteractionController(
         this.canvas,
         this.renderer,
@@ -379,9 +415,14 @@ export class App {
       this.renderer.playInitialSequence(this.settings.introAnimation);
       this.installLifecycleHandlers();
       this.installDebugApi();
+      this.startupComplete = true;
       this.setPhase(this.isPaused() ? "paused" : "running");
+      this.root.dataset.startupReadyMs = String(
+        Number((performance.now() - startupStartedAt).toFixed(1)),
+      );
       this.lastFrameTime = performance.now() / 1000;
       this.frameLimiter.reset();
+      this.resetPerformanceWindow();
       this.frameRequest = requestAnimationFrame((time) => this.frame(time));
       if (this.contextLossTestFromQuery) {
         window.setTimeout(
@@ -851,6 +892,10 @@ export class App {
     this.updateFpsLabel();
     this.voice.setPaused(paused);
     this.bgm.setPaused(paused);
+    if (!this.startupComplete) {
+      this.setPhase("loading");
+      return;
+    }
     if (paused) this.setPhase("paused");
     else if (this.phase !== "error") this.setPhase("running");
   };

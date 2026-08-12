@@ -258,6 +258,7 @@ try {
 
   const adapter = new WallpaperEngineAdapter();
   const listener = window.wallpaperPropertyListener;
+  const initialUserProperties = adapter.waitForInitialUserProperties(100);
 
   assert.equal(adapter.current.debugPanelEnabled, false);
   assert.equal(adapter.current.fpsLimit, 60);
@@ -265,6 +266,8 @@ try {
   assert.equal(adapter.current.dialogueAutoPlay, false);
 
   listener.applyUserProperties({ muted: { value: true } });
+  assert.equal(await initialUserProperties, true);
+  assert.equal(await adapter.waitForInitialUserProperties(0), true);
   assert.equal(adapter.current.muted, true);
   listener.applyUserProperties({ muted: { value: false } });
   listener.applyUserProperties({ dialogueautoplay: { value: true } });
@@ -525,7 +528,9 @@ try {
 
   listener.applyUserProperties({ fpslimit: { value: 30 } });
   assert.equal(adapter.current.fpsLimit, 30);
-  console.log("Validated grouped property presets, custom-state restoration, quality presets, FPS precedence, and session overrides.");
+  const browserFallbackAdapter = new WallpaperEngineAdapter();
+  assert.equal(await browserFallbackAdapter.waitForInitialUserProperties(0), false);
+  console.log("Validated initial WE property synchronization, grouped property presets, custom-state restoration, quality presets, FPS precedence, and session overrides.");
 } finally {
   await server.close();
   delete globalThis.window;

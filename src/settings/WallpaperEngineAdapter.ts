@@ -143,6 +143,8 @@ function isSubtitleLocale(value: unknown): value is SubtitleLocale {
 export class WallpaperEngineAdapter {
   private readonly listeners = new Set<SettingsListener>();
   private readonly pauseListeners = new Set<PauseListener>();
+  private readonly initialUserPropertyWaiters = new Set<() => void>();
+  private initialUserPropertiesReceived = false;
   private hostSettings: WallpaperSettings = { ...DEFAULT_SETTINGS };
   private sessionOverrides: Partial<WallpaperSettings> = {};
   private effectiveSettings: WallpaperSettings = { ...DEFAULT_SETTINGS };
@@ -215,6 +217,26 @@ export class WallpaperEngineAdapter {
   subscribePaused(listener: PauseListener) {
     this.pauseListeners.add(listener);
     return () => this.pauseListeners.delete(listener);
+  }
+
+  waitForInitialUserProperties(timeoutMilliseconds = 100): Promise<boolean> {
+    if (this.initialUserPropertiesReceived) return Promise.resolve(true);
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (received: boolean) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        this.initialUserPropertyWaiters.delete(onReceived);
+        resolve(received);
+      };
+      const onReceived = () => finish(true);
+      const timeout = setTimeout(
+        () => finish(false),
+        Math.max(timeoutMilliseconds, 0),
+      );
+      this.initialUserPropertyWaiters.add(onReceived);
+    });
   }
 
   setFpsLimitForDebug(fps: number) {
@@ -413,6 +435,14 @@ export class WallpaperEngineAdapter {
       patch.fpsLimit = this.resolveFpsLimit();
     }
     this.patchHost(patch);
+    this.resolveInitialUserPropertyWaiters();
+  }
+
+  private resolveInitialUserPropertyWaiters() {
+    if (this.initialUserPropertiesReceived) return;
+    this.initialUserPropertiesReceived = true;
+    for (const waiter of this.initialUserPropertyWaiters) waiter();
+    this.initialUserPropertyWaiters.clear();
   }
 
   private parseUserProperties(
