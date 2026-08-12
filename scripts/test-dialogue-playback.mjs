@@ -114,6 +114,21 @@ try {
   assert.equal(
     didInteractionSettingsChange(interactionSettings, {
       ...interactionSettings,
+      interactionPreset: "default",
+    }),
+    false,
+  );
+  assert.equal(
+    didInteractionSettingsChange(interactionSettings, {
+      ...interactionSettings,
+      interactionPreset: "default",
+      introAnimation: false,
+    }),
+    true,
+  );
+  assert.equal(
+    didInteractionSettingsChange(interactionSettings, {
+      ...interactionSettings,
       voiceEnabled: false,
     }),
     true,

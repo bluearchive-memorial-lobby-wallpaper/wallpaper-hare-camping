@@ -16,6 +16,7 @@ export interface PanelText {
   fpsLimit: string;
   viewport: string;
   renderStatus: string;
+  debugPanelVisibilityHint: string;
   visualQuality: string;
   preset: string;
   defaultPreset: string;
@@ -39,7 +40,21 @@ export interface PanelText {
   dialogueAutoPlay: string;
   dialogueLanguage: string;
   showSubtitles: string;
-  subtitleLanguage: string;
+  subtitleSettings: string;
+  primarySubtitleLanguage: string;
+  showSecondarySubtitles: string;
+  secondarySubtitleLanguage: string;
+  subtitleAlignment: string;
+  subtitleAlignCenter: string;
+  subtitleAlignLeft: string;
+  subtitleAlignRight: string;
+  subtitlePosition: string;
+  subtitlePositionBottomCenter: string;
+  subtitlePositionTopCenter: string;
+  subtitlePositionScreenCenter: string;
+  subtitlePositionBottomLeft: string;
+  subtitleX: string;
+  subtitleY: string;
   replay: string;
   skipToIdle: string;
   nextDialogue: string;
@@ -79,6 +94,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     fpsLimit: "FPS 上限",
     viewport: "视口",
     renderStatus: "渲染",
+    debugPanelVisibilityHint:
+      "要切换调试面板的可见性，点击壁纸右上角的“显示/隐藏调试面板”按钮",
     visualQuality: "画面质量",
     preset: "预设",
     defaultPreset: "默认",
@@ -102,7 +119,21 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     dialogueAutoPlay: "自动播放",
     dialogueLanguage: "对话语言",
     showSubtitles: "显示字幕",
-    subtitleLanguage: "字幕语言",
+    subtitleSettings: "字幕",
+    primarySubtitleLanguage: "主字幕语言",
+    showSecondarySubtitles: "显示副字幕",
+    secondarySubtitleLanguage: "副字幕语言",
+    subtitleAlignment: "字幕对齐",
+    subtitleAlignCenter: "居中对齐",
+    subtitleAlignLeft: "左对齐",
+    subtitleAlignRight: "右对齐",
+    subtitlePosition: "字幕位置",
+    subtitlePositionBottomCenter: "底部中央",
+    subtitlePositionTopCenter: "顶部中央",
+    subtitlePositionScreenCenter: "屏幕中心",
+    subtitlePositionBottomLeft: "底部左侧",
+    subtitleX: "字幕 X",
+    subtitleY: "字幕 Y",
     replay: "完整重播",
     skipToIdle: "切到待机",
     nextDialogue: "下一组对话",
@@ -140,6 +171,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     fpsLimit: "FPS limit",
     viewport: "Viewport",
     renderStatus: "Render",
+    debugPanelVisibilityHint:
+      'To toggle the debug panel, click the "Show/Hide Debug Panel" button in the top-right corner of the wallpaper.',
     visualQuality: "Visual Quality",
     preset: "Preset",
     defaultPreset: "Default",
@@ -163,7 +196,21 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     dialogueAutoPlay: "Auto play",
     dialogueLanguage: "Dialogue Language",
     showSubtitles: "Show subtitles",
-    subtitleLanguage: "Subtitle language",
+    subtitleSettings: "Subtitles",
+    primarySubtitleLanguage: "Primary subtitle language",
+    showSecondarySubtitles: "Show secondary subtitles",
+    secondarySubtitleLanguage: "Secondary subtitle language",
+    subtitleAlignment: "Subtitle alignment",
+    subtitleAlignCenter: "Center",
+    subtitleAlignLeft: "Left",
+    subtitleAlignRight: "Right",
+    subtitlePosition: "Subtitle position",
+    subtitlePositionBottomCenter: "Bottom center",
+    subtitlePositionTopCenter: "Top center",
+    subtitlePositionScreenCenter: "Screen center",
+    subtitlePositionBottomLeft: "Bottom left",
+    subtitleX: "Subtitle X",
+    subtitleY: "Subtitle Y",
     replay: "Full replay",
     skipToIdle: "Skip to idle",
     nextDialogue: "Next dialogue",

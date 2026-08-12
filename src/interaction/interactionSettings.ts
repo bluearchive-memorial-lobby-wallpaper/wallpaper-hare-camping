@@ -1,7 +1,6 @@
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 
 const INTERACTION_SETTING_KEYS = [
-  "interactionPreset",
   "introAnimation",
   "interactionsEnabled",
   "mouseTracking",

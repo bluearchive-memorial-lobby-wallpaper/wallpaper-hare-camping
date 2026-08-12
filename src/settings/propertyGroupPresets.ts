@@ -1,5 +1,9 @@
 import type { SubtitleLocale, VoiceLocale } from "../config";
 import type { PanelLocale } from "../i18n/panel";
+import type {
+  SubtitleAlignment,
+  SubtitlePosition,
+} from "../dialogue/subtitleLayout";
 
 export type PositionPreset = "default" | "custom";
 export type InteractionPreset = "default" | "custom";
@@ -23,7 +27,13 @@ export interface InteractionPresetSettings {
 export interface DialogueLanguagePresetSettings {
   voiceLocale: VoiceLocale;
   subtitlesEnabled: boolean;
-  subtitleLocale: SubtitleLocale;
+  primarySubtitleLocale: SubtitleLocale;
+  secondarySubtitlesEnabled: boolean;
+  secondarySubtitleLocale: SubtitleLocale;
+  subtitleAlignment: SubtitleAlignment;
+  subtitlePosition: SubtitlePosition;
+  subtitleX: number;
+  subtitleY: number;
 }
 
 export interface DebugPresetSettings {
@@ -53,17 +63,35 @@ export const DIALOGUE_LANGUAGE_PRESETS: Record<
   "zh-cn": {
     voiceLocale: "zh-cn",
     subtitlesEnabled: true,
-    subtitleLocale: "zh-cn",
+    primarySubtitleLocale: "zh-cn",
+    secondarySubtitlesEnabled: false,
+    secondarySubtitleLocale: "ja",
+    subtitleAlignment: "center",
+    subtitlePosition: "bottom-center",
+    subtitleX: 0,
+    subtitleY: 0,
   },
   ja: {
     voiceLocale: "ja",
     subtitlesEnabled: true,
-    subtitleLocale: "ja",
+    primarySubtitleLocale: "ja",
+    secondarySubtitlesEnabled: false,
+    secondarySubtitleLocale: "zh-cn",
+    subtitleAlignment: "center",
+    subtitlePosition: "bottom-center",
+    subtitleX: 0,
+    subtitleY: 0,
   },
   ko: {
     voiceLocale: "ko",
     subtitlesEnabled: true,
-    subtitleLocale: "zh-cn",
+    primarySubtitleLocale: "zh-cn",
+    secondarySubtitlesEnabled: false,
+    secondarySubtitleLocale: "ja",
+    subtitleAlignment: "center",
+    subtitlePosition: "bottom-center",
+    subtitleX: 0,
+    subtitleY: 0,
   },
 };
 

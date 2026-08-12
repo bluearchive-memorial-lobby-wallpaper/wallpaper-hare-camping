@@ -23,7 +23,16 @@ try {
   const { resolvePropertyGroupVisibility } = await server.ssrLoadModule(
     "/src/settings/propertyGroupVisibility.ts",
   );
-  assert.equal(DEFAULT_SETTINGS_VERSION, 2);
+  const { resolveDebugPanelExpanded } = await server.ssrLoadModule(
+    "/src/app/debugPanelVisibility.ts",
+  );
+  assert.equal(resolveDebugPanelExpanded(false, false, false, false), false);
+  assert.equal(resolveDebugPanelExpanded(false, false, true, false), true);
+  assert.equal(resolveDebugPanelExpanded(false, true, true, false), false);
+  assert.equal(resolveDebugPanelExpanded(true, true, false, false), false);
+  assert.equal(resolveDebugPanelExpanded(false, false, false, true), false);
+  assert.equal(resolveDebugPanelExpanded(true, false, false, true), true);
+  assert.equal(DEFAULT_SETTINGS_VERSION, 4);
   assert.deepEqual(resolvePropertyGroupVisibility(DEFAULT_SETTINGS), {
     qualityCustom: false,
     positionCustom: false,
@@ -32,7 +41,10 @@ try {
     dialogueControls: true,
     voiceVolume: true,
     dialogueCustom: false,
-    subtitleLanguage: false,
+    primarySubtitleLanguage: false,
+    secondarySubtitles: false,
+    secondarySubtitleLanguage: false,
+    subtitleCustomPosition: false,
     bgmVolume: true,
   });
   assert.deepEqual(
@@ -51,7 +63,10 @@ try {
       dialogueControls: true,
       voiceVolume: true,
       dialogueCustom: true,
-      subtitleLanguage: true,
+      primarySubtitleLanguage: true,
+      secondarySubtitles: true,
+      secondarySubtitleLanguage: false,
+      subtitleCustomPosition: false,
       bgmVolume: true,
     },
   );
@@ -69,7 +84,10 @@ try {
       dialogueControls: false,
       voiceVolume: false,
       dialogueCustom: false,
-      subtitleLanguage: false,
+      primarySubtitleLanguage: false,
+      secondarySubtitles: false,
+      secondarySubtitleLanguage: false,
+      subtitleCustomPosition: false,
       bgmVolume: true,
     },
   );
@@ -86,7 +104,10 @@ try {
       dialogueControls: true,
       voiceVolume: false,
       dialogueCustom: false,
-      subtitleLanguage: false,
+      primarySubtitleLanguage: false,
+      secondarySubtitles: false,
+      secondarySubtitleLanguage: false,
+      subtitleCustomPosition: false,
       bgmVolume: false,
     },
   );
@@ -106,9 +127,42 @@ try {
       dialogueControls: false,
       voiceVolume: false,
       dialogueCustom: false,
-      subtitleLanguage: false,
+      primarySubtitleLanguage: false,
+      secondarySubtitles: false,
+      secondarySubtitleLanguage: false,
+      subtitleCustomPosition: false,
       bgmVolume: false,
     },
+  );
+  assert.deepEqual(
+    resolvePropertyGroupVisibility({
+      ...DEFAULT_SETTINGS,
+      dialogueLanguagePreset: "custom",
+      secondarySubtitlesEnabled: true,
+    }),
+    {
+      qualityCustom: false,
+      positionCustom: false,
+      interactionCustom: false,
+      interactionChildren: false,
+      dialogueControls: true,
+      voiceVolume: true,
+      dialogueCustom: true,
+      primarySubtitleLanguage: true,
+      secondarySubtitles: true,
+      secondarySubtitleLanguage: true,
+      subtitleCustomPosition: false,
+      bgmVolume: true,
+    },
+  );
+  assert.equal(
+    resolvePropertyGroupVisibility({
+      ...DEFAULT_SETTINGS,
+      dialogueLanguagePreset: "custom",
+      subtitlesEnabled: false,
+      subtitlePosition: "custom",
+    }).subtitleCustomPosition,
+    true,
   );
   assert.deepEqual(
     {
@@ -159,6 +213,14 @@ try {
       dialogueLanguagePreset: properties.dialoguelanguagepreset.value,
       muted: properties.muted.value,
       dialogueAutoPlay: properties.dialogueautoplay.value,
+      subtitlesEnabled: properties.showsubtitles.value,
+      primarySubtitleLocale: properties.subtitlelanguage.value,
+      secondarySubtitlesEnabled: properties.showsecondarysubtitles.value,
+      secondarySubtitleLocale: properties.secondarysubtitlelanguage.value,
+      subtitleAlignment: properties.subtitlealignment.value,
+      subtitlePosition: properties.subtitleposition.value,
+      subtitleX: properties.subtitlex.value,
+      subtitleY: properties.subtitley.value,
       debugPreset: properties.debugpreset.value,
       bgmVolume: properties.bgmvolume.value / 100,
       voiceVolume: properties.voicevolume.value / 100,
@@ -176,6 +238,14 @@ try {
       dialogueLanguagePreset: DEFAULT_SETTINGS.dialogueLanguagePreset,
       muted: DEFAULT_SETTINGS.muted,
       dialogueAutoPlay: DEFAULT_SETTINGS.dialogueAutoPlay,
+      subtitlesEnabled: DEFAULT_SETTINGS.subtitlesEnabled,
+      primarySubtitleLocale: DEFAULT_SETTINGS.primarySubtitleLocale,
+      secondarySubtitlesEnabled: DEFAULT_SETTINGS.secondarySubtitlesEnabled,
+      secondarySubtitleLocale: DEFAULT_SETTINGS.secondarySubtitleLocale,
+      subtitleAlignment: DEFAULT_SETTINGS.subtitleAlignment,
+      subtitlePosition: DEFAULT_SETTINGS.subtitlePosition,
+      subtitleX: DEFAULT_SETTINGS.subtitleX,
+      subtitleY: DEFAULT_SETTINGS.subtitleY,
       debugPreset: DEFAULT_SETTINGS.debugPreset,
       bgmVolume: DEFAULT_SETTINGS.bgmVolume,
       voiceVolume: DEFAULT_SETTINGS.voiceVolume,
@@ -247,27 +317,53 @@ try {
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "ja" } });
   assert.equal(adapter.current.voiceLocale, "ja");
   assert.equal(adapter.current.subtitlesEnabled, true);
-  assert.equal(adapter.current.subtitleLocale, "ja");
+  assert.equal(adapter.current.primarySubtitleLocale, "ja");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, false);
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "ko" } });
   assert.equal(adapter.current.voiceLocale, "ko");
   assert.equal(adapter.current.subtitlesEnabled, true);
-  assert.equal(adapter.current.subtitleLocale, "zh-cn");
+  assert.equal(adapter.current.primarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, false);
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "custom" } });
   listener.applyUserProperties({
     voicelanguage: { value: "ja" },
     showsubtitles: { value: false },
     subtitlelanguage: { value: "ja" },
+    showsecondarysubtitles: { value: true },
+    secondarysubtitlelanguage: { value: "zh-cn" },
+    subtitlealignment: { value: "left" },
+    subtitleposition: { value: "custom" },
+    subtitlex: { value: 240 },
+    subtitley: { value: -160 },
   });
   assert.equal(adapter.current.voiceLocale, "ja");
   assert.equal(adapter.current.subtitlesEnabled, false);
-  assert.equal(adapter.current.subtitleLocale, "ja");
+  assert.equal(adapter.current.primarySubtitleLocale, "ja");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, true);
+  assert.equal(adapter.current.secondarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.subtitleAlignment, "left");
+  assert.equal(adapter.current.subtitlePosition, "custom");
+  assert.equal(adapter.current.subtitleX, 240);
+  assert.equal(adapter.current.subtitleY, -160);
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "zh-cn" } });
   assert.equal(adapter.current.voiceLocale, "zh-cn");
   assert.equal(adapter.current.subtitlesEnabled, true);
-  assert.equal(adapter.current.subtitleLocale, "zh-cn");
+  assert.equal(adapter.current.primarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, false);
+  assert.equal(adapter.current.subtitleAlignment, "center");
+  assert.equal(adapter.current.subtitlePosition, "bottom-center");
+  assert.equal(adapter.current.subtitleX, 0);
+  assert.equal(adapter.current.subtitleY, 0);
   listener.applyUserProperties({ dialoguelanguagepreset: { value: "custom" } });
   assert.equal(adapter.current.voiceLocale, "ja");
   assert.equal(adapter.current.subtitlesEnabled, false);
+  assert.equal(adapter.current.primarySubtitleLocale, "ja");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, true);
+  assert.equal(adapter.current.secondarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.subtitleAlignment, "left");
+  assert.equal(adapter.current.subtitlePosition, "custom");
+  assert.equal(adapter.current.subtitleX, 240);
+  assert.equal(adapter.current.subtitleY, -160);
 
   listener.applyUserProperties({ debugpreset: { value: "panel" } });
   assert.equal(adapter.current.debugPanelEnabled, true);
@@ -357,11 +453,32 @@ try {
   adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "ko" });
   assert.equal(adapter.current.voiceLocale, "ko");
   assert.equal(adapter.current.subtitlesEnabled, true);
-  assert.equal(adapter.current.subtitleLocale, "zh-cn");
+  assert.equal(adapter.current.primarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, false);
   adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "custom" });
   assert.equal(adapter.current.voiceLocale, "ja");
   assert.equal(adapter.current.subtitlesEnabled, false);
-  assert.equal(adapter.current.subtitleLocale, "ja");
+  assert.equal(adapter.current.primarySubtitleLocale, "ja");
+  assert.equal(adapter.current.secondarySubtitlesEnabled, true);
+  assert.equal(adapter.current.secondarySubtitleLocale, "zh-cn");
+  assert.equal(adapter.current.subtitleAlignment, "left");
+  assert.equal(adapter.current.subtitlePosition, "custom");
+  adapter.setUserPropertiesForDebug({
+    subtitlealignment: "right",
+    subtitleposition: "top-center",
+    subtitlex: 1200,
+    subtitley: -1200,
+  });
+  assert.equal(adapter.current.subtitleAlignment, "right");
+  assert.equal(adapter.current.subtitlePosition, "top-center");
+  assert.equal(adapter.current.subtitleX, 1000);
+  assert.equal(adapter.current.subtitleY, -1000);
+  adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "ko" });
+  adapter.setUserPropertiesForDebug({ dialoguelanguagepreset: "custom" });
+  assert.equal(adapter.current.subtitleAlignment, "right");
+  assert.equal(adapter.current.subtitlePosition, "top-center");
+  assert.equal(adapter.current.subtitleX, 1000);
+  assert.equal(adapter.current.subtitleY, -1000);
 
   adapter.setUserPropertiesForDebug({ qualitypreset: "maximum" });
   assert.equal(adapter.current.renderResolution, "2160p");

@@ -80,8 +80,10 @@ body {
   max-width: min(72vw, 58rem);
   margin: 0;
   padding: 0.72rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   color: rgba(250, 252, 255, 0.98);
-  font-size: clamp(0.95rem, 1.25vw, 1.35rem);
   font-weight: 550;
   line-height: 1.55;
   text-align: center;
@@ -95,7 +97,63 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.subtitle[data-alignment="center"] {
+  text-align: center;
+}
+
+.subtitle[data-alignment="left"] {
+  text-align: left;
+}
+
+.subtitle[data-alignment="right"] {
+  text-align: right;
+}
+
+.subtitle[data-position="top-center"] {
+  top: clamp(2.5rem, 7vh, 7rem);
+  bottom: auto;
+}
+
+.subtitle[data-position="screen-center"] {
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+}
+
+.subtitle[data-position="bottom-left"] {
+  left: clamp(2.5rem, 5vw, 7rem);
+  transform: none;
+}
+
+.subtitle[data-position="custom"] {
+  top: 50%;
+  bottom: auto;
+  transform: translate(
+    calc(-50% + var(--subtitle-x, 0px)),
+    calc(-50% - var(--subtitle-y, 0px))
+  );
+}
+
+.subtitle__primary,
+.subtitle__secondary {
+  margin: 0;
+}
+
+.subtitle__primary {
+  font-size: clamp(1.05rem, 1.4vw, 1.5rem);
+}
+
+.subtitle__secondary {
+  margin-top: 0.22rem;
+  color: rgba(231, 239, 252, 0.88);
+  font-size: clamp(0.82rem, 1vw, 1.1rem);
+}
+
 .subtitle[hidden] {
+  display: none;
+}
+
+.subtitle__secondary[hidden] {
   display: none;
 }
 
@@ -235,6 +293,15 @@ body {
   white-space: nowrap;
 }
 
+.status-panel__visibility-hint {
+  margin: 0.75rem 0 0;
+  padding-top: 0.65rem;
+  color: rgba(224, 235, 251, 0.66);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  border-top: 1px solid rgba(159, 190, 236, 0.16);
+}
+
 .status-panel__error {
   margin: 0.8rem 0 0;
   padding-top: 0.75rem;
@@ -245,9 +312,7 @@ body {
 }
 
 .status-panel__controls {
-  margin-top: 0.85rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(159, 190, 236, 0.16);
+  margin-top: 0.75rem;
 }
 
 .status-panel__toolbar {
@@ -331,6 +396,22 @@ body {
   gap: 0.55rem;
   padding: 0.55rem 0 0 0.55rem;
   border-left: 1px solid rgba(159, 190, 236, 0.2);
+}
+
+.status-panel__subtitle-settings {
+  margin-top: 0.1rem;
+  padding: 0.65rem 0.65rem 0.1rem;
+  border: 1px solid rgba(159, 200, 255, 0.24);
+  border-radius: 0.55rem;
+  background: rgba(66, 105, 165, 0.1);
+}
+
+.status-panel__subgroup-title {
+  margin: 0;
+  color: #a9cffd;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
 }
 
 .status-panel__control-label {

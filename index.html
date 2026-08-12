@@ -12,7 +12,10 @@
       <canvas id="wallpaper" aria-label="Hare Camping animated wallpaper"></canvas>
       <canvas id="interaction-overlay" class="interaction-overlay" hidden></canvas>
 
-      <p id="subtitle" class="subtitle" aria-live="polite" hidden></p>
+      <div id="subtitle" class="subtitle" aria-live="polite" hidden>
+        <p id="subtitle-primary" class="subtitle__primary"></p>
+        <p id="subtitle-secondary" class="subtitle__secondary" hidden></p>
+      </div>
 
       <section id="status-panel" class="status-panel" aria-live="polite" aria-label="Hare（露营）状态与控制面板" data-panel-aria="panelAria">
         <p class="status-panel__eyebrow">OFFLINE EDITION · 1.0</p>
@@ -29,6 +32,7 @@
           <div><dt data-panel-text="viewport">视口</dt><dd id="status-viewport">—</dd></div>
           <div><dt data-panel-text="renderStatus">渲染</dt><dd id="status-render-resolution">—</dd></div>
         </dl>
+        <p class="status-panel__visibility-hint" data-panel-text="debugPanelVisibilityHint">要切换调试面板的可见性，点击壁纸右上角的“显示/隐藏调试面板”按钮</p>
         <div id="debug-controls" class="status-panel__controls" aria-label="壁纸调试控制" data-panel-aria="controlsAria">
           <div class="status-panel__toolbar">
             <button id="debug-replay-intro" type="button" data-panel-text="replay">完整重播</button>
@@ -218,18 +222,72 @@
                     <option value="ko" data-panel-text="korean">韩文</option>
                   </select>
                 </div>
+                <div id="debug-subtitle-settings" class="status-panel__nested-controls status-panel__subtitle-settings">
+                  <p class="status-panel__subgroup-title" data-panel-text="subtitleSettings">字幕</p>
                 <label class="status-panel__checkbox">
                   <span data-panel-text="showSubtitles">显示字幕</span>
                   <input id="debug-show-subtitles" type="checkbox" checked />
                 </label>
-                <div id="debug-subtitle-language-control" class="status-panel__control-group">
-                  <label class="status-panel__control-label" for="debug-subtitle-language">
-                    <span data-panel-text="subtitleLanguage">字幕语言</span>
+                <div id="debug-primary-subtitle-language-control" class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-primary-subtitle-language">
+                    <span data-panel-text="primarySubtitleLanguage">主字幕语言</span>
                   </label>
-                  <select id="debug-subtitle-language">
+                  <select id="debug-primary-subtitle-language">
                     <option value="zh-cn" data-panel-text="simplifiedChinese" selected>简体中文</option>
                     <option value="ja" data-panel-text="japanese">日文</option>
                   </select>
+                </div>
+                <label id="debug-show-secondary-subtitles-control" class="status-panel__checkbox">
+                  <span data-panel-text="showSecondarySubtitles">显示副字幕</span>
+                  <input id="debug-show-secondary-subtitles" type="checkbox" />
+                </label>
+                <div id="debug-secondary-subtitle-language-control" class="status-panel__control-group" hidden>
+                  <label class="status-panel__control-label" for="debug-secondary-subtitle-language">
+                    <span data-panel-text="secondarySubtitleLanguage">副字幕语言</span>
+                  </label>
+                  <select id="debug-secondary-subtitle-language">
+                    <option value="zh-cn" data-panel-text="simplifiedChinese">简体中文</option>
+                    <option value="ja" data-panel-text="japanese" selected>日文</option>
+                  </select>
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-subtitle-alignment">
+                    <span data-panel-text="subtitleAlignment">字幕对齐</span>
+                  </label>
+                  <select id="debug-subtitle-alignment">
+                    <option value="center" data-panel-text="subtitleAlignCenter" selected>居中对齐</option>
+                    <option value="left" data-panel-text="subtitleAlignLeft">左对齐</option>
+                    <option value="right" data-panel-text="subtitleAlignRight">右对齐</option>
+                  </select>
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-subtitle-position">
+                    <span data-panel-text="subtitlePosition">字幕位置</span>
+                  </label>
+                  <select id="debug-subtitle-position">
+                    <option value="bottom-center" data-panel-text="subtitlePositionBottomCenter" selected>底部中央</option>
+                    <option value="top-center" data-panel-text="subtitlePositionTopCenter">顶部中央</option>
+                    <option value="screen-center" data-panel-text="subtitlePositionScreenCenter">屏幕中心</option>
+                    <option value="bottom-left" data-panel-text="subtitlePositionBottomLeft">底部左侧</option>
+                    <option value="custom" data-panel-text="customPreset">自定义</option>
+                  </select>
+                </div>
+                <div id="debug-subtitle-custom-position" class="status-panel__nested-controls" hidden>
+                  <div class="status-panel__control-group">
+                    <label class="status-panel__control-label" for="debug-subtitle-x">
+                      <span data-panel-text="subtitleX">字幕 X</span>
+                      <output id="debug-subtitle-x-output" for="debug-subtitle-x">0</output>
+                    </label>
+                    <input id="debug-subtitle-x" type="range" min="-1000" max="1000" step="1" value="0" />
+                  </div>
+                  <div class="status-panel__control-group">
+                    <label class="status-panel__control-label" for="debug-subtitle-y">
+                      <span data-panel-text="subtitleY">字幕 Y</span>
+                      <output id="debug-subtitle-y-output" for="debug-subtitle-y">0</output>
+                    </label>
+                    <input id="debug-subtitle-y" type="range" min="-1000" max="1000" step="1" value="0" />
+                  </div>
+                </div>
                 </div>
               </div>
             </fieldset>
