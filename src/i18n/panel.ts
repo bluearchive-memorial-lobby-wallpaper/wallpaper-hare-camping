@@ -7,6 +7,8 @@ export interface PanelText {
   showDebugPanel: string;
   hideDebugPanel: string;
   restoreHostSettings: string;
+  expandSection: string;
+  collapseSection: string;
   status: string;
   animation: string;
   interaction: string;
@@ -24,6 +26,18 @@ export interface PanelText {
   customPreset: string;
   renderResolution: string;
   modelResolution: string;
+  panelSettings: string;
+  panelPositionAndScale: string;
+  panelSize: string;
+  panelX: string;
+  panelY: string;
+  customPanelLayout: string;
+  customVisualQuality: string;
+  customModelLayout: string;
+  customAnimationAndInteractions: string;
+  interactionSettings: string;
+  customDialogue: string;
+  customSubtitlePosition: string;
   positionAndScale: string;
   modelScale: string;
   modelX: string;
@@ -82,6 +96,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     showDebugPanel: "显示调试面板",
     hideDebugPanel: "隐藏调试面板",
     restoreHostSettings: "恢复 WE 设置",
+    expandSection: "展开",
+    collapseSection: "折叠",
     panelAria: "Hare（露营）状态与控制面板",
     controlsAria: "壁纸调试控制",
     voiceLanguageAria: "对话语音语言",
@@ -103,6 +119,18 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     customPreset: "自定义",
     renderResolution: "渲染分辨率",
     modelResolution: "模型纹理",
+    panelSettings: "面板设置",
+    panelPositionAndScale: "位置与缩放",
+    panelSize: "面板尺寸",
+    panelX: "面板 X",
+    panelY: "面板 Y",
+    customPanelLayout: "自定义面板布局",
+    customVisualQuality: "自定义画面质量",
+    customModelLayout: "自定义模型布局",
+    customAnimationAndInteractions: "自定义动画与互动",
+    interactionSettings: "交互设置",
+    customDialogue: "自定义对话",
+    customSubtitlePosition: "自定义字幕位置",
     positionAndScale: "位置与缩放",
     modelScale: "模型缩放",
     modelX: "模型 X",
@@ -159,6 +187,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     showDebugPanel: "Show debug panel",
     hideDebugPanel: "Hide debug panel",
     restoreHostSettings: "Restore WE settings",
+    expandSection: "Expand",
+    collapseSection: "Collapse",
     panelAria: "Hare (Camping) status and controls",
     controlsAria: "Wallpaper debug controls",
     voiceLanguageAria: "Dialogue voice language",
@@ -180,6 +210,18 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     customPreset: "Custom",
     renderResolution: "Render resolution",
     modelResolution: "Model texture",
+    panelSettings: "Panel Settings",
+    panelPositionAndScale: "Position & Scale",
+    panelSize: "Panel size",
+    panelX: "Panel X",
+    panelY: "Panel Y",
+    customPanelLayout: "Custom Panel Layout",
+    customVisualQuality: "Custom Visual Quality",
+    customModelLayout: "Custom Model Layout",
+    customAnimationAndInteractions: "Custom Animation & Interactions",
+    interactionSettings: "Interaction Settings",
+    customDialogue: "Custom Dialogue",
+    customSubtitlePosition: "Custom Subtitle Position",
     positionAndScale: "Position & Scale",
     modelScale: "Model scale",
     modelX: "Model X",

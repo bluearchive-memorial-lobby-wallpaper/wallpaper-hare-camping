@@ -54,6 +54,14 @@ export class App {
   private readonly qualityCustomControls: HTMLElement;
   private readonly positionPresetSelect: HTMLSelectElement;
   private readonly positionCustomControls: HTMLElement;
+  private readonly panelPositionPresetSelect: HTMLSelectElement;
+  private readonly panelPositionCustomControls: HTMLElement;
+  private readonly panelScaleSlider: HTMLInputElement;
+  private readonly panelScaleOutput: HTMLOutputElement;
+  private readonly panelXSlider: HTMLInputElement;
+  private readonly panelXOutput: HTMLOutputElement;
+  private readonly panelYSlider: HTMLInputElement;
+  private readonly panelYOutput: HTMLOutputElement;
   private readonly modelScaleSlider: HTMLInputElement;
   private readonly modelScaleOutput: HTMLOutputElement;
   private readonly modelXSlider: HTMLInputElement;
@@ -101,6 +109,8 @@ export class App {
   private readonly panelLanguageSelect: HTMLSelectElement;
   private readonly hitboxesButton: HTMLButtonElement;
   private readonly restoreHostSettingsButton: HTMLButtonElement;
+  private readonly propertyGroupToggleButtons: readonly HTMLButtonElement[];
+  private readonly subgroupToggleButtons: readonly HTMLButtonElement[];
   private readonly adapter = new WallpaperEngineAdapter();
   private readonly subtitle: SubtitlePresenter;
   private readonly voice: VoicePlayer;
@@ -178,6 +188,29 @@ export class App {
     this.positionCustomControls = this.getElement(
       "debug-position-custom",
       HTMLElement,
+    );
+    this.panelPositionPresetSelect = this.getElement(
+      "debug-panel-position-preset",
+      HTMLSelectElement,
+    );
+    this.panelPositionCustomControls = this.getElement(
+      "debug-panel-position-custom",
+      HTMLElement,
+    );
+    this.panelScaleSlider = this.getElement("debug-panel-scale", HTMLInputElement);
+    this.panelScaleOutput = this.getElement(
+      "debug-panel-scale-output",
+      HTMLOutputElement,
+    );
+    this.panelXSlider = this.getElement("debug-panel-x", HTMLInputElement);
+    this.panelXOutput = this.getElement(
+      "debug-panel-x-output",
+      HTMLOutputElement,
+    );
+    this.panelYSlider = this.getElement("debug-panel-y", HTMLInputElement);
+    this.panelYOutput = this.getElement(
+      "debug-panel-y-output",
+      HTMLOutputElement,
     );
     this.modelScaleSlider = this.getElement("debug-model-scale", HTMLInputElement);
     this.modelScaleOutput = this.getElement(
@@ -319,6 +352,16 @@ export class App {
       "debug-restore-host-settings",
       HTMLButtonElement,
     );
+    this.propertyGroupToggleButtons = Array.from(
+      this.statusPanel.querySelectorAll<HTMLButtonElement>(
+        ".status-panel__property-group-toggle",
+      ),
+    );
+    this.subgroupToggleButtons = Array.from(
+      this.statusPanel.querySelectorAll<HTMLButtonElement>(
+        ".status-panel__subgroup-toggle",
+      ),
+    );
     this.subtitle = new SubtitlePresenter(
       this.getElement("subtitle", HTMLElement),
       this.getElement("subtitle-primary", HTMLElement),
@@ -451,6 +494,7 @@ export class App {
       this.debugFromQuery,
     );
     this.settings = settings;
+    this.syncDebugPanelLayout(settings);
     this.syncPanelText();
     this.renderer?.applySettings(settings);
     if (
@@ -620,6 +664,12 @@ export class App {
       this.debugPanelExpanded = !this.debugPanelExpanded;
       this.syncDebugPanelVisibility();
     });
+    for (const button of this.propertyGroupToggleButtons) {
+      button.addEventListener("click", () => this.togglePropertyGroup(button));
+    }
+    for (const button of this.subgroupToggleButtons) {
+      button.addEventListener("click", () => this.toggleSubgroup(button));
+    }
     this.replayIntroButton.addEventListener("click", () => this.replaySession());
     this.skipIdleButton.addEventListener("click", () => this.skipToIdle());
     this.dialogueButton.addEventListener("click", () => this.playNextDialogue());
@@ -631,6 +681,26 @@ export class App {
     this.positionPresetSelect.addEventListener("change", () =>
       this.adapter.setUserPropertiesForDebug({
         positionpreset: this.positionPresetSelect.value,
+      }),
+    );
+    this.panelPositionPresetSelect.addEventListener("change", () =>
+      this.adapter.setUserPropertiesForDebug({
+        panelpositionpreset: this.panelPositionPresetSelect.value,
+      }),
+    );
+    this.panelScaleSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        panelscale: Number(this.panelScaleSlider.value),
+      }),
+    );
+    this.panelXSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        panelx: Number(this.panelXSlider.value),
+      }),
+    );
+    this.panelYSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        panely: Number(this.panelYSlider.value),
       }),
     );
     this.modelScaleSlider.addEventListener("input", () =>
@@ -826,6 +896,14 @@ export class App {
     this.qualityCustomControls.hidden = !visibility.qualityCustom;
     this.positionPresetSelect.value = settings.positionPreset;
     this.positionCustomControls.hidden = !visibility.positionCustom;
+    this.panelPositionPresetSelect.value = settings.panelPositionPreset;
+    this.panelPositionCustomControls.hidden = !visibility.panelPositionCustom;
+    this.panelScaleSlider.value = String(settings.panelScale);
+    this.panelScaleOutput.value = settings.panelScale.toFixed(2);
+    this.panelXSlider.value = String(settings.panelX);
+    this.panelXOutput.value = String(settings.panelX);
+    this.panelYSlider.value = String(settings.panelY);
+    this.panelYOutput.value = String(settings.panelY);
     this.modelScaleSlider.value = String(settings.modelScale);
     this.modelScaleOutput.value = settings.modelScale.toFixed(2);
     this.modelXSlider.value = String(settings.modelX);
@@ -1018,6 +1096,7 @@ export class App {
       const value = key ? text[key] : undefined;
       if (typeof value === "string") element.setAttribute("aria-label", value);
     }
+    this.syncPropertyGroupToggleLabels();
     this.phaseLabel.textContent = text.phases[this.phase];
     this.interactionLabel.textContent = text.interactions[this.interactionMode];
     this.lastActionLabel.textContent =
@@ -1042,6 +1121,55 @@ export class App {
     this.debugPanelToggle.setAttribute("aria-label", this.debugPanelToggle.textContent);
     this.statusPanel.classList.toggle("status-panel--visible", expanded);
     this.statusPanel.setAttribute("aria-hidden", String(!expanded));
+  }
+
+  private syncDebugPanelLayout(settings: Readonly<WallpaperSettings>) {
+    this.statusPanel.style.setProperty(
+      "--debug-panel-scale",
+      String(settings.panelScale),
+    );
+    this.statusPanel.style.setProperty("--debug-panel-x", `${settings.panelX}px`);
+    this.statusPanel.style.setProperty("--debug-panel-y", `${settings.panelY}px`);
+  }
+
+  private togglePropertyGroup(button: HTMLButtonElement) {
+    const group = button.closest<HTMLElement>(".status-panel__property-group");
+    if (!group) return;
+    const expanded = button.getAttribute("aria-expanded") !== "true";
+    button.setAttribute("aria-expanded", String(expanded));
+    group.classList.toggle("status-panel__property-group--collapsed", !expanded);
+    this.syncPropertyGroupToggleLabel(button);
+  }
+
+  private syncPropertyGroupToggleLabels() {
+    for (const button of this.propertyGroupToggleButtons) {
+      this.syncPropertyGroupToggleLabel(button);
+    }
+    for (const button of this.subgroupToggleButtons) {
+      this.syncPropertyGroupToggleLabel(button);
+    }
+  }
+
+  private toggleSubgroup(button: HTMLButtonElement) {
+    const group = button.closest<HTMLElement>(".status-panel__nested-controls");
+    if (!group) return;
+    const expanded = button.getAttribute("aria-expanded") !== "true";
+    button.setAttribute("aria-expanded", String(expanded));
+    group.classList.toggle("status-panel__nested-controls--collapsed", !expanded);
+    this.syncPropertyGroupToggleLabel(button);
+  }
+
+  private syncPropertyGroupToggleLabel(button: HTMLButtonElement) {
+    const expanded = button.getAttribute("aria-expanded") === "true";
+    const groupTitle = button.querySelector<HTMLElement>("[data-panel-text]")
+      ?.textContent?.trim();
+    if (!groupTitle) return;
+    const action = expanded
+      ? this.panelText.collapseSection
+      : this.panelText.expandSection;
+    const label = `${action}: ${groupTitle}`;
+    button.setAttribute("aria-label", label);
+    button.title = label;
   }
 
   private get panelText(): PanelText {

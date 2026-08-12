@@ -27,7 +27,9 @@ import {
   isDebugPreset,
   isDialogueLanguagePreset,
   isInteractionPreset,
+  isPanelPositionPreset,
   isPositionPreset,
+  PANEL_POSITION_PRESETS,
   POSITION_PRESETS,
   type DebugPreset,
   type DebugPresetSettings,
@@ -35,6 +37,8 @@ import {
   type DialogueLanguagePresetSettings,
   type InteractionPreset,
   type InteractionPresetSettings,
+  type PanelPositionPreset,
+  type PanelPositionPresetSettings,
   type PositionPreset,
   type PositionPresetSettings,
 } from "./propertyGroupPresets";
@@ -45,6 +49,10 @@ export interface WallpaperSettings {
   modelScale: number;
   modelX: number;
   modelY: number;
+  panelPositionPreset: PanelPositionPreset;
+  panelScale: number;
+  panelX: number;
+  panelY: number;
   interactionPreset: InteractionPreset;
   interactionsEnabled: boolean;
   mouseTracking: boolean;
@@ -78,7 +86,7 @@ export interface WallpaperSettings {
 type SettingsListener = (settings: Readonly<WallpaperSettings>) => void;
 type PauseListener = (paused: boolean) => void;
 
-export const DEFAULT_SETTINGS_VERSION = 5;
+export const DEFAULT_SETTINGS_VERSION = 6;
 
 export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   positionPreset: "default",
@@ -86,6 +94,10 @@ export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   modelScale: 0.8,
   modelX: 0,
   modelY: 0,
+  panelPositionPreset: "default",
+  panelScale: 1,
+  panelX: 0,
+  panelY: 0,
   interactionPreset: "default",
   interactionsEnabled: true,
   mouseTracking: true,
@@ -160,6 +172,11 @@ export class WallpaperEngineAdapter {
     modelX: DEFAULT_SETTINGS.modelX,
     modelY: DEFAULT_SETTINGS.modelY,
   };
+  private customPanelPositionSettings: PanelPositionPresetSettings = {
+    panelScale: DEFAULT_SETTINGS.panelScale,
+    panelX: DEFAULT_SETTINGS.panelX,
+    panelY: DEFAULT_SETTINGS.panelY,
+  };
   private customInteractionSettings: InteractionPresetSettings = {
     introAnimation: DEFAULT_SETTINGS.introAnimation,
     interactionsEnabled: DEFAULT_SETTINGS.interactionsEnabled,
@@ -181,13 +198,15 @@ export class WallpaperEngineAdapter {
   private customDebugSettings: DebugPresetSettings = {
     debugPanelEnabled: DEFAULT_SETTINGS.debugPanelEnabled,
     drawHitboxes: DEFAULT_SETTINGS.drawHitboxes,
-    panelLocale: DEFAULT_SETTINGS.panelLocale,
   };
   private sessionCustomQualitySettings: QualityPresetSettings = {
     ...this.customQualitySettings,
   };
   private sessionCustomPositionSettings: PositionPresetSettings = {
     ...this.customPositionSettings,
+  };
+  private sessionCustomPanelPositionSettings: PanelPositionPresetSettings = {
+    ...this.customPanelPositionSettings,
   };
   private sessionCustomInteractionSettings: InteractionPresetSettings = {
     ...this.customInteractionSettings,
@@ -260,6 +279,14 @@ export class WallpaperEngineAdapter {
           : POSITION_PRESETS[patch.positionPreset],
       );
     }
+    if (patch.panelPositionPreset !== undefined) {
+      Object.assign(
+        patch,
+        patch.panelPositionPreset === "custom"
+          ? this.sessionCustomPanelPositionSettings
+          : PANEL_POSITION_PRESETS[patch.panelPositionPreset],
+      );
+    }
     if (patch.interactionPreset !== undefined) {
       Object.assign(
         patch,
@@ -322,6 +349,11 @@ export class WallpaperEngineAdapter {
     if (patch.modelScale !== undefined) this.customPositionSettings.modelScale = patch.modelScale;
     if (patch.modelX !== undefined) this.customPositionSettings.modelX = patch.modelX;
     if (patch.modelY !== undefined) this.customPositionSettings.modelY = patch.modelY;
+    if (patch.panelScale !== undefined) {
+      this.customPanelPositionSettings.panelScale = patch.panelScale;
+    }
+    if (patch.panelX !== undefined) this.customPanelPositionSettings.panelX = patch.panelX;
+    if (patch.panelY !== undefined) this.customPanelPositionSettings.panelY = patch.panelY;
     if (patch.introAnimation !== undefined) {
       this.customInteractionSettings.introAnimation = patch.introAnimation;
     }
@@ -373,9 +405,6 @@ export class WallpaperEngineAdapter {
     if (patch.drawHitboxes !== undefined) {
       this.customDebugSettings.drawHitboxes = patch.drawHitboxes;
     }
-    if (patch.panelLocale !== undefined) {
-      this.customDebugSettings.panelLocale = patch.panelLocale;
-    }
     if (patch.renderResolution !== undefined) {
       this.customQualitySettings.renderResolution = patch.renderResolution;
     }
@@ -392,6 +421,16 @@ export class WallpaperEngineAdapter {
       if (patch.positionPreset === "custom") Object.assign(patch, this.customPositionSettings);
     } else {
       Object.assign(patch, POSITION_PRESETS[positionPreset]);
+    }
+
+    const panelPositionPreset =
+      patch.panelPositionPreset ?? this.hostSettings.panelPositionPreset;
+    if (panelPositionPreset === "custom") {
+      if (patch.panelPositionPreset === "custom") {
+        Object.assign(patch, this.customPanelPositionSettings);
+      }
+    } else {
+      Object.assign(patch, PANEL_POSITION_PRESETS[panelPositionPreset]);
     }
 
     const interactionPreset =
@@ -454,6 +493,12 @@ export class WallpaperEngineAdapter {
       patch.positionPreset = properties.positionpreset.value;
     }
     if (
+      properties.panelpositionpreset &&
+      isPanelPositionPreset(properties.panelpositionpreset.value)
+    ) {
+      patch.panelPositionPreset = properties.panelpositionpreset.value;
+    }
+    if (
       properties.interactionpreset &&
       isInteractionPreset(properties.interactionpreset.value)
     ) {
@@ -480,6 +525,15 @@ export class WallpaperEngineAdapter {
     }
     if (properties.modely) {
       patch.modelY = clamp(Number(properties.modely.value), -1000, 1000);
+    }
+    if (properties.panelscale) {
+      patch.panelScale = clamp(Number(properties.panelscale.value), 0.6, 1.4);
+    }
+    if (properties.panelx) {
+      patch.panelX = clamp(Number(properties.panelx.value), -1000, 1000);
+    }
+    if (properties.panely) {
+      patch.panelY = clamp(Number(properties.panely.value), -1000, 1000);
     }
     if (properties.interactions) {
       patch.interactionsEnabled = Boolean(properties.interactions.value);
@@ -583,6 +637,15 @@ export class WallpaperEngineAdapter {
     }
     if (patch.modelX !== undefined) this.sessionCustomPositionSettings.modelX = patch.modelX;
     if (patch.modelY !== undefined) this.sessionCustomPositionSettings.modelY = patch.modelY;
+    if (patch.panelScale !== undefined) {
+      this.sessionCustomPanelPositionSettings.panelScale = patch.panelScale;
+    }
+    if (patch.panelX !== undefined) {
+      this.sessionCustomPanelPositionSettings.panelX = patch.panelX;
+    }
+    if (patch.panelY !== undefined) {
+      this.sessionCustomPanelPositionSettings.panelY = patch.panelY;
+    }
     if (patch.introAnimation !== undefined) {
       this.sessionCustomInteractionSettings.introAnimation = patch.introAnimation;
     }
@@ -646,6 +709,9 @@ export class WallpaperEngineAdapter {
   private resetSessionCustomSettings() {
     this.sessionCustomQualitySettings = { ...this.customQualitySettings };
     this.sessionCustomPositionSettings = { ...this.customPositionSettings };
+    this.sessionCustomPanelPositionSettings = {
+      ...this.customPanelPositionSettings,
+    };
     this.sessionCustomInteractionSettings = { ...this.customInteractionSettings };
     this.sessionCustomDialogueLanguageSettings = {
       ...this.customDialogueLanguageSettings,

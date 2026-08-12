@@ -42,19 +42,55 @@
             <button id="debug-restore-host-settings" type="button" data-panel-text="restoreHostSettings">恢复 WE 设置</button>
           </div>
 
-          <div class="status-panel__control-group status-panel__panel-language">
-            <label class="status-panel__control-label" for="debug-panel-language">
-              <span data-panel-text="panelLanguage">面板语言</span>
-            </label>
-            <select id="debug-panel-language">
-              <option value="zh-cn" data-panel-text="simplifiedChinese" selected>简体中文</option>
-              <option value="en" data-panel-text="english">English</option>
-            </select>
-          </div>
-
           <div class="status-panel__property-groups">
             <fieldset class="status-panel__property-group">
-              <legend data-panel-text="visualQuality">画面质量</legend>
+              <legend><button class="status-panel__property-group-toggle" type="button" aria-expanded="true"><span data-panel-text="panelSettings">面板设置</span></button></legend>
+              <div class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-panel-position-preset">
+                  <span data-panel-text="panelPositionAndScale">位置与缩放</span>
+                </label>
+                <select id="debug-panel-position-preset">
+                  <option value="default" data-panel-text="defaultPreset" selected>默认</option>
+                  <option value="custom" data-panel-text="customPreset">自定义</option>
+                </select>
+              </div>
+              <div id="debug-panel-position-custom" class="status-panel__nested-controls" hidden>
+                <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="customPanelLayout">自定义面板布局</span></button>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-panel-scale">
+                    <span data-panel-text="panelSize">面板尺寸</span>
+                    <output id="debug-panel-scale-output" for="debug-panel-scale">1.00</output>
+                  </label>
+                  <input id="debug-panel-scale" type="range" min="0.6" max="1.4" step="0.01" value="1" />
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-panel-x">
+                    <span data-panel-text="panelX">面板 X</span>
+                    <output id="debug-panel-x-output" for="debug-panel-x">0</output>
+                  </label>
+                  <input id="debug-panel-x" type="range" min="-1000" max="1000" step="1" value="0" />
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-panel-y">
+                    <span data-panel-text="panelY">面板 Y</span>
+                    <output id="debug-panel-y-output" for="debug-panel-y">0</output>
+                  </label>
+                  <input id="debug-panel-y" type="range" min="-1000" max="1000" step="1" value="0" />
+                </div>
+              </div>
+              <div class="status-panel__control-group">
+                <label class="status-panel__control-label" for="debug-panel-language">
+                  <span data-panel-text="panelLanguage">面板语言</span>
+                </label>
+                <select id="debug-panel-language">
+                  <option value="zh-cn" data-panel-text="simplifiedChinese" selected>简体中文</option>
+                  <option value="en" data-panel-text="english">English</option>
+                </select>
+              </div>
+            </fieldset>
+
+            <fieldset class="status-panel__property-group">
+              <legend><button class="status-panel__property-group-toggle" type="button" aria-expanded="true"><span data-panel-text="visualQuality">画面质量</span></button></legend>
               <div class="status-panel__control-group">
                 <label class="status-panel__control-label" for="debug-quality-preset">
                   <span data-panel-text="preset">预设</span>
@@ -68,6 +104,7 @@
                 </select>
               </div>
               <div id="debug-quality-custom" class="status-panel__nested-controls" hidden>
+                <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="customVisualQuality">自定义画面质量</span></button>
                 <div class="status-panel__control-group">
                   <label class="status-panel__control-label" for="debug-render-resolution">
                     <span data-panel-text="renderResolution">渲染分辨率</span>
@@ -100,7 +137,7 @@
             </fieldset>
 
             <fieldset class="status-panel__property-group">
-              <legend data-panel-text="positionAndScale">位置与缩放</legend>
+              <legend><button class="status-panel__property-group-toggle" type="button" aria-expanded="true"><span data-panel-text="positionAndScale">位置与缩放</span></button></legend>
               <div class="status-panel__control-group">
                 <label class="status-panel__control-label" for="debug-position-preset">
                   <span data-panel-text="preset">预设</span>
@@ -111,6 +148,7 @@
                 </select>
               </div>
               <div id="debug-position-custom" class="status-panel__nested-controls" hidden>
+                <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="customModelLayout">自定义模型布局</span></button>
                 <div class="status-panel__control-group">
                   <label class="status-panel__control-label" for="debug-model-scale">
                     <span data-panel-text="modelScale">模型缩放</span>
@@ -136,7 +174,7 @@
             </fieldset>
 
             <fieldset class="status-panel__property-group">
-              <legend data-panel-text="animationAndInteractions">动画与互动</legend>
+              <legend><button class="status-panel__property-group-toggle" type="button" aria-expanded="true"><span data-panel-text="animationAndInteractions">动画与互动</span></button></legend>
               <div class="status-panel__control-group">
                 <label class="status-panel__control-label" for="debug-interaction-preset">
                   <span data-panel-text="preset">预设</span>
@@ -147,6 +185,7 @@
                 </select>
               </div>
               <div id="debug-interaction-custom" class="status-panel__nested-controls" hidden>
+                <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="customAnimationAndInteractions">自定义动画与互动</span></button>
                 <label class="status-panel__checkbox">
                   <span data-panel-text="introAnimation">入场动画</span>
                   <input id="debug-intro-animation" type="checkbox" checked />
@@ -156,6 +195,7 @@
                   <input id="debug-interactions-enabled" type="checkbox" checked />
                 </label>
                 <div id="debug-interaction-dependent" class="status-panel__nested-controls">
+                  <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="interactionSettings">交互设置</span></button>
                   <label class="status-panel__checkbox">
                     <span data-panel-text="mouseTracking">鼠标跟随</span>
                     <input id="debug-mouse-tracking" type="checkbox" checked />
@@ -173,7 +213,7 @@
             </fieldset>
 
             <fieldset class="status-panel__property-group">
-              <legend data-panel-text="volume">音量</legend>
+              <legend><button class="status-panel__property-group-toggle" type="button" aria-expanded="true"><span data-panel-text="volume">音量</span></button></legend>
               <label class="status-panel__checkbox">
                 <span data-panel-text="muted">静音</span>
                 <input id="debug-muted" type="checkbox" />
@@ -195,7 +235,7 @@
             </fieldset>
 
             <fieldset id="debug-dialogue-playback-group" class="status-panel__property-group">
-              <legend data-panel-text="dialoguePlayback">对话播放</legend>
+              <legend><button class="status-panel__property-group-toggle" type="button" aria-expanded="true"><span data-panel-text="dialoguePlayback">对话播放</span></button></legend>
               <label class="status-panel__checkbox">
                 <span data-panel-text="dialogueAutoPlay">自动播放</span>
                 <input id="debug-dialogue-autoplay" type="checkbox" />
@@ -213,6 +253,7 @@
                 </select>
               </div>
               <div id="debug-dialogue-custom" class="status-panel__nested-controls" hidden>
+                <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="customDialogue">自定义对话</span></button>
                 <div class="status-panel__control-group">
                   <label class="status-panel__control-label" for="debug-voice-language">
                     <span data-panel-text="voiceLanguage">对话语音</span>
@@ -224,7 +265,7 @@
                   </select>
                 </div>
                 <div id="debug-subtitle-settings" class="status-panel__nested-controls status-panel__subtitle-settings">
-                  <p class="status-panel__subgroup-title" data-panel-text="subtitleSettings">字幕</p>
+                  <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="subtitleSettings">字幕</span></button>
                 <label class="status-panel__checkbox">
                   <span data-panel-text="showSubtitles">显示字幕</span>
                   <input id="debug-show-subtitles" type="checkbox" checked />
@@ -278,6 +319,7 @@
                   </select>
                 </div>
                 <div id="debug-subtitle-custom-position" class="status-panel__nested-controls" hidden>
+                  <button class="status-panel__subgroup-toggle" type="button" aria-expanded="true"><span data-panel-text="customSubtitlePosition">自定义字幕位置</span></button>
                   <div class="status-panel__control-group">
                     <label class="status-panel__control-label" for="debug-subtitle-x">
                       <span data-panel-text="subtitleX">字幕 X</span>

@@ -32,10 +32,11 @@ try {
   assert.equal(resolveDebugPanelExpanded(true, true, false, false), false);
   assert.equal(resolveDebugPanelExpanded(false, false, false, true), false);
   assert.equal(resolveDebugPanelExpanded(true, false, false, true), true);
-  assert.equal(DEFAULT_SETTINGS_VERSION, 5);
+  assert.equal(DEFAULT_SETTINGS_VERSION, 6);
   assert.deepEqual(resolvePropertyGroupVisibility(DEFAULT_SETTINGS), {
     qualityCustom: false,
     positionCustom: false,
+    panelPositionCustom: false,
     interactionCustom: false,
     interactionChildren: false,
     dialogueControls: true,
@@ -52,12 +53,14 @@ try {
       ...DEFAULT_SETTINGS,
       qualityPreset: "custom",
       positionPreset: "custom",
+      panelPositionPreset: "custom",
       interactionPreset: "custom",
       dialogueLanguagePreset: "custom",
     }),
     {
       qualityCustom: true,
       positionCustom: true,
+      panelPositionCustom: true,
       interactionCustom: true,
       interactionChildren: true,
       dialogueControls: true,
@@ -79,6 +82,7 @@ try {
     {
       qualityCustom: false,
       positionCustom: false,
+      panelPositionCustom: false,
       interactionCustom: true,
       interactionChildren: true,
       dialogueControls: false,
@@ -99,6 +103,7 @@ try {
     {
       qualityCustom: false,
       positionCustom: false,
+      panelPositionCustom: false,
       interactionCustom: false,
       interactionChildren: false,
       dialogueControls: true,
@@ -122,6 +127,7 @@ try {
     {
       qualityCustom: false,
       positionCustom: false,
+      panelPositionCustom: false,
       interactionCustom: true,
       interactionChildren: false,
       dialogueControls: false,
@@ -143,6 +149,7 @@ try {
     {
       qualityCustom: false,
       positionCustom: false,
+      panelPositionCustom: false,
       interactionCustom: false,
       interactionChildren: false,
       dialogueControls: true,
@@ -170,6 +177,10 @@ try {
       modelX: DEFAULT_SETTINGS.modelX,
       modelY: DEFAULT_SETTINGS.modelY,
       positionPreset: DEFAULT_SETTINGS.positionPreset,
+      panelPositionPreset: DEFAULT_SETTINGS.panelPositionPreset,
+      panelScale: DEFAULT_SETTINGS.panelScale,
+      panelX: DEFAULT_SETTINGS.panelX,
+      panelY: DEFAULT_SETTINGS.panelY,
       interactionPreset: DEFAULT_SETTINGS.interactionPreset,
       dialogueLanguagePreset: DEFAULT_SETTINGS.dialogueLanguagePreset,
       debugPreset: DEFAULT_SETTINGS.debugPreset,
@@ -186,6 +197,10 @@ try {
       modelX: 0,
       modelY: 0,
       positionPreset: "default",
+      panelPositionPreset: "default",
+      panelScale: 1,
+      panelX: 0,
+      panelY: 0,
       interactionPreset: "default",
       dialogueLanguagePreset: "zh-cn",
       debugPreset: "off",
@@ -209,6 +224,10 @@ try {
       modelX: properties.modelx.value,
       modelY: properties.modely.value,
       positionPreset: properties.positionpreset.value,
+      panelPositionPreset: properties.panelpositionpreset.value,
+      panelScale: properties.panelscale.value,
+      panelX: properties.panelx.value,
+      panelY: properties.panely.value,
       interactionPreset: properties.interactionpreset.value,
       dialogueLanguagePreset: properties.dialoguelanguagepreset.value,
       muted: properties.muted.value,
@@ -234,6 +253,10 @@ try {
       modelX: DEFAULT_SETTINGS.modelX,
       modelY: DEFAULT_SETTINGS.modelY,
       positionPreset: DEFAULT_SETTINGS.positionPreset,
+      panelPositionPreset: DEFAULT_SETTINGS.panelPositionPreset,
+      panelScale: DEFAULT_SETTINGS.panelScale,
+      panelX: DEFAULT_SETTINGS.panelX,
+      panelY: DEFAULT_SETTINGS.panelY,
       interactionPreset: DEFAULT_SETTINGS.interactionPreset,
       dialogueLanguagePreset: DEFAULT_SETTINGS.dialogueLanguagePreset,
       muted: DEFAULT_SETTINGS.muted,
@@ -293,6 +316,27 @@ try {
   assert.deepEqual(
     [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
     [0.92, 140, -80],
+  );
+
+  listener.applyUserProperties({ panelpositionpreset: { value: "custom" } });
+  listener.applyUserProperties({
+    panelscale: { value: 1.18 },
+    panelx: { value: 220 },
+    panely: { value: -140 },
+  });
+  assert.deepEqual(
+    [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],
+    [1.18, 220, -140],
+  );
+  listener.applyUserProperties({ panelpositionpreset: { value: "default" } });
+  assert.deepEqual(
+    [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],
+    [1, 0, 0],
+  );
+  listener.applyUserProperties({ panelpositionpreset: { value: "custom" } });
+  assert.deepEqual(
+    [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],
+    [1.18, 220, -140],
   );
 
   listener.applyUserProperties({ interactionpreset: { value: "custom" } });
@@ -373,9 +417,11 @@ try {
   assert.equal(adapter.current.subtitleX, 240);
   assert.equal(adapter.current.subtitleY, -160);
 
+  listener.applyUserProperties({ panellanguage: { value: "en" } });
   listener.applyUserProperties({ debugpreset: { value: "panel" } });
   assert.equal(adapter.current.debugPanelEnabled, true);
   assert.equal(adapter.current.drawHitboxes, false);
+  assert.equal(adapter.current.panelLocale, "en");
   listener.applyUserProperties({ debugpreset: { value: "all" } });
   assert.equal(adapter.current.debugPanelEnabled, true);
   assert.equal(adapter.current.drawHitboxes, true);
@@ -442,6 +488,24 @@ try {
   assert.deepEqual(
     [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
     [1.05, -210, -80],
+  );
+
+  adapter.setUserPropertiesForDebug({ panelpositionpreset: "default" });
+  assert.deepEqual(
+    [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],
+    [1, 0, 0],
+  );
+  adapter.setUserPropertiesForDebug({ panelpositionpreset: "custom" });
+  assert.deepEqual(
+    [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],
+    [1.18, 220, -140],
+  );
+  adapter.setUserPropertiesForDebug({ panelscale: 2, panelx: -1200, panely: 360 });
+  adapter.setUserPropertiesForDebug({ panelpositionpreset: "default" });
+  adapter.setUserPropertiesForDebug({ panelpositionpreset: "custom" });
+  assert.deepEqual(
+    [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],
+    [1.4, -1000, 360],
   );
 
   adapter.setUserPropertiesForDebug({ interactionpreset: "default" });
@@ -515,6 +579,10 @@ try {
   assert.deepEqual(
     [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
     [0.92, 140, -80],
+  );
+  assert.deepEqual(
+    [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],
+    [1.18, 220, -140],
   );
   assert.equal(adapter.current.qualityPreset, "custom");
   assert.equal(adapter.current.renderResolution, "1440p");

@@ -3,6 +3,7 @@ import type { WallpaperSettings } from "./WallpaperEngineAdapter";
 export interface PropertyGroupVisibility {
   qualityCustom: boolean;
   positionCustom: boolean;
+  panelPositionCustom: boolean;
   interactionCustom: boolean;
   interactionChildren: boolean;
   dialogueControls: boolean;
@@ -27,6 +28,7 @@ export function resolvePropertyGroupVisibility(
   return {
     qualityCustom: settings.qualityPreset === "custom",
     positionCustom: settings.positionPreset === "custom",
+    panelPositionCustom: settings.panelPositionPreset === "custom",
     interactionCustom: settings.interactionPreset === "custom",
     interactionChildren:
       settings.interactionPreset === "custom" && settings.interactionsEnabled,

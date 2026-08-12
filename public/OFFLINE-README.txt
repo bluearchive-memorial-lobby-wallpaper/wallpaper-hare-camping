@@ -31,6 +31,8 @@ Engine's Create Wallpaper flow. Keep every directory and file together.
 项目 FPS 上限 60，主题色 #0e4eac。实际帧率不会超过 Wallpaper Engine 的全局上限。
 属性页提供 Default、2K、4K、Maximum 与 Custom 画质；Maximum 为 2160P 渲染、8K 纹理和 160 FPS。
 其他固定分组会隐藏高级子项，选择 Custom 后显示并恢复自定义值；韩语预设使用韩语语音和字幕，英语预设使用日语语音和官方英语字幕。
+调试面板的 Panel Settings 可独立设置界面语言；选择 Custom 后可调整面板尺寸与 X/Y 位置。
+面板内每个顶层设置分组及其子分组都可单击标题栏独立折叠或展开。
 
 完整性 / Integrity
 ------------------

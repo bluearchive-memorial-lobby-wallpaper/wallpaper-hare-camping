@@ -82,6 +82,10 @@ if (
   frozenDefaults?.fpslimit?.value !== 60 ||
   frozenDefaults?.qualitypreset?.value !== "default" ||
   frozenDefaults?.positionpreset?.value !== "default" ||
+  frozenDefaults?.panelpositionpreset?.value !== "default" ||
+  frozenDefaults?.panelscale?.value !== 1 ||
+  frozenDefaults?.panelx?.value !== 0 ||
+  frozenDefaults?.panely?.value !== 0 ||
   frozenDefaults?.interactionpreset?.value !== "default" ||
   frozenDefaults?.muted?.value !== false ||
   frozenDefaults?.dialogueautoplay?.value !== false ||
@@ -152,6 +156,10 @@ const expectedPropertyOrder = [
   "debugpreset",
   "drawhitboxes",
   "debugpanelenabled",
+  "panelpositionpreset",
+  "panelscale",
+  "panelx",
+  "panely",
   "panellanguage",
 ];
 const actualPropertyOrder = Object.entries(frozenDefaults)
@@ -169,6 +177,7 @@ if (
 }
 const expectedGroupOptions = {
   positionpreset: ["default", "custom"],
+  panelpositionpreset: ["default", "custom"],
   interactionpreset: ["default", "custom"],
   dialoguelanguagepreset: ["zh-cn", "ja", "ko", "en", "custom"],
   debugpreset: ["off", "panel", "all", "custom"],
@@ -225,6 +234,10 @@ const expectedPropertyLabels = {
   debugpreset: "Debug",
   drawhitboxes: "Show Interactive Areas",
   debugpanelenabled: "Enable Debug Panel",
+  panelpositionpreset: "Debug Panel Position & Scale",
+  panelscale: "Debug Panel Size",
+  panelx: "Debug Panel X",
+  panely: "Debug Panel Y",
   panellanguage: "Panel Language",
 };
 for (const [key, label] of Object.entries(expectedPropertyLabels)) {
@@ -268,7 +281,16 @@ const expectedConditions = {
     "dialoguelanguagepreset.value == 'custom' && subtitleposition.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
   drawhitboxes: "debugpreset.value == 'custom'",
   debugpanelenabled: "debugpreset.value == 'custom'",
-  panellanguage: "debugpreset.value == 'custom' && debugpanelenabled.value == true",
+  panelpositionpreset:
+    "debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true)",
+  panelscale:
+    "panelpositionpreset.value == 'custom' && (debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true))",
+  panelx:
+    "panelpositionpreset.value == 'custom' && (debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true))",
+  panely:
+    "panelpositionpreset.value == 'custom' && (debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true))",
+  panellanguage:
+    "debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true)",
 };
 for (const [key, condition] of Object.entries(expectedConditions)) {
   if (frozenDefaults[key].condition !== condition) {
@@ -289,6 +311,23 @@ for (const key of ["subtitlex", "subtitley"]) {
     frozenDefaults[key].type !== "slider"
   ) {
     throw new Error(`Subtitle custom position range is invalid: ${key}`);
+  }
+}
+if (
+  frozenDefaults.panelscale.min !== 0.6 ||
+  frozenDefaults.panelscale.max !== 1.4 ||
+  frozenDefaults.panelscale.step !== 0.01 ||
+  frozenDefaults.panelscale.type !== "slider"
+) {
+  throw new Error("Debug panel size range is invalid");
+}
+for (const key of ["panelx", "panely"]) {
+  if (
+    frozenDefaults[key].min !== -1000 ||
+    frozenDefaults[key].max !== 1000 ||
+    frozenDefaults[key].type !== "slider"
+  ) {
+    throw new Error(`Debug panel custom position range is invalid: ${key}`);
   }
 }
 if (project.general?.properties?.debugpanelenabled?.value !== false) {
@@ -487,6 +526,12 @@ for (const [label, pattern] of [
   }
 }
 const expectedDebugPanelLayout = [
+  "debug-panel-position-preset",
+  "debug-panel-position-custom",
+  "debug-panel-scale",
+  "debug-panel-x",
+  "debug-panel-y",
+  "debug-panel-language",
   "debug-quality-preset",
   "debug-position-preset",
   "debug-interaction-preset",
@@ -529,6 +574,49 @@ if (
 }
 if (!builtHtml.includes('data-panel-text="subtitleSettings"')) {
   throw new Error("Debug panel subtitle subgroup title is missing");
+}
+if (!builtHtml.includes('data-panel-text="panelSettings"')) {
+  throw new Error("Debug panel settings group title is missing");
+}
+const propertyGroupToggleMatches = builtHtml.match(
+  /class="status-panel__property-group-toggle"/g,
+);
+if (
+  propertyGroupToggleMatches?.length !== 6 ||
+  !builtHtml.includes('aria-expanded="true"')
+) {
+  throw new Error("Every debug panel property group must have an expanded toggle");
+}
+for (const selector of [
+  ".status-panel__property-group-toggle",
+  ".status-panel__property-group--collapsed",
+]) {
+  if (!builtCss.includes(selector)) {
+    throw new Error(`Debug panel collapse CSS is missing: ${selector}`);
+  }
+}
+const subgroupToggleMatches = builtHtml.match(
+  /class="status-panel__subgroup-toggle"/g,
+);
+if (subgroupToggleMatches?.length !== 8) {
+  throw new Error("Every debug panel nested group must have an expanded toggle");
+}
+for (const selector of [
+  ".status-panel__subgroup-toggle",
+  ".status-panel__nested-controls--collapsed",
+]) {
+  if (!builtCss.includes(selector)) {
+    throw new Error(`Debug panel subgroup collapse CSS is missing: ${selector}`);
+  }
+}
+for (const variable of [
+  "--debug-panel-scale",
+  "--debug-panel-x",
+  "--debug-panel-y",
+]) {
+  if (!builtCss.includes(variable)) {
+    throw new Error(`Debug panel layout CSS is missing: ${variable}`);
+  }
 }
 
 console.log("Validated offline 1.0 dist: preview, metadata, notices, 2K/4K/8K model tiers, 30 voices, BGM, Runtime, and checksums.");

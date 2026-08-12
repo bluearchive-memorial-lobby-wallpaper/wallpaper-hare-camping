@@ -349,14 +349,61 @@
         "type": "bool",
         "value": false
       },
+      "panelpositionpreset": {
+        "condition": "debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true)",
+        "index": 33,
+        "options": [
+          { "label": "Default", "value": "default" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "order": 63,
+        "text": "Debug Panel Position & Scale",
+        "type": "combo",
+        "value": "default"
+      },
+      "panelscale": {
+        "condition": "panelpositionpreset.value == 'custom' && (debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true))",
+        "fraction": true,
+        "index": 34,
+        "max": 1.4,
+        "min": 0.6,
+        "order": 64,
+        "precision": 2,
+        "step": 0.01,
+        "text": "Debug Panel Size",
+        "type": "slider",
+        "value": 1
+      },
+      "panelx": {
+        "condition": "panelpositionpreset.value == 'custom' && (debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true))",
+        "fraction": false,
+        "index": 35,
+        "max": 1000,
+        "min": -1000,
+        "order": 65,
+        "text": "Debug Panel X",
+        "type": "slider",
+        "value": 0
+      },
+      "panely": {
+        "condition": "panelpositionpreset.value == 'custom' && (debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true))",
+        "fraction": false,
+        "index": 36,
+        "max": 1000,
+        "min": -1000,
+        "order": 66,
+        "text": "Debug Panel Y",
+        "type": "slider",
+        "value": 0
+      },
       "panellanguage": {
-        "condition": "debugpreset.value == 'custom' && debugpanelenabled.value == true",
+        "condition": "debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true)",
         "index": 32,
         "options": [
           { "label": "Simplified Chinese", "value": "zh-cn" },
           { "label": "English", "value": "en" }
         ],
-        "order": 63,
+        "order": 67,
         "text": "Panel Language",
         "type": "combo",
         "value": "zh-cn"

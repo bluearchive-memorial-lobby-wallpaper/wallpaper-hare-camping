@@ -1,11 +1,11 @@
 import type { SubtitleLocale, VoiceLocale } from "../config";
-import type { PanelLocale } from "../i18n/panel";
 import type {
   SubtitleAlignment,
   SubtitlePosition,
 } from "../dialogue/subtitleLayout";
 
 export type PositionPreset = "default" | "custom";
+export type PanelPositionPreset = "default" | "custom";
 export type InteractionPreset = "default" | "custom";
 export type DialogueLanguagePreset = "zh-cn" | "ja" | "ko" | "en" | "custom";
 export type DebugPreset = "off" | "panel" | "all" | "custom";
@@ -14,6 +14,12 @@ export interface PositionPresetSettings {
   modelScale: number;
   modelX: number;
   modelY: number;
+}
+
+export interface PanelPositionPresetSettings {
+  panelScale: number;
+  panelX: number;
+  panelY: number;
 }
 
 export interface InteractionPresetSettings {
@@ -39,11 +45,17 @@ export interface DialogueLanguagePresetSettings {
 export interface DebugPresetSettings {
   debugPanelEnabled: boolean;
   drawHitboxes: boolean;
-  panelLocale: PanelLocale;
 }
 
 export const POSITION_PRESETS: Record<"default", PositionPresetSettings> = {
   default: { modelScale: 0.8, modelX: 0, modelY: 0 },
+};
+
+export const PANEL_POSITION_PRESETS: Record<
+  "default",
+  PanelPositionPresetSettings
+> = {
+  default: { panelScale: 1, panelX: 0, panelY: 0 },
 };
 
 export const INTERACTION_PRESETS: Record<"default", InteractionPresetSettings> = {
@@ -113,21 +125,24 @@ export const DEBUG_PRESETS: Record<
   off: {
     debugPanelEnabled: false,
     drawHitboxes: false,
-    panelLocale: "zh-cn",
   },
   panel: {
     debugPanelEnabled: true,
     drawHitboxes: false,
-    panelLocale: "zh-cn",
   },
   all: {
     debugPanelEnabled: true,
     drawHitboxes: true,
-    panelLocale: "zh-cn",
   },
 };
 
 export function isPositionPreset(value: unknown): value is PositionPreset {
+  return value === "default" || value === "custom";
+}
+
+export function isPanelPositionPreset(
+  value: unknown,
+): value is PanelPositionPreset {
   return value === "default" || value === "custom";
 }
 
