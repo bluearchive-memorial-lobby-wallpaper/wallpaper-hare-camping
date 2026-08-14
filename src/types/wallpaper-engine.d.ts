@@ -30,7 +30,7 @@ declare global {
       applyUserProperties?: (properties: WallpaperProperties) => void;
       setPaused?: (paused: boolean) => void;
     };
-    __hareWallpaperDebug?: {
+    __memoryLobbyWallpaperDebug?: {
       getSnapshot: () => Record<string, unknown>;
       replayIntro: () => void;
       skipToIdle: () => void;
