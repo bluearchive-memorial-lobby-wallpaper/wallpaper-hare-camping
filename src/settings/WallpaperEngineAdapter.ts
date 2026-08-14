@@ -2,26 +2,20 @@ import type { SubtitleLocale, VoiceLocale } from "../config";
 import {
   isSubtitleAlignment,
   isSubtitlePosition,
+  isModelResolution,
+  isQualityPreset,
+  isRenderResolution,
+  QUALITY_PRESETS,
+  type ModelResolution,
+  type QualityPreset,
+  type QualityPresetSettings,
+  type RenderResolution,
   type SubtitleAlignment,
   type SubtitlePosition,
 } from "ba-memorylobby-wallpaper-runtime";
 import type { WallpaperProperties } from "ba-memorylobby-wallpaper-runtime/wallpaper-engine";
 import { installWallpaperEngineBridge } from "ba-memorylobby-wallpaper-runtime/wallpaper-engine";
 import { isPanelLocale, type PanelLocale } from "../i18n/panel";
-import {
-  isRenderResolution,
-  type RenderResolution,
-} from "./renderResolution";
-import {
-  isModelResolution,
-  type ModelResolution,
-} from "./modelResolution";
-import {
-  isQualityPreset,
-  QUALITY_PRESETS,
-  type QualityPreset,
-  type QualityPresetSettings,
-} from "./qualityPreset";
 import {
   DEBUG_PRESETS,
   DIALOGUE_LANGUAGE_PRESETS,
