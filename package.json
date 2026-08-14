@@ -9,7 +9,7 @@
     "dev": "npm run prepare:assets && vite --host 127.0.0.1",
     "test:display": "node scripts/test-display-layout.mjs",
     "test:subtitle": "node scripts/test-subtitle-presenter.mjs",
-    "test:settings": "node scripts/test-settings-adapter.mjs",
+    "test:settings": "node scripts/test-settings-project.mjs",
     "test:logging": "node scripts/test-logging.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run prepare:assets && npm run typecheck && vite build && node scripts/validate-dist.mjs",
