@@ -99,18 +99,23 @@ assert(viewerControllerSource.includes("viewer.hidden = false"));
 assert(viewerControllerSource.includes('document.execCommand("copy")'));
 assert(viewerControllerSource.includes("onVisibilityChange"));
 const sourceHtml = await readFile(path.resolve("index.html"), "utf8");
-assert(sourceHtml.includes('id="wallpaper-log-viewer"'));
-assert(sourceHtml.includes('id="wallpaper-log-viewer-content"'));
-assert(sourceHtml.includes('<pre id="wallpaper-log-viewer-content"'));
-assert.equal(sourceHtml.includes('<textarea id="wallpaper-log-viewer-content"'), false);
-assert.equal(sourceHtml.includes('<select id="wallpaper-log-viewer-session"'), false);
-assert(sourceHtml.includes('id="wallpaper-log-viewer-copy"'));
-assert(sourceHtml.includes('class="wallpaper-log-viewer__close"'));
-assert.equal(sourceHtml.includes('id="wallpaper-log-viewer-copy-hint"'), false);
-assert(sourceHtml.includes("wallpaper-log-viewer--independent"));
+assert(sourceHtml.includes('<main id="app"></main>'));
+const shellSource = await readFile(
+  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "ui", "createWallpaperShell.ts"),
+  "utf8",
+);
+assert(shellSource.includes('id="wallpaper-log-viewer"'));
+assert(shellSource.includes('id="wallpaper-log-viewer-content"'));
+assert(shellSource.includes('<pre id="wallpaper-log-viewer-content"'));
+assert.equal(shellSource.includes('<textarea id="wallpaper-log-viewer-content"'), false);
+assert.equal(shellSource.includes('<select id="wallpaper-log-viewer-session"'), false);
+assert(shellSource.includes('id="wallpaper-log-viewer-copy"'));
+assert(shellSource.includes('class="wallpaper-log-viewer__close"'));
+assert.equal(shellSource.includes('id="wallpaper-log-viewer-copy-hint"'), false);
+assert(shellSource.includes("wallpaper-log-viewer--independent"));
 assert(
-  sourceHtml.indexOf('id="wallpaper-log-viewer"') >
-    sourceHtml.indexOf('id="status-error"'),
+  shellSource.indexOf('id="wallpaper-log-viewer"') >
+    shellSource.indexOf('id="status-error"'),
   "The log viewer must be outside the debug panel surface",
 );
 const sourceCss = await readFile(

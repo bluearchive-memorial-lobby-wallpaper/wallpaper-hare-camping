@@ -520,6 +520,7 @@ const builtJs = (
     builtJsNames.map((name) => readFile(path.join(dist, "assets", name), "utf8")),
   )
 ).join("\n");
+const builtUi = builtJs;
 if (!offlineReadme.includes("Version 1.0.0") || !offlineReadme.includes("MANIFEST.sha256")) {
   throw new Error("Offline installation and integrity instructions are incomplete");
 }
@@ -552,14 +553,14 @@ if (builtJs.includes(".showModal(")) {
 }
 if (
   builtJs.includes("createObjectURL") ||
-  !builtHtml.includes('id="wallpaper-log-viewer-content"') ||
-  !builtHtml.includes('<pre id="wallpaper-log-viewer-content"') ||
-  !builtHtml.includes('id="wallpaper-log-viewer-copy"') ||
-  !builtHtml.includes('class="wallpaper-log-viewer__close"') ||
-  !builtHtml.includes("wallpaper-log-viewer--independent") ||
-  !builtHtml.includes('id="wallpaper-log-scrollbar"') ||
-  !builtHtml.includes('id="wallpaper-log-scrollbar-horizontal"') ||
-  !builtHtml.includes('id="debug-panel-scrollbar"')
+  !builtUi.includes('id="wallpaper-log-viewer-content"') ||
+  !builtUi.includes('<pre id="wallpaper-log-viewer-content"') ||
+  !builtUi.includes('id="wallpaper-log-viewer-copy"') ||
+  !builtUi.includes('class="wallpaper-log-viewer__close"') ||
+  !builtUi.includes("wallpaper-log-viewer--independent") ||
+  !builtUi.includes('id="wallpaper-log-scrollbar"') ||
+  !builtUi.includes('id="wallpaper-log-scrollbar-horizontal"') ||
+  !builtUi.includes('id="debug-panel-scrollbar"')
 ) {
   throw new Error("Built log viewer must use the static CEF-safe pointer UI");
 }
@@ -611,39 +612,39 @@ const expectedDebugPanelLayout = [
 ];
 let previousDebugGroupIndex = -1;
 for (const id of expectedDebugPanelLayout) {
-  const index = builtHtml.indexOf(`id="${id}"`);
+  const index = builtUi.indexOf(`id="${id}"`);
   if (index <= previousDebugGroupIndex) {
     throw new Error(`Debug panel property group is missing or out of order: ${id}`);
   }
   previousDebugGroupIndex = index;
 }
 if (
-  builtHtml.includes('id="debug-debug-preset"') ||
-  builtHtml.includes('id="debug-theme-color"') ||
-  !builtHtml.includes('id="debug-hitboxes"')
+  builtUi.includes('id="debug-debug-preset"') ||
+  builtUi.includes('id="debug-theme-color"') ||
+  !builtUi.includes('id="debug-hitboxes"')
 ) {
   throw new Error(
     "Debug panel must omit Theme Color and the WE Debug preset while retaining tools",
   );
 }
 if (
-  !builtHtml.includes("要切换调试面板的可见性") ||
-  !builtHtml.includes('data-panel-text="debugPanelVisibilityHint"')
+  !builtUi.includes("要切换调试面板的可见性") ||
+  !builtUi.includes('data-panel-text="debugPanelVisibilityHint"')
 ) {
   throw new Error("Debug panel visibility hint is missing from the status area");
 }
-if (!builtHtml.includes('data-panel-text="subtitleSettings"')) {
+if (!builtUi.includes('data-panel-text="subtitleSettings"')) {
   throw new Error("Debug panel subtitle subgroup title is missing");
 }
-if (!builtHtml.includes('data-panel-text="panelSettings"')) {
+if (!builtUi.includes('data-panel-text="panelSettings"')) {
   throw new Error("Debug panel settings group title is missing");
 }
-const propertyGroupToggleMatches = builtHtml.match(
+const propertyGroupToggleMatches = builtUi.match(
   /class="status-panel__property-group-toggle"/g,
 );
 if (
   propertyGroupToggleMatches?.length !== 6 ||
-  !builtHtml.includes('aria-expanded="true"')
+  !builtUi.includes('aria-expanded="true"')
 ) {
   throw new Error("Every debug panel property group must have an expanded toggle");
 }
@@ -655,7 +656,7 @@ for (const selector of [
     throw new Error(`Debug panel collapse CSS is missing: ${selector}`);
   }
 }
-const subgroupToggleMatches = builtHtml.match(
+const subgroupToggleMatches = builtUi.match(
   /class="status-panel__subgroup-toggle"/g,
 );
 if (subgroupToggleMatches?.length !== 8) {
