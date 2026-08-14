@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { createServer } from "vite";
 
@@ -66,6 +67,13 @@ try {
   ]);
   assert.equal(maximumConcurrentLoads, 1);
   assert.deepEqual(racedResult, { resolution: "8k", loadPasses: 2 });
+
+  const appSource = await readFile(path.join(root, "src", "app", "App.ts"), "utf8");
+  assert(appSource.includes('has("testWeInterfaces")'));
+  assert(appSource.includes("value === null ? Number.NaN : Number(value)"));
+  assert(appSource.includes("weInterfaceGeneral"));
+  assert(appSource.includes("weInterfaceUser"));
+  assert(appSource.includes("weInterfacePause"));
 
   console.log("Validated single-pass final-resolution startup and sequential fallback when WE settings change during initialization.");
 } finally {
