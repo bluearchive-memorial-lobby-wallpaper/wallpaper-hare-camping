@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "generate:model-textures": "node scripts/generate-model-textures.mjs",
+    "generate:checksums": "memory-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base .",
+    "verify:checksums": "memory-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base . --verify",
     "prepare:assets": "node scripts/prepare-assets.mjs",
     "dev": "npm run prepare:assets && vite --host 127.0.0.1",
     "test:display": "node scripts/test-display-layout.mjs",
