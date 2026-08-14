@@ -806,6 +806,7 @@ export class App {
       this.pointerController?.dispose();
       this.logViewerController.dispose();
       this.debugPanelPointerController.dispose();
+      this.adapter.dispose();
       this.removeBgmUnlockListeners();
       this.voice.stop();
       this.bgm.dispose();
