@@ -24,7 +24,7 @@ try {
     "/src/settings/propertyGroupVisibility.ts",
   );
   const { resolveDebugPanelExpanded } = await server.ssrLoadModule(
-    "/src/app/debugPanelVisibility.ts",
+    "ba-memorylobby-wallpaper-runtime",
   );
   assert.equal(resolveDebugPanelExpanded(false, false, false, false), false);
   assert.equal(resolveDebugPanelExpanded(false, false, true, false), true);
