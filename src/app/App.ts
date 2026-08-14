@@ -1,8 +1,6 @@
 import {
-  BGM,
-  DIALOGUES,
   findDialogueLine,
-  voicePath,
+  WALLPAPER_DEFINITION,
   type VoiceLocale,
 } from "../config";
 import {
@@ -146,7 +144,9 @@ export class App {
   private readonly subtitle: SubtitlePresenter;
   private readonly voice: VoicePlayer;
   private readonly bgm: BgmPlayer;
-  private readonly dialoguePlayback = new DialoguePlaybackSequence(DIALOGUES.length);
+  private readonly dialoguePlayback = new DialoguePlaybackSequence(
+    WALLPAPER_DEFINITION.dialogues.length,
+  );
   private renderer?: SpineRenderer;
   private pointerController?: PointerInteractionController;
   private settings: Readonly<WallpaperSettings> = this.adapter.current;
@@ -413,7 +413,7 @@ export class App {
       findDialogueLine,
       { primaryLocale: "zh-cn", secondaryLocale: "ja" },
     );
-    this.voice = new VoicePlayer(voicePath, {
+    this.voice = new VoicePlayer(WALLPAPER_DEFINITION.audio.voicePath, {
       onEnded: (eventId) => this.subtitle.hide(eventId),
       onError: (message) => {
         console.warn(message);
@@ -421,7 +421,7 @@ export class App {
         this.eventLabel.textContent = "audio-error";
       },
     });
-    this.bgm = new BgmPlayer(BGM, {
+    this.bgm = new BgmPlayer(WALLPAPER_DEFINITION.audio.bgm, {
       onStatusChange: (status) => this.updateBgmLabel(status),
       onError: (message) => {
         console.warn(message);
