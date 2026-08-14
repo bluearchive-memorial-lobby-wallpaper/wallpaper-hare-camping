@@ -11,44 +11,53 @@ const server = await createServer({
 });
 
 try {
-  const { resolveSubtitlePresentation } = await server.ssrLoadModule(
-    "/src/dialogue/SubtitlePresenter.ts",
+  const { DIALOGUES, WALLPAPER_DEFINITION } = await server.ssrLoadModule(
+    "/src/config.ts",
   );
-  const { DIALOGUES } = await server.ssrLoadModule("/src/config.ts");
   const {
     applySubtitleLayout,
     isSubtitleAlignment,
     isSubtitlePosition,
-  } = await server.ssrLoadModule("/src/dialogue/subtitleLayout.ts");
+    resolveSubtitlePresentation,
+  } = await import("ba-memorylobby-wallpaper-runtime");
   const eventId = "CH0233_MemorialLobby_1_1";
+  assert.equal(WALLPAPER_DEFINITION.id, "blue-archive-hare-camping");
+  assert.equal(WALLPAPER_DEFINITION.dialogues.length, DIALOGUES.length);
+  assert.equal(WALLPAPER_DEFINITION.audio.bgm.title, "Starry Confession");
+  const linesById = new Map(
+    DIALOGUES.flatMap((dialogue) =>
+      dialogue.lines.map((line) => [line.id.toLowerCase(), line]),
+    ),
+  );
+  const resolveLine = (id) => linesById.get(id.toLowerCase());
 
   assert.equal(
-    resolveSubtitlePresentation(eventId, false, "zh-cn", true, "ja"),
+    resolveSubtitlePresentation(resolveLine, eventId, false, "zh-cn", true, "ja"),
     null,
   );
   assert.deepEqual(
-    resolveSubtitlePresentation(eventId, true, "zh-cn", false, "ja"),
+    resolveSubtitlePresentation(resolveLine, eventId, true, "zh-cn", false, "ja"),
     {
       primaryText: "天上充满了光……",
       secondaryText: null,
     },
   );
   assert.deepEqual(
-    resolveSubtitlePresentation(eventId, true, "zh-cn", true, "ja"),
+    resolveSubtitlePresentation(resolveLine, eventId, true, "zh-cn", true, "ja"),
     {
       primaryText: "天上充满了光……",
       secondaryText: "空が、光でいっぱい……。",
     },
   );
   assert.deepEqual(
-    resolveSubtitlePresentation(eventId, true, "ja", true, "ja"),
+    resolveSubtitlePresentation(resolveLine, eventId, true, "ja", true, "ja"),
     {
       primaryText: "空が、光でいっぱい……。",
       secondaryText: null,
     },
   );
   assert.deepEqual(
-    resolveSubtitlePresentation(eventId, true, "ko", true, "en"),
+    resolveSubtitlePresentation(resolveLine, eventId, true, "ko", true, "en"),
     {
       primaryText: "하늘에 빛이 가득해…",
       secondaryText: "The sky is so full of light...",
@@ -91,7 +100,7 @@ try {
     assert.deepEqual(Object.keys(line.text).sort(), ["en", "ja", "ko", "zh-cn"]);
   }
   assert.equal(
-    resolveSubtitlePresentation("missing-event", true, "zh-cn", true, "ja"),
+    resolveSubtitlePresentation(resolveLine, "missing-event", true, "zh-cn", true, "ja"),
     null,
   );
 

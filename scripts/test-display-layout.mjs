@@ -12,12 +12,11 @@ const server = await createServer({
 
 try {
   const { MODEL } = await server.ssrLoadModule("/src/config.ts");
-  const { calculateViewportLayout } = await server.ssrLoadModule(
-    "/src/spine/viewportLayout.ts",
-  );
-  const { createModelRotationMatrix, rotateModelPoint } = await server.ssrLoadModule(
-    "/src/spine/modelTransform.ts",
-  );
+  const {
+    calculateViewportLayout,
+    createModelRotationMatrix,
+    rotateModelPoint,
+  } = await import("ba-memorylobby-wallpaper-runtime");
   const cases = [
     ["1080p 16:9", 1920, 1080, 1920, 1080, 3200, 1800],
     ["1440p 16:9", 2560, 1440, 1920, 1080, 3200, 1800],

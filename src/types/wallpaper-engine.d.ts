@@ -1,9 +1,14 @@
+import type {
+  WallpaperEngineGeneralProperties,
+  WallpaperProperties,
+} from "ba-memorylobby-wallpaper-runtime/wallpaper-engine";
+
 export {};
 
 declare global {
   interface Window {
     spine?: any;
-    __hareLogBootstrap?: {
+    __wallpaperLogBootstrap?: {
       sessionId: string;
       sessionFileName: string;
       handlesGlobalErrors: boolean;
@@ -21,13 +26,11 @@ declare global {
       markCleanExit: () => void;
     };
     wallpaperPropertyListener?: {
-      applyGeneralProperties?: (properties: { fps?: number }) => void;
-      applyUserProperties?: (
-        properties: Record<string, { value: boolean | number | string }>,
-      ) => void;
+      applyGeneralProperties?: (properties: WallpaperEngineGeneralProperties) => void;
+      applyUserProperties?: (properties: WallpaperProperties) => void;
       setPaused?: (paused: boolean) => void;
     };
-    __hareWallpaperDebug?: {
+    __memoryLobbyWallpaperDebug?: {
       getSnapshot: () => Record<string, unknown>;
       replayIntro: () => void;
       skipToIdle: () => void;
