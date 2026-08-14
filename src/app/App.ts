@@ -538,7 +538,7 @@ export class App {
         source: this.root.dataset.initialSettingsSource,
         settings: this.settings,
       });
-      this.renderer = new SpineRenderer(this.canvas, {
+      this.renderer = new SpineRenderer(this.canvas, WALLPAPER_DEFINITION, {
         onAnimationChange: (animation) => {
           const previousAnimation = this.animation;
           this.animation = animation;
@@ -590,6 +590,7 @@ export class App {
       this.pointerController = new PointerInteractionController(
         this.canvas,
         this.renderer,
+        WALLPAPER_DEFINITION.interactions,
         {
           onDialogueRequested: () => this.playNextDialogue(undefined, true),
           onInteractionCompleted: (interaction) =>
