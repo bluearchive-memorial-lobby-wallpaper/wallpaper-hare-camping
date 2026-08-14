@@ -49,6 +49,7 @@ export interface WallpaperSettings {
   modelScale: number;
   modelX: number;
   modelY: number;
+  modelRotation: number;
   panelPositionPreset: PanelPositionPreset;
   panelScale: number;
   panelX: number;
@@ -86,7 +87,7 @@ export interface WallpaperSettings {
 type SettingsListener = (settings: Readonly<WallpaperSettings>) => void;
 type PauseListener = (paused: boolean) => void;
 
-export const DEFAULT_SETTINGS_VERSION = 6;
+export const DEFAULT_SETTINGS_VERSION = 7;
 
 export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   positionPreset: "default",
@@ -94,6 +95,7 @@ export const DEFAULT_SETTINGS: Readonly<WallpaperSettings> = Object.freeze({
   modelScale: 0.8,
   modelX: 0,
   modelY: 0,
+  modelRotation: 0,
   panelPositionPreset: "default",
   panelScale: 1,
   panelX: 0,
@@ -171,6 +173,7 @@ export class WallpaperEngineAdapter {
     modelScale: DEFAULT_SETTINGS.modelScale,
     modelX: DEFAULT_SETTINGS.modelX,
     modelY: DEFAULT_SETTINGS.modelY,
+    modelRotation: DEFAULT_SETTINGS.modelRotation,
   };
   private customPanelPositionSettings: PanelPositionPresetSettings = {
     panelScale: DEFAULT_SETTINGS.panelScale,
@@ -349,6 +352,9 @@ export class WallpaperEngineAdapter {
     if (patch.modelScale !== undefined) this.customPositionSettings.modelScale = patch.modelScale;
     if (patch.modelX !== undefined) this.customPositionSettings.modelX = patch.modelX;
     if (patch.modelY !== undefined) this.customPositionSettings.modelY = patch.modelY;
+    if (patch.modelRotation !== undefined) {
+      this.customPositionSettings.modelRotation = patch.modelRotation;
+    }
     if (patch.panelScale !== undefined) {
       this.customPanelPositionSettings.panelScale = patch.panelScale;
     }
@@ -526,6 +532,9 @@ export class WallpaperEngineAdapter {
     if (properties.modely) {
       patch.modelY = clamp(Number(properties.modely.value), -1000, 1000);
     }
+    if (properties.modelrotation) {
+      patch.modelRotation = clamp(Number(properties.modelrotation.value), 0, 360);
+    }
     if (properties.panelscale) {
       patch.panelScale = clamp(Number(properties.panelscale.value), 0.6, 1.4);
     }
@@ -637,6 +646,9 @@ export class WallpaperEngineAdapter {
     }
     if (patch.modelX !== undefined) this.sessionCustomPositionSettings.modelX = patch.modelX;
     if (patch.modelY !== undefined) this.sessionCustomPositionSettings.modelY = patch.modelY;
+    if (patch.modelRotation !== undefined) {
+      this.sessionCustomPositionSettings.modelRotation = patch.modelRotation;
+    }
     if (patch.panelScale !== undefined) {
       this.sessionCustomPanelPositionSettings.panelScale = patch.panelScale;
     }

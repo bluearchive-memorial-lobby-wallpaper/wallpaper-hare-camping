@@ -134,6 +134,7 @@ const expectedPropertyOrder = [
   "modelscale",
   "modelx",
   "modely",
+  "modelrotation",
   "interactionpreset",
   "introanimation",
   "interactions",
@@ -168,6 +169,15 @@ const actualPropertyOrder = Object.entries(frozenDefaults)
   .map(([key]) => key);
 if (JSON.stringify(actualPropertyOrder) !== JSON.stringify(expectedPropertyOrder)) {
   throw new Error("Grouped property order does not match the approved layout");
+}
+if (
+  frozenDefaults.modelrotation.type !== "slider" ||
+  frozenDefaults.modelrotation.min !== 0 ||
+  frozenDefaults.modelrotation.max !== 360 ||
+  frozenDefaults.modelrotation.value !== 0 ||
+  frozenDefaults.modelrotation.condition !== "positionpreset.value == 'custom'"
+) {
+  throw new Error("Model rotation property schema is invalid");
 }
 if (
   frozenDefaults.muted.type !== "bool" ||

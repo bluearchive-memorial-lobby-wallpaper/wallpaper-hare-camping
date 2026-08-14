@@ -44,6 +44,7 @@ export interface PanelText {
   modelScale: string;
   modelX: string;
   modelY: string;
+  modelRotation: string;
   animationAndInteractions: string;
   introAnimation: string;
   interactiveActions: string;
@@ -139,6 +140,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     modelScale: "模型缩放",
     modelX: "模型 X",
     modelY: "模型 Y",
+    modelRotation: "模型旋转",
     animationAndInteractions: "动画与互动",
     introAnimation: "入场动画",
     interactiveActions: "交互动作",
@@ -232,6 +234,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     modelScale: "Model scale",
     modelX: "Model X",
     modelY: "Model Y",
+    modelRotation: "Model rotation",
     animationAndInteractions: "Animation & Interactions",
     introAnimation: "Intro animation",
     interactiveActions: "Interactive actions",

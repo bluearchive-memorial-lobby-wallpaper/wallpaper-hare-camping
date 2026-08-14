@@ -86,6 +86,8 @@ export class App {
   private readonly modelXOutput: HTMLOutputElement;
   private readonly modelYSlider: HTMLInputElement;
   private readonly modelYOutput: HTMLOutputElement;
+  private readonly modelRotationSlider: HTMLInputElement;
+  private readonly modelRotationOutput: HTMLOutputElement;
   private readonly interactionPresetSelect: HTMLSelectElement;
   private readonly interactionCustomControls: HTMLElement;
   private readonly interactionDependentControls: HTMLElement;
@@ -246,6 +248,14 @@ export class App {
     this.modelXOutput = this.getElement("debug-model-x-output", HTMLOutputElement);
     this.modelYSlider = this.getElement("debug-model-y", HTMLInputElement);
     this.modelYOutput = this.getElement("debug-model-y-output", HTMLOutputElement);
+    this.modelRotationSlider = this.getElement(
+      "debug-model-rotation",
+      HTMLInputElement,
+    );
+    this.modelRotationOutput = this.getElement(
+      "debug-model-rotation-output",
+      HTMLOutputElement,
+    );
     this.interactionPresetSelect = this.getElement(
       "debug-interaction-preset",
       HTMLSelectElement,
@@ -908,6 +918,11 @@ export class App {
     this.modelYSlider.addEventListener("input", () =>
       this.adapter.setUserPropertiesForDebug({ modely: Number(this.modelYSlider.value) }),
     );
+    this.modelRotationSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        modelrotation: Number(this.modelRotationSlider.value),
+      }),
+    );
     this.interactionPresetSelect.addEventListener("change", () =>
       this.adapter.setUserPropertiesForDebug({
         interactionpreset: this.interactionPresetSelect.value,
@@ -1104,6 +1119,8 @@ export class App {
     this.modelXOutput.value = String(settings.modelX);
     this.modelYSlider.value = String(settings.modelY);
     this.modelYOutput.value = String(settings.modelY);
+    this.modelRotationSlider.value = String(settings.modelRotation);
+    this.modelRotationOutput.value = `${settings.modelRotation}°`;
     this.interactionPresetSelect.value = settings.interactionPreset;
     this.interactionCustomControls.hidden = !visibility.interactionCustom;
     this.introAnimationCheckbox.checked = settings.introAnimation;
@@ -1424,7 +1441,7 @@ export class App {
       geometry.head.y,
       geometry.head.radiusX,
       geometry.head.radiusY,
-      0,
+      geometry.head.rotation,
       0,
       Math.PI * 2,
     );
@@ -1436,7 +1453,7 @@ export class App {
       geometry.body.y,
       geometry.body.radiusX,
       geometry.body.radiusY,
-      0,
+      geometry.body.rotation,
       0,
       Math.PI * 2,
     );

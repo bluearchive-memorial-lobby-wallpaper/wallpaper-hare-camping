@@ -14,6 +14,7 @@ export interface PositionPresetSettings {
   modelScale: number;
   modelX: number;
   modelY: number;
+  modelRotation: number;
 }
 
 export interface PanelPositionPresetSettings {
@@ -48,7 +49,7 @@ export interface DebugPresetSettings {
 }
 
 export const POSITION_PRESETS: Record<"default", PositionPresetSettings> = {
-  default: { modelScale: 0.8, modelX: 0, modelY: 0 },
+  default: { modelScale: 0.8, modelX: 0, modelY: 0, modelRotation: 0 },
 };
 
 export const PANEL_POSITION_PRESETS: Record<

@@ -3,6 +3,11 @@ import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import type { ModelResolution } from "../settings/modelResolution";
 import { resetAndApplyPlaybackPose } from "./resetPlaybackPose";
+import {
+  createModelRotationMatrix,
+  modelRotationRadians,
+  rotateModelPoint,
+} from "./modelTransform";
 import { calculateViewportLayout } from "./viewportLayout";
 
 export type InteractionMode = "intro" | "idle" | "dialogue" | "look" | "pat" | "cooldown";
@@ -71,8 +76,8 @@ const TRACK_ENTRY_VALUES = [
 ] as const;
 
 export interface InteractionGeometry {
-  head: { x: number; y: number; radiusX: number; radiusY: number };
-  body: { x: number; y: number; radiusX: number; radiusY: number };
+  head: { x: number; y: number; radiusX: number; radiusY: number; rotation: number };
+  body: { x: number; y: number; radiusX: number; radiusY: number; rotation: number };
 }
 
 const STRAIGHT_ALPHA_SCREEN_UNIFORM = "u_premultiplyStraightAlpha";
@@ -85,6 +90,7 @@ export class SpineRenderer {
   private shader: any;
   private batcher: any;
   private readonly mvp: any;
+  private readonly modelTransform: any;
   private skeletonRenderer: any;
   private assetManager: any;
   private spineData?: SpineData;
@@ -141,6 +147,7 @@ export class SpineRenderer {
     this.gl = context;
     this.installSpine38ScreenBlendFix();
     this.mvp = new this.spine.webgl.Matrix4();
+    this.modelTransform = new this.spine.webgl.Matrix4();
     this.createGraphicsResources();
     this.assetManager = new this.spine.webgl.AssetManager(context);
     this.canvas.addEventListener("webglcontextlost", this.handleContextLost);
@@ -509,24 +516,34 @@ export class SpineRenderer {
     const data = this.spineData;
     if (!data) return null;
     const headWorld = { x: data.headAnchorBone.worldX, y: data.headAnchorBone.worldY };
-    const head = this.worldToCanvas(headWorld.x, headWorld.y);
+    const modelRotation = this.settings?.modelRotation ?? 0;
+    const pivot = {
+      x: MODEL.designViewport.centerX,
+      y: MODEL.designViewport.centerY,
+    };
+    const rotatedHeadWorld = rotateModelPoint(headWorld, modelRotation, pivot);
+    const head = this.worldToCanvas(rotatedHeadWorld.x, rotatedHeadWorld.y);
     const bodyWorld = {
       x: headWorld.x + MODEL.interaction.bodyFromHead.x,
       y: headWorld.y + MODEL.interaction.bodyFromHead.y,
     };
-    const body = this.worldToCanvas(bodyWorld.x, bodyWorld.y);
+    const rotatedBodyWorld = rotateModelPoint(bodyWorld, modelRotation, pivot);
+    const body = this.worldToCanvas(rotatedBodyWorld.x, rotatedBodyWorld.y);
     const scaleX = this.viewport.width / this.worldRect.width;
     const scaleY = this.viewport.height / this.worldRect.height;
+    const canvasRotation = -modelRotationRadians(modelRotation);
     return {
       head: {
         ...head,
         radiusX: MODEL.interaction.headRadius.x * scaleX,
         radiusY: MODEL.interaction.headRadius.y * scaleY,
+        rotation: canvasRotation,
       },
       body: {
         ...body,
         radiusX: MODEL.interaction.bodyFromHead.radiusX * scaleX,
         radiusY: MODEL.interaction.bodyFromHead.radiusY * scaleY,
+        rotation: canvasRotation,
       },
     };
   }
@@ -595,6 +612,13 @@ export class SpineRenderer {
       worldRect.width,
       worldRect.height,
     );
+    this.modelTransform.set(
+      createModelRotationMatrix(this.settings?.modelRotation ?? 0, {
+        x: MODEL.designViewport.centerX,
+        y: MODEL.designViewport.centerY,
+      }),
+    );
+    this.mvp.multiply(this.modelTransform);
     this.gl.viewport(0, 0, pixelWidth, pixelHeight);
     this.viewport = {
       width: cssWidth,
@@ -795,10 +819,22 @@ export class SpineRenderer {
   private insideEllipse(
     x: number,
     y: number,
-    ellipse: { x: number; y: number; radiusX: number; radiusY: number },
+    ellipse: {
+      x: number;
+      y: number;
+      radiusX: number;
+      radiusY: number;
+      rotation: number;
+    },
   ) {
-    const normalizedX = (x - ellipse.x) / ellipse.radiusX;
-    const normalizedY = (y - ellipse.y) / ellipse.radiusY;
+    const deltaX = x - ellipse.x;
+    const deltaY = y - ellipse.y;
+    const cosine = Math.cos(-ellipse.rotation);
+    const sine = Math.sin(-ellipse.rotation);
+    const localX = cosine * deltaX - sine * deltaY;
+    const localY = sine * deltaX + cosine * deltaY;
+    const normalizedX = localX / ellipse.radiusX;
+    const normalizedY = localY / ellipse.radiusY;
     return normalizedX * normalizedX + normalizedY * normalizedY <= 1;
   }
 
