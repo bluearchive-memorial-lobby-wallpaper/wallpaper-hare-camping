@@ -1,4 +1,4 @@
-import { MODEL } from "../config";
+import type { InteractionDefinition } from "ba-memorylobby-wallpaper-runtime";
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 import type { SpineRenderer } from "../spine/SpineRenderer";
 import {
@@ -24,6 +24,7 @@ export class PointerInteractionController {
   private readonly canvas: HTMLCanvasElement;
   private readonly renderer: SpineRenderer;
   private readonly callbacks: PointerInteractionCallbacks;
+  private readonly dragThresholdPixels: number;
   private settings?: Readonly<WallpaperSettings>;
   private active?: {
     id: number;
@@ -37,10 +38,14 @@ export class PointerInteractionController {
   constructor(
     canvas: HTMLCanvasElement,
     renderer: SpineRenderer,
+    interaction: Pick<InteractionDefinition, "dragThresholdPixels"> & {
+      readonly dragThresholdPixels: number;
+    },
     callbacks: PointerInteractionCallbacks,
   ) {
     this.canvas = canvas;
     this.renderer = renderer;
+    this.dragThresholdPixels = interaction.dragThresholdPixels;
     this.callbacks = callbacks;
     canvas.addEventListener("pointerdown", this.onPointerDown);
     canvas.addEventListener("pointermove", this.onPointerMove);
@@ -115,7 +120,7 @@ export class PointerInteractionController {
         event.clientX - active.startX,
         event.clientY - active.startY,
       );
-      if (distance >= MODEL.interaction.dragThresholdPixels && this.renderer.beginLook()) {
+      if (distance >= this.dragThresholdPixels && this.renderer.beginLook()) {
         active.intent = "look";
         this.canvas.dataset.pointerIntent = "look";
       }
