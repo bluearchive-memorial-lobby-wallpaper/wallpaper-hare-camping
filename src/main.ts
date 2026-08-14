@@ -1,4 +1,4 @@
-import "./style.css";
+import "ba-memorylobby-wallpaper-runtime/style.css";
 import { App } from "ba-memorylobby-wallpaper-runtime";
 import { findDialogueLine, WALLPAPER_DEFINITION } from "./config";
 import { wallpaperLogger } from "./logging/WallpaperLogger";

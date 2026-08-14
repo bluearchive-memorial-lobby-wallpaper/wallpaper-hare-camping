@@ -113,7 +113,10 @@ assert(
     sourceHtml.indexOf('id="status-error"'),
   "The log viewer must be outside the debug panel surface",
 );
-const sourceCss = await readFile(path.resolve("src", "style.css"), "utf8");
+const sourceCss = await readFile(
+  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "styles", "wallpaper.css"),
+  "utf8",
+);
 const independentViewerRule = sourceCss.match(/\.wallpaper-log-viewer\s*\{([^}]*)\}/)?.[1];
 assert(independentViewerRule?.includes("position: absolute"));
 assert(independentViewerRule?.includes("top: 50%"));
