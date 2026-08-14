@@ -11,7 +11,9 @@ const server = await createServer({
 });
 
 try {
-  const { DIALOGUES } = await server.ssrLoadModule("/src/config.ts");
+  const { DIALOGUES, WALLPAPER_DEFINITION } = await server.ssrLoadModule(
+    "/src/config.ts",
+  );
   const {
     applySubtitleLayout,
     isSubtitleAlignment,
@@ -19,6 +21,9 @@ try {
     resolveSubtitlePresentation,
   } = await import("ba-memorylobby-wallpaper-runtime");
   const eventId = "CH0233_MemorialLobby_1_1";
+  assert.equal(WALLPAPER_DEFINITION.id, "blue-archive-hare-camping");
+  assert.equal(WALLPAPER_DEFINITION.dialogues.length, DIALOGUES.length);
+  assert.equal(WALLPAPER_DEFINITION.audio.bgm.title, "Starry Confession");
   const linesById = new Map(
     DIALOGUES.flatMap((dialogue) =>
       dialogue.lines.map((line) => [line.id.toLowerCase(), line]),
