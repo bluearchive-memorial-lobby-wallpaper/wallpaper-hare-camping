@@ -20,6 +20,7 @@
     "ba-memorylobby-wallpaper-runtime": "file:../ba-memorylobby-wallpaper-runtime"
   },
   "devDependencies": {
+    "ba-memorylobby-wallpaper-toolkit": "file:../ba-memorylobby-wallpaper-toolkit",
     "typescript": "7.0.2",
     "vite": "8.2.1"
   }
