@@ -1,3 +1,9 @@
+import {
+  assertWallpaperDefinition,
+  createDialogueLineResolver,
+  defineWallpaper,
+} from "ba-memorylobby-wallpaper-runtime";
+
 export type VoiceLocale = "ja" | "zh-cn" | "ko";
 export type SubtitleLocale = "zh-cn" | "ja" | "ko" | "en";
 
@@ -194,14 +200,62 @@ export const DIALOGUES: readonly DialogueDefinition[] = [
   },
 ] as const;
 
-const dialogueLines = new Map(
-  DIALOGUES.flatMap((dialogue) => dialogue.lines.map((line) => [line.id.toLowerCase(), line])),
-);
-
-export function findDialogueLine(eventId: string): DialogueLine | undefined {
-  return dialogueLines.get(eventId.toLowerCase());
-}
-
 export function voicePath(eventId: string, locale: VoiceLocale): string {
   return `./assets/hare-camping/audio/${locale}/${eventId.toLowerCase()}.ogg`;
 }
+
+export const WALLPAPER_DEFINITION = defineWallpaper({
+  schemaVersion: 1,
+  id: "blue-archive-hare-camping",
+  model: {
+    binary: MODEL.binary,
+    atlases: MODEL.atlases,
+    spineVersion: MODEL.spineVersion,
+    designViewport: MODEL.designViewport,
+  },
+  animations: {
+    intro: MODEL.introAnimation,
+    idle: MODEL.idleAnimation,
+    tracks: MODEL.tracks,
+  },
+  interactions: {
+    eyeBone: MODEL.interaction.eyeBone,
+    headControlBone: MODEL.interaction.headControlBone,
+    headAnchorBone: MODEL.interaction.headAnchorBone,
+    look: {
+      animation: MODEL.interaction.lookAnimation,
+      endMotionAnimation: MODEL.interaction.lookEndMotionAnimation,
+      endAttachmentAnimation: MODEL.interaction.lookEndAttachmentAnimation,
+    },
+    pat: {
+      motionAnimation: MODEL.interaction.patMotionAnimation,
+      attachmentAnimation: MODEL.interaction.patAttachmentAnimation,
+      endMotionAnimation: MODEL.interaction.patEndMotionAnimation,
+      endAttachmentAnimation: MODEL.interaction.patEndAttachmentAnimation,
+    },
+    headRadius: MODEL.interaction.headRadius,
+    bodyFromHead: MODEL.interaction.bodyFromHead,
+    eyeClamp: MODEL.interaction.eyeClamp,
+    patClamp: MODEL.interaction.patClamp,
+    dragThresholdPixels: MODEL.interaction.dragThresholdPixels,
+    cooldownSeconds: MODEL.interaction.cooldownSeconds,
+    dialogueGraceSeconds: MODEL.interaction.dialogueGraceSeconds,
+  },
+  dialogues: DIALOGUES.map((dialogue) => ({
+    index: dialogue.index,
+    motionAnimation: dialogue.motionAnimation,
+    attachmentAnimation: dialogue.attachmentAnimation,
+    durationSeconds: dialogue.duration,
+    lines: dialogue.lines,
+  })),
+  audio: {
+    bgm: BGM,
+    voicePath,
+  },
+});
+
+assertWallpaperDefinition(WALLPAPER_DEFINITION);
+
+export const findDialogueLine = createDialogueLineResolver(
+  WALLPAPER_DEFINITION.dialogues,
+);
