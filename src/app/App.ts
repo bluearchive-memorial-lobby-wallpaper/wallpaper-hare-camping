@@ -19,6 +19,9 @@ import {
   didInteractionSettingsChange,
   DebugPanelPointerController,
   LogViewerController,
+  WallpaperEngineAdapter,
+  resolvePropertyGroupVisibility,
+  type WallpaperSettings,
   SpineRenderer,
   type InteractionMode,
   type SpineEventDetail,
@@ -26,11 +29,6 @@ import {
   VoicePlayer,
 } from "ba-memorylobby-wallpaper-runtime";
 import { PANEL_TEXT, type PanelText } from "../i18n/panel";
-import {
-  WallpaperEngineAdapter,
-  type WallpaperSettings,
-} from "../settings/WallpaperEngineAdapter";
-import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
 import { wallpaperLogger } from "../logging/WallpaperLogger";
 
 type Phase = "booting" | "loading" | "running" | "paused" | "error";

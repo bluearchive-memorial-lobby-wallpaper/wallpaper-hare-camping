@@ -18,10 +18,10 @@ try {
     DEFAULT_SETTINGS_VERSION,
     WallpaperEngineAdapter,
   } = await server.ssrLoadModule(
-    "/src/settings/WallpaperEngineAdapter.ts",
+    "ba-memorylobby-wallpaper-runtime",
   );
   const { resolvePropertyGroupVisibility } = await server.ssrLoadModule(
-    "/src/settings/propertyGroupVisibility.ts",
+    "ba-memorylobby-wallpaper-runtime",
   );
   const { resolveDebugPanelExpanded } = await server.ssrLoadModule(
     "ba-memorylobby-wallpaper-runtime",
