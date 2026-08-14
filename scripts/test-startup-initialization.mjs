@@ -20,26 +20,26 @@ function deferred() {
 }
 
 try {
-  const { initializeStableModelResolution } = await server.ssrLoadModule(
-    "/src/app/initializeModelResolution.ts",
+  const { initializeStableResourceVariant } = await server.ssrLoadModule(
+    "ba-memorylobby-wallpaper-runtime",
   );
 
   const directCalls = [];
-  const direct = await initializeStableModelResolution({
-    getTargetResolution: () => "8k",
+  const direct = await initializeStableResourceVariant({
+    getTargetVariant: () => "8k",
     initialize: async (resolution) => directCalls.push(["initialize", resolution]),
-    switchResolution: async (resolution) => directCalls.push(["switch", resolution]),
+    switchVariant: async (resolution) => directCalls.push(["switch", resolution]),
   });
   assert.deepEqual(directCalls, [["initialize", "8k"]]);
-  assert.deepEqual(direct, { resolution: "8k", loadPasses: 1 });
+  assert.deepEqual(direct, { variant: "8k", loadPasses: 1 });
 
   let targetResolution = "2k";
   let activeLoads = 0;
   let maximumConcurrentLoads = 0;
   const initializationGate = deferred();
   const raceCalls = [];
-  const race = initializeStableModelResolution({
-    getTargetResolution: () => targetResolution,
+  const race = initializeStableResourceVariant({
+    getTargetVariant: () => targetResolution,
     initialize: async (resolution) => {
       raceCalls.push(["initialize-start", resolution]);
       activeLoads += 1;
@@ -48,7 +48,7 @@ try {
       activeLoads -= 1;
       raceCalls.push(["initialize-end", resolution]);
     },
-    switchResolution: async (resolution) => {
+    switchVariant: async (resolution) => {
       raceCalls.push(["switch", resolution]);
       activeLoads += 1;
       maximumConcurrentLoads = Math.max(maximumConcurrentLoads, activeLoads);
@@ -66,7 +66,7 @@ try {
     ["switch", "8k"],
   ]);
   assert.equal(maximumConcurrentLoads, 1);
-  assert.deepEqual(racedResult, { resolution: "8k", loadPasses: 2 });
+  assert.deepEqual(racedResult, { variant: "8k", loadPasses: 2 });
 
   const appSource = await readFile(path.join(root, "src", "app", "App.ts"), "utf8");
   assert(appSource.includes('has("testWeInterfaces")'));

@@ -8,6 +8,11 @@ import {
   type BgmStatus,
   DialoguePlaybackSequence,
   FrameLimiter,
+  initializeStableResourceVariant,
+  isQualityPreset,
+  MODEL_RESOLUTIONS,
+  RENDER_RESOLUTIONS,
+  resolveDebugPanelExpanded,
   SubtitlePresenter,
   VoicePlayer,
 } from "ba-memorylobby-wallpaper-runtime";
@@ -22,15 +27,10 @@ import {
   WallpaperEngineAdapter,
   type WallpaperSettings,
 } from "../settings/WallpaperEngineAdapter";
-import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
-import { MODEL_RESOLUTIONS } from "../settings/modelResolution";
-import { isQualityPreset } from "../settings/qualityPreset";
 import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
 import { wallpaperLogger } from "../logging/WallpaperLogger";
 import { DebugPanelPointerController } from "./DebugPanelPointerController";
 import { LogViewerController } from "./LogViewerController";
-import { resolveDebugPanelExpanded } from "./debugPanelVisibility";
-import { initializeStableModelResolution } from "./initializeModelResolution";
 import {
   SpineRenderer,
   type InteractionMode,
@@ -574,13 +574,13 @@ export class App {
         onError: (error) => this.fail(error),
       });
       const modelInitializationStartedAt = performance.now();
-      const initialModel = await initializeStableModelResolution({
-        getTargetResolution: () => this.adapter.current.modelResolution,
+      const initialModel = await initializeStableResourceVariant({
+        getTargetVariant: () => this.adapter.current.modelResolution,
         initialize: (resolution) => this.renderer!.initialize(resolution),
-        switchResolution: (resolution) =>
+        switchVariant: (resolution) =>
           this.renderer!.setModelResolution(resolution),
       });
-      this.root.dataset.initialModelResolution = initialModel.resolution;
+      this.root.dataset.initialModelResolution = initialModel.variant;
       this.root.dataset.initialModelLoadPasses = String(initialModel.loadPasses);
       this.root.dataset.initialModelLoadMs = String(
         Number((performance.now() - modelInitializationStartedAt).toFixed(1)),
@@ -643,7 +643,7 @@ export class App {
       );
       wallpaperLogger.info("lifecycle", "application startup completed", {
         startupMilliseconds: Number((performance.now() - startupStartedAt).toFixed(1)),
-        modelResolution: initialModel.resolution,
+        modelResolution: initialModel.variant,
         modelLoadPasses: initialModel.loadPasses,
       });
       this.lastFrameTime = performance.now() / 1000;
