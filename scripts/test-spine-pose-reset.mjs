@@ -12,7 +12,7 @@ const server = await createServer({
 
 try {
   const { resetAndApplyPlaybackPose } = await server.ssrLoadModule(
-    "/src/spine/resetPlaybackPose.ts",
+    "ba-memorylobby-wallpaper-runtime",
   );
   const calls = [];
   const skeleton = {

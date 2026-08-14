@@ -2,13 +2,13 @@ import {
   calculateViewportLayout,
   createModelRotationMatrix,
   modelRotationRadians,
+  RENDER_RESOLUTIONS,
+  resetAndApplyPlaybackPose,
   rotateModelPoint,
   type InteractiveWallpaperDefinition,
+  type ModelResolution,
 } from "ba-memorylobby-wallpaper-runtime";
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
-import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
-import type { ModelResolution } from "../settings/modelResolution";
-import { resetAndApplyPlaybackPose } from "./resetPlaybackPose";
 
 export type InteractionMode = "intro" | "idle" | "dialogue" | "look" | "pat" | "cooldown";
 export type HitRegion = "head" | "body" | "background";
