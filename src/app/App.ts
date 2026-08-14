@@ -1,11 +1,18 @@
-import { DIALOGUES, type VoiceLocale } from "../config";
 import {
+  BGM,
+  DIALOGUES,
+  findDialogueLine,
+  voicePath,
+  type VoiceLocale,
+} from "../config";
+import {
+  BgmPlayer,
+  type BgmStatus,
   DialoguePlaybackSequence,
   FrameLimiter,
+  SubtitlePresenter,
+  VoicePlayer,
 } from "ba-memorylobby-wallpaper-runtime";
-import { BgmPlayer, type BgmStatus } from "../audio/BgmPlayer";
-import { VoicePlayer } from "../audio/VoicePlayer";
-import { SubtitlePresenter } from "../dialogue/SubtitlePresenter";
 import { PANEL_TEXT, type PanelText } from "../i18n/panel";
 import { PointerInteractionController } from "../interaction/PointerInteractionController";
 import {
@@ -403,8 +410,10 @@ export class App {
       this.getElement("subtitle", HTMLElement),
       this.getElement("subtitle-primary", HTMLElement),
       this.getElement("subtitle-secondary", HTMLElement),
+      findDialogueLine,
+      { primaryLocale: "zh-cn", secondaryLocale: "ja" },
     );
-    this.voice = new VoicePlayer({
+    this.voice = new VoicePlayer(voicePath, {
       onEnded: (eventId) => this.subtitle.hide(eventId),
       onError: (message) => {
         console.warn(message);
@@ -412,7 +421,7 @@ export class App {
         this.eventLabel.textContent = "audio-error";
       },
     });
-    this.bgm = new BgmPlayer({
+    this.bgm = new BgmPlayer(BGM, {
       onStatusChange: (status) => this.updateBgmLabel(status),
       onError: (message) => {
         console.warn(message);
