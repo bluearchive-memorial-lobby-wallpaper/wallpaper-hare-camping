@@ -10,6 +10,7 @@
     "test:fps": "node scripts/test-frame-limiter.mjs",
     "test:display": "node scripts/test-display-layout.mjs",
     "test:dialogue": "node scripts/test-dialogue-playback.mjs",
+    "test:interaction": "node scripts/test-pointer-interaction.mjs",
     "test:subtitle": "node scripts/test-subtitle-presenter.mjs",
     "test:pose": "node scripts/test-spine-pose-reset.mjs",
     "test:settings": "node scripts/test-settings-adapter.mjs",
