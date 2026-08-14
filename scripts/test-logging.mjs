@@ -91,7 +91,7 @@ assert.equal(loggerSource.includes("new Blob"), false);
 assert.equal(loggerSource.includes("document.getElementById"), false);
 assert(loggerSource.includes("getSessionSnapshot"));
 const viewerControllerSource = await readFile(
-  path.resolve("src", "app", "LogViewerController.ts"),
+  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "debug-ui", "LogViewerController.ts"),
   "utf8",
 );
 assert(viewerControllerSource.includes("class LogViewerController"));
@@ -184,7 +184,7 @@ try {
 }
 
 const pointerControllerSource = await readFile(
-  path.resolve("src", "app", "DebugPanelPointerController.ts"),
+  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "debug-ui", "DebugPanelPointerController.ts"),
   "utf8",
 );
 assert(pointerControllerSource.includes("trackPointerHandlers"));

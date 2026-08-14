@@ -17,6 +17,8 @@ import {
   canTriggerDialogue,
   didDialogueSettingChange,
   didInteractionSettingsChange,
+  DebugPanelPointerController,
+  LogViewerController,
   SpineRenderer,
   type InteractionMode,
   type SpineEventDetail,
@@ -30,8 +32,6 @@ import {
 } from "../settings/WallpaperEngineAdapter";
 import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
 import { wallpaperLogger } from "../logging/WallpaperLogger";
-import { DebugPanelPointerController } from "./DebugPanelPointerController";
-import { LogViewerController } from "./LogViewerController";
 
 type Phase = "booting" | "loading" | "running" | "paused" | "error";
 
