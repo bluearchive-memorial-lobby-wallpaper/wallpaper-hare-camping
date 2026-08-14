@@ -88,9 +88,30 @@ assert.equal(loggerSource.includes("showModal()"), false);
 assert.equal(loggerSource.includes("scrollHeight"), false);
 assert.equal(loggerSource.includes("createObjectURL"), false);
 assert.equal(loggerSource.includes("new Blob"), false);
+assert.equal(loggerSource.includes("document.getElementById"), false);
+assert(loggerSource.includes("getSessionSnapshot"));
+const viewerControllerSource = await readFile(
+  path.resolve("src", "app", "LogViewerController.ts"),
+  "utf8",
+);
+assert(viewerControllerSource.includes("class LogViewerController"));
+assert(viewerControllerSource.includes("viewer.hidden = false"));
 const sourceHtml = await readFile(path.resolve("index.html"), "utf8");
 assert(sourceHtml.includes('id="wallpaper-log-viewer"'));
 assert(sourceHtml.includes('id="wallpaper-log-viewer-content"'));
+assert(sourceHtml.includes('<pre id="wallpaper-log-viewer-content"'));
+assert.equal(sourceHtml.includes('<textarea id="wallpaper-log-viewer-content"'), false);
+assert.equal(sourceHtml.includes('<select id="wallpaper-log-viewer-session"'), false);
+assert(sourceHtml.includes("wallpaper-log-viewer--independent"));
+assert(
+  sourceHtml.indexOf('id="wallpaper-log-viewer"') >
+    sourceHtml.indexOf('id="status-error"'),
+  "The log viewer must be outside the debug panel surface",
+);
+const sourceCss = await readFile(path.resolve("src", "style.css"), "utf8");
+const independentViewerRule = sourceCss.match(/\.wallpaper-log-viewer\s*\{([^}]*)\}/)?.[1];
+assert(independentViewerRule?.includes("position: absolute"));
+assert.equal(independentViewerRule?.includes("backdrop-filter"), false);
 
 const sessionFile = "2026-08-14_12-34-56-789_test01.log";
 const output = path.resolve("dist", "log", sessionFile);

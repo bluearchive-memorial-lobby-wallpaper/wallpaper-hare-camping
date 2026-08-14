@@ -44,28 +44,6 @@
             <button id="debug-restore-host-settings" type="button" data-panel-text="restoreHostSettings">恢复 WE 设置</button>
           </div>
 
-          <section id="wallpaper-log-viewer" class="wallpaper-log-viewer" aria-label="壁纸日志" hidden>
-            <header>
-              <strong id="wallpaper-log-viewer-title">壁纸日志</strong>
-              <button id="wallpaper-log-viewer-close" type="button">关闭</button>
-            </header>
-            <label class="wallpaper-log-viewer__session-label" for="wallpaper-log-viewer-session">
-              <span id="wallpaper-log-viewer-session-label">日志会话</span>
-              <select id="wallpaper-log-viewer-session"></select>
-            </label>
-            <p id="wallpaper-log-viewer-notice" class="wallpaper-log-viewer__notice" hidden></p>
-            <div class="wallpaper-log-viewer__scroll-shell">
-              <textarea id="wallpaper-log-viewer-content" readonly wrap="off" spellcheck="false" aria-label="日志内容"></textarea>
-              <div id="wallpaper-log-scrollbar" class="debug-scrollbar debug-scrollbar--embedded" aria-hidden="true" hidden>
-                <div id="wallpaper-log-scrollbar-thumb" class="debug-scrollbar__thumb"></div>
-              </div>
-              <div id="wallpaper-log-scrollbar-horizontal" class="debug-scrollbar debug-scrollbar--horizontal" aria-hidden="true" hidden>
-                <div id="wallpaper-log-scrollbar-horizontal-thumb" class="debug-scrollbar__thumb"></div>
-              </div>
-            </div>
-            <p id="wallpaper-log-viewer-copy-hint" class="wallpaper-log-viewer__copy-hint">只读日志；可使用 Ctrl+A、Ctrl+C 复制。</p>
-          </section>
-
           <div class="status-panel__property-groups">
             <fieldset class="status-panel__property-group">
               <legend><button class="status-panel__property-group-toggle" type="button" aria-expanded="true"><span data-panel-text="panelSettings">面板设置</span></button></legend>
@@ -366,6 +344,29 @@
           </div>
         </div>
         <p id="status-error" class="status-panel__error" hidden></p>
+      </section>
+
+      <section id="wallpaper-log-viewer" class="wallpaper-log-viewer wallpaper-log-viewer--independent" aria-label="壁纸日志" hidden>
+        <header>
+          <strong id="wallpaper-log-viewer-title">壁纸日志</strong>
+          <button id="wallpaper-log-viewer-close" type="button">关闭</button>
+        </header>
+        <div class="wallpaper-log-viewer__session-nav" aria-label="日志会话">
+          <button id="wallpaper-log-viewer-previous-session" type="button" aria-label="上一份日志">‹</button>
+          <span id="wallpaper-log-viewer-session-label">日志会话</span>
+          <button id="wallpaper-log-viewer-next-session" type="button" aria-label="下一份日志">›</button>
+        </div>
+        <p id="wallpaper-log-viewer-notice" class="wallpaper-log-viewer__notice" hidden></p>
+        <div class="wallpaper-log-viewer__scroll-shell">
+          <pre id="wallpaper-log-viewer-content" tabindex="0" aria-label="日志内容"></pre>
+          <div id="wallpaper-log-scrollbar" class="debug-scrollbar debug-scrollbar--embedded" aria-hidden="true" hidden>
+            <div id="wallpaper-log-scrollbar-thumb" class="debug-scrollbar__thumb"></div>
+          </div>
+          <div id="wallpaper-log-scrollbar-horizontal" class="debug-scrollbar debug-scrollbar--horizontal" aria-hidden="true" hidden>
+            <div id="wallpaper-log-scrollbar-horizontal-thumb" class="debug-scrollbar__thumb"></div>
+          </div>
+        </div>
+        <p id="wallpaper-log-viewer-copy-hint" class="wallpaper-log-viewer__copy-hint">只读日志；可使用 Ctrl+A、Ctrl+C 复制。</p>
       </section>
 
       <div id="debug-panel-scrollbar" class="debug-scrollbar debug-scrollbar--fixed" aria-hidden="true" hidden>

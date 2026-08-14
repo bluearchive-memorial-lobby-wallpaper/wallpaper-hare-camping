@@ -543,6 +543,8 @@ if (builtJs.includes(".showModal(")) {
 if (
   builtJs.includes("createObjectURL") ||
   !builtHtml.includes('id="wallpaper-log-viewer-content"') ||
+  !builtHtml.includes('<pre id="wallpaper-log-viewer-content"') ||
+  !builtHtml.includes("wallpaper-log-viewer--independent") ||
   !builtHtml.includes('id="wallpaper-log-scrollbar"') ||
   !builtHtml.includes('id="wallpaper-log-scrollbar-horizontal"') ||
   !builtHtml.includes('id="debug-panel-scrollbar"')

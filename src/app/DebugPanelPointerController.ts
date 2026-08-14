@@ -4,6 +4,7 @@ interface ScrollbarBinding {
   thumb: HTMLElement;
   axis: "vertical" | "horizontal";
   fixedToViewport: boolean;
+  isVisible: () => boolean;
 }
 
 type ActiveDrag =
@@ -32,7 +33,8 @@ export class DebugPanelPointerController {
     panel: HTMLElement;
     panelScrollbar: HTMLElement;
     panelScrollbarThumb: HTMLElement;
-    logViewport: HTMLTextAreaElement;
+    logViewer: HTMLElement;
+    logViewport: HTMLElement;
     logScrollbar: HTMLElement;
     logScrollbarThumb: HTMLElement;
     logHorizontalScrollbar: HTMLElement;
@@ -46,6 +48,7 @@ export class DebugPanelPointerController {
         thumb: options.panelScrollbarThumb,
         axis: "vertical",
         fixedToViewport: true,
+        isVisible: () => options.panel.classList.contains("status-panel--visible"),
       },
       {
         viewport: options.logViewport,
@@ -53,6 +56,7 @@ export class DebugPanelPointerController {
         thumb: options.logScrollbarThumb,
         axis: "vertical",
         fixedToViewport: false,
+        isVisible: () => !options.logViewer.hidden,
       },
       {
         viewport: options.logViewport,
@@ -60,6 +64,7 @@ export class DebugPanelPointerController {
         thumb: options.logHorizontalScrollbarThumb,
         axis: "horizontal",
         fixedToViewport: false,
+        isVisible: () => !options.logViewer.hidden,
       },
     ];
 
@@ -80,6 +85,7 @@ export class DebugPanelPointerController {
 
     this.resizeObserver = new ResizeObserver(this.scheduleRefresh);
     this.resizeObserver.observe(this.panel);
+    this.resizeObserver.observe(options.logViewer);
     this.resizeObserver.observe(options.logViewport);
     this.refresh();
   }
@@ -88,6 +94,10 @@ export class DebugPanelPointerController {
     cancelAnimationFrame(this.refreshRequest);
     this.refreshRequest = 0;
     for (const binding of this.scrollbars) this.refreshScrollbar(binding);
+  }
+
+  requestRefresh() {
+    this.scheduleRefresh();
   }
 
   dispose() {
@@ -246,9 +256,8 @@ export class DebugPanelPointerController {
       ? binding.viewport.scrollWidth
       : binding.viewport.scrollHeight;
     const maxScroll = Math.max(scrollLength - viewportLength, 0);
-    const panelVisible = this.panel.classList.contains("status-panel--visible");
     const viewportVisible = viewportRect.width > 0 && viewportRect.height > 0;
-    binding.track.hidden = !panelVisible || !viewportVisible || maxScroll <= 1;
+    binding.track.hidden = !binding.isVisible() || !viewportVisible || maxScroll <= 1;
     if (binding.track.hidden) return;
 
     if (binding.fixedToViewport) {

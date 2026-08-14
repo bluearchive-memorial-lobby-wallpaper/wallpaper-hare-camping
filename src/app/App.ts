@@ -21,6 +21,7 @@ import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibil
 import { FrameLimiter } from "../render/FrameLimiter";
 import { wallpaperLogger } from "../logging/WallpaperLogger";
 import { DebugPanelPointerController } from "./DebugPanelPointerController";
+import { LogViewerController } from "./LogViewerController";
 import { resolveDebugPanelExpanded } from "./debugPanelVisibility";
 import { initializeStableModelResolution } from "./initializeModelResolution";
 import {
@@ -126,6 +127,7 @@ export class App {
   private readonly hitboxesButton: HTMLButtonElement;
   private readonly restoreHostSettingsButton: HTMLButtonElement;
   private readonly debugPanelPointerController: DebugPanelPointerController;
+  private readonly logViewerController: LogViewerController;
   private readonly propertyGroupToggleButtons: readonly HTMLButtonElement[];
   private readonly subgroupToggleButtons: readonly HTMLButtonElement[];
   private readonly adapter = new WallpaperEngineAdapter();
@@ -405,6 +407,11 @@ export class App {
         this.eventLabel.textContent = "bgm-error";
       },
     });
+    const logViewer = this.getElement("wallpaper-log-viewer", HTMLElement);
+    const logViewport = this.getElement(
+      "wallpaper-log-viewer-content",
+      HTMLPreElement,
+    );
     this.debugPanelPointerController = new DebugPanelPointerController({
       panel: this.statusPanel,
       panelScrollbar: this.getElement("debug-panel-scrollbar", HTMLElement),
@@ -412,10 +419,8 @@ export class App {
         "debug-panel-scrollbar-thumb",
         HTMLElement,
       ),
-      logViewport: this.getElement(
-        "wallpaper-log-viewer-content",
-        HTMLTextAreaElement,
-      ),
+      logViewer,
+      logViewport,
       logScrollbar: this.getElement("wallpaper-log-scrollbar", HTMLElement),
       logScrollbarThumb: this.getElement(
         "wallpaper-log-scrollbar-thumb",
@@ -429,6 +434,39 @@ export class App {
         "wallpaper-log-scrollbar-horizontal-thumb",
         HTMLElement,
       ),
+    });
+    this.logViewerController = new LogViewerController({
+      viewer: logViewer,
+      title: this.getElement("wallpaper-log-viewer-title", HTMLElement),
+      closeButton: this.getElement(
+        "wallpaper-log-viewer-close",
+        HTMLButtonElement,
+      ),
+      sessionLabel: this.getElement(
+        "wallpaper-log-viewer-session-label",
+        HTMLElement,
+      ),
+      previousSessionButton: this.getElement(
+        "wallpaper-log-viewer-previous-session",
+        HTMLButtonElement,
+      ),
+      nextSessionButton: this.getElement(
+        "wallpaper-log-viewer-next-session",
+        HTMLButtonElement,
+      ),
+      notice: this.getElement(
+        "wallpaper-log-viewer-notice",
+        HTMLParagraphElement,
+      ),
+      content: logViewport,
+      copyHint: this.getElement(
+        "wallpaper-log-viewer-copy-hint",
+        HTMLParagraphElement,
+      ),
+      getSnapshot: () => wallpaperLogger.getSessionSnapshot(),
+      onLayoutChange: () => this.debugPanelPointerController.requestRefresh(),
+      onInteraction: (action, details) =>
+        wallpaperLogger.info("interaction", `log viewer ${action}`, details),
     });
   }
 
@@ -742,6 +780,7 @@ export class App {
       resizeObserver.disconnect();
       document.removeEventListener("visibilitychange", this.syncPausedState);
       this.pointerController?.dispose();
+      this.logViewerController.dispose();
       this.debugPanelPointerController.dispose();
       this.removeBgmUnlockListeners();
       this.voice.stop();
@@ -806,8 +845,8 @@ export class App {
     });
     this.openLogsButton.addEventListener("click", () => {
       try {
-        wallpaperLogger.openLogs(this.settings.panelLocale);
-        this.debugPanelPointerController.refresh();
+        wallpaperLogger.info("interaction", "debug panel open logs clicked");
+        this.logViewerController.open(this.settings.panelLocale);
       } catch (error) {
         wallpaperLogger.error("error", "opening logs failed", error);
         this.eventLabel.textContent = "log-open-error";

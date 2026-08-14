@@ -360,18 +360,30 @@ body {
 }
 
 .wallpaper-log-viewer {
+  position: absolute;
+  z-index: 5;
+  top: 4.25rem;
+  right: 1.25rem;
   display: grid;
   gap: 0.55rem;
-  margin-top: 0.65rem;
+  width: min(42rem, calc(100vw - 2.5rem));
+  max-height: calc(100vh - 5.5rem);
+  box-sizing: border-box;
   padding: 0.65rem;
   color: #e8f1ff;
   border: 1px solid rgba(159, 200, 255, 0.32);
   border-radius: 0.65rem;
-  background: rgba(8, 16, 30, 0.72);
+  background: rgba(8, 16, 30, 0.94);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
 }
 
 .wallpaper-log-viewer[hidden] {
   display: none;
+}
+
+.wallpaper-log-viewer > * {
+  min-width: 0;
 }
 
 .wallpaper-log-viewer header {
@@ -382,7 +394,8 @@ body {
   padding: 0;
 }
 
-.wallpaper-log-viewer header button {
+.wallpaper-log-viewer header button,
+.wallpaper-log-viewer__session-nav button {
   padding: 0.1rem 0.45rem;
   color: inherit;
   font: inherit;
@@ -393,22 +406,20 @@ body {
   cursor: pointer;
 }
 
-.wallpaper-log-viewer__session-label {
+.wallpaper-log-viewer__session-nav {
   display: grid;
-  gap: 0.3rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
   color: #abcdf8;
   font-size: 0.75rem;
 }
 
-.wallpaper-log-viewer__session-label select {
-  width: 100%;
-  min-height: 2rem;
-  padding: 0.35rem 0.6rem;
-  color: #e8f1ff;
-  font: inherit;
-  border: 1px solid rgba(159, 200, 255, 0.38);
-  border-radius: 0.35rem;
-  background: rgba(47, 78, 121, 0.55);
+.wallpaper-log-viewer__session-nav span {
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wallpaper-log-viewer__notice {
@@ -421,25 +432,29 @@ body {
 
 .wallpaper-log-viewer__scroll-shell {
   position: relative;
+  min-width: 0;
 }
 
-.wallpaper-log-viewer textarea {
+.wallpaper-log-viewer pre {
   display: block;
   width: 100%;
-  height: 14rem;
+  height: min(24rem, calc(100vh - 14rem));
+  min-height: 10rem;
   box-sizing: border-box;
   margin: 0;
   padding: 0.65rem;
-  resize: none;
+  overflow: auto;
   color: #dceaff;
   border: 1px solid rgba(159, 200, 255, 0.2);
   border-radius: 0.35rem;
   background: rgba(2, 8, 17, 0.7);
   font: 0.78rem/1.5 Consolas, "Cascadia Mono", monospace;
   scrollbar-width: none;
+  user-select: text;
+  white-space: pre;
 }
 
-.wallpaper-log-viewer textarea::-webkit-scrollbar {
+.wallpaper-log-viewer pre::-webkit-scrollbar {
   width: 0;
   height: 0;
 }

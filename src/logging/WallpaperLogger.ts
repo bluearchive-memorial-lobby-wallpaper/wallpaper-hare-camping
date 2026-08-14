@@ -6,8 +6,6 @@ export type LogCategory =
   | "configuration";
 
 type LogLevel = "INFO" | "WARN" | "ERROR";
-type LogViewerLocale = "zh-cn" | "en";
-
 interface LogRecord {
   timestamp: string;
   level: LogLevel;
@@ -16,7 +14,7 @@ interface LogRecord {
   details?: unknown;
 }
 
-interface StoredLogSession {
+export interface StoredLogSession {
   id: string;
   fileName: string;
   startedAt: string;
@@ -29,33 +27,6 @@ interface StoredLogSession {
 
 const LOG_ENDPOINT = "/__hare-log";
 const MAX_MEMORY_LINES = 4000;
-
-const VIEWER_TEXT = {
-  "zh-cn": {
-    title: "壁纸日志",
-    session: "日志会话",
-    close: "关闭",
-    content: "日志内容",
-    copyHint: "只读日志；可使用 Ctrl+A、Ctrl+C 复制。",
-    current: "当前运行",
-    cleanExit: "正常结束",
-    interrupted: "异常中断",
-    possiblyInterrupted: "未正常结束",
-    truncated: "较早的日志已因容量限制被清理。",
-  },
-  en: {
-    title: "Wallpaper logs",
-    session: "Log session",
-    close: "Close",
-    content: "Log content",
-    copyHint: "Read-only log; use Ctrl+A and Ctrl+C to copy it.",
-    current: "Current",
-    cleanExit: "Clean exit",
-    interrupted: "Interrupted",
-    possiblyInterrupted: "Did not exit cleanly",
-    truncated: "Older entries were removed because of the storage limit.",
-  },
-} as const;
 
 function pad(value: number, width = 2) {
   return String(value).padStart(width, "0");
@@ -103,79 +74,6 @@ function formatRecord(record: LogRecord) {
   return `[${record.timestamp}] [${record.level}] [${record.category}] ${record.message}${details}`;
 }
 
-function renderLogViewer(
-  sessions: StoredLogSession[],
-  currentSessionId: string,
-  locale: LogViewerLocale,
-) {
-  const text = VIEWER_TEXT[locale];
-  const viewer = document.getElementById("wallpaper-log-viewer");
-  const title = document.getElementById("wallpaper-log-viewer-title");
-  const closeButton = document.getElementById("wallpaper-log-viewer-close");
-  const sessionLabel = document.getElementById(
-    "wallpaper-log-viewer-session-label",
-  );
-  const sessionSelect = document.getElementById("wallpaper-log-viewer-session");
-  const notice = document.getElementById("wallpaper-log-viewer-notice");
-  const content = document.getElementById("wallpaper-log-viewer-content");
-  const copyHint = document.getElementById("wallpaper-log-viewer-copy-hint");
-  if (
-    !(viewer instanceof HTMLElement) ||
-    !(title instanceof HTMLElement) ||
-    !(closeButton instanceof HTMLButtonElement) ||
-    !(sessionLabel instanceof HTMLElement) ||
-    !(sessionSelect instanceof HTMLSelectElement) ||
-    !(notice instanceof HTMLParagraphElement) ||
-    !(content instanceof HTMLTextAreaElement) ||
-    !(copyHint instanceof HTMLParagraphElement)
-  ) {
-    throw new Error("Log viewer markup is incomplete");
-  }
-
-  viewer.setAttribute("aria-label", text.title);
-  title.textContent = text.title;
-  sessionLabel.textContent = text.session;
-  closeButton.textContent = text.close;
-  content.setAttribute("aria-label", text.content);
-  copyHint.textContent = text.copyHint;
-  sessionSelect.replaceChildren();
-
-  for (const session of sessions) {
-    const option = document.createElement("option");
-    option.value = session.id;
-    const status =
-      session.id === currentSessionId
-        ? text.current
-        : session.status === "clean-exit"
-          ? text.cleanExit
-          : session.status === "interrupted"
-            ? text.interrupted
-            : text.possiblyInterrupted;
-    option.textContent = `${session.fileName} · ${status}`;
-    option.selected = session.id === currentSessionId;
-    sessionSelect.append(option);
-  }
-
-  const getSelectedSession = () =>
-    sessions.find((session) => session.id === sessionSelect.value) ?? sessions[0];
-  const showSelectedSession = () => {
-    const selected = getSelectedSession();
-    if (!selected) {
-      content.value = "";
-      return;
-    }
-    content.value = `${selected.lines.join("\n")}\n`;
-    notice.textContent = selected.truncated ? text.truncated : "";
-    notice.hidden = !selected.truncated;
-  };
-  sessionSelect.onchange = showSelectedSession;
-  closeButton.onclick = () => {
-    viewer.hidden = true;
-  };
-  showSelectedSession();
-  viewer.hidden = false;
-}
-
 export class WallpaperLogger {
   readonly sessionFileName: string;
 
@@ -221,10 +119,14 @@ export class WallpaperLogger {
     this.append("ERROR", category, message, details);
   }
 
-  openLogs(locale: LogViewerLocale) {
-    this.info("interaction", "debug panel open logs clicked");
-    const sessions = this.getStoredSessions();
-    renderLogViewer(sessions, this.sessionId, locale);
+  getSessionSnapshot() {
+    return {
+      currentSessionId: this.sessionId,
+      sessions: this.getStoredSessions().map((session) => ({
+        ...session,
+        lines: [...session.lines],
+      })),
+    };
   }
 
   private append(
