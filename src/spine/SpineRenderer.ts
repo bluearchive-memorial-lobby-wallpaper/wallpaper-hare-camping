@@ -1,9 +1,9 @@
-import { DIALOGUES, MODEL } from "../config";
 import {
   calculateViewportLayout,
   createModelRotationMatrix,
   modelRotationRadians,
   rotateModelPoint,
+  type InteractiveWallpaperDefinition,
 } from "ba-memorylobby-wallpaper-runtime";
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
@@ -83,6 +83,7 @@ export interface InteractionGeometry {
 const STRAIGHT_ALPHA_SCREEN_UNIFORM = "u_premultiplyStraightAlpha";
 
 export class SpineRenderer {
+  private readonly definition: InteractiveWallpaperDefinition<any>;
   private readonly canvas: HTMLCanvasElement;
   private readonly callbacks: RendererCallbacks;
   private readonly spine: any;
@@ -123,8 +124,13 @@ export class SpineRenderer {
   private contextPlayback?: PlaybackSnapshot;
   private disposed = false;
 
-  constructor(canvas: HTMLCanvasElement, callbacks: RendererCallbacks) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    definition: InteractiveWallpaperDefinition<any>,
+    callbacks: RendererCallbacks,
+  ) {
     this.canvas = canvas;
+    this.definition = definition;
     this.callbacks = callbacks;
     this.spine = window.spine;
     if (!this.spine?.webgl) {
@@ -199,8 +205,8 @@ export class SpineRenderer {
     assetManager: any,
     modelResolution: ModelResolution,
   ): Promise<SpineData> {
-    const atlasPath = MODEL.atlases[modelResolution];
-    assetManager.loadBinary(MODEL.binary);
+    const atlasPath = this.definition.model.atlases[modelResolution];
+    assetManager.loadBinary(this.definition.model.binary);
     assetManager.loadTextureAtlas(atlasPath);
     await this.waitForAssets(assetManager);
 
@@ -208,11 +214,11 @@ export class SpineRenderer {
     const atlasLoader = new this.spine.AtlasAttachmentLoader(atlas);
     const skeletonBinary = new this.spine.SkeletonBinary(atlasLoader);
     const skeletonData = skeletonBinary.readSkeletonData(
-      assetManager.get(MODEL.binary),
+      assetManager.get(this.definition.model.binary),
     );
-    if (skeletonData.version !== MODEL.spineVersion) {
+    if (skeletonData.version !== this.definition.model.spineVersion) {
       throw new Error(
-        `Spine 版本不匹配：期望 ${MODEL.spineVersion}，实际 ${skeletonData.version}`,
+        `Spine 版本不匹配：期望 ${this.definition.model.spineVersion}，实际 ${skeletonData.version}`,
       );
     }
 
@@ -242,9 +248,9 @@ export class SpineRenderer {
       },
     });
 
-    const eyeBone = this.requireBone(skeleton, MODEL.interaction.eyeBone);
-    const headControlBone = this.requireBone(skeleton, MODEL.interaction.headControlBone);
-    const headAnchorBone = this.requireBone(skeleton, MODEL.interaction.headAnchorBone);
+    const eyeBone = this.requireBone(skeleton, this.definition.interactions.eyeBone);
+    const headControlBone = this.requireBone(skeleton, this.definition.interactions.headControlBone);
+    const headAnchorBone = this.requireBone(skeleton, this.definition.interactions.headAnchorBone);
     return {
       skeleton,
       state,
@@ -353,10 +359,10 @@ export class SpineRenderer {
     this.cooldownRemaining = 0;
     resetAndApplyPlaybackPose(skeleton, state, () => {
       if (withIntro) {
-        state.setAnimation(MODEL.tracks.base, MODEL.introAnimation, false);
-        state.addAnimation(MODEL.tracks.base, MODEL.idleAnimation, true, 0);
+        state.setAnimation(this.definition.animations.tracks.base, this.definition.animations.intro, false);
+        state.addAnimation(this.definition.animations.tracks.base, this.definition.animations.idle, true, 0);
       } else {
-        state.setAnimation(MODEL.tracks.base, MODEL.idleAnimation, true);
+        state.setAnimation(this.definition.animations.tracks.base, this.definition.animations.idle, true);
       }
     });
     this.setInteractionMode(withIntro ? "intro" : "idle");
@@ -380,30 +386,30 @@ export class SpineRenderer {
     this.cooldownRemaining = 0;
     this.resetInteractionOffsets();
     resetAndApplyPlaybackPose(skeleton, state, () => {
-      state.setAnimation(MODEL.tracks.base, MODEL.idleAnimation, true);
+      state.setAnimation(this.definition.animations.tracks.base, this.definition.animations.idle, true);
     });
     this.setInteractionMode("idle");
   }
 
   playDialogue(index: number): boolean {
     if (this.interactionMode !== "idle") return false;
-    const dialogue = DIALOGUES.find((candidate) => candidate.index === index);
+    const dialogue = this.definition.dialogues.find((candidate) => candidate.index === index);
     if (!dialogue) return false;
 
     this.clearInteractionTracks();
     const { state } = this.requireData();
     const motionEntry = state.setAnimation(
-      MODEL.tracks.motion,
+      this.definition.animations.tracks.motion,
       dialogue.motionAnimation,
       false,
     );
-    state.addEmptyAnimation(MODEL.tracks.motion, 0.35, 0);
-    state.setAnimation(MODEL.tracks.attachment, dialogue.attachmentAnimation, false);
-    state.addEmptyAnimation(MODEL.tracks.attachment, 0.35, 0);
+    state.addEmptyAnimation(this.definition.animations.tracks.motion, 0.35, 0);
+    state.setAnimation(this.definition.animations.tracks.attachment, dialogue.attachmentAnimation, false);
+    state.addEmptyAnimation(this.definition.animations.tracks.attachment, 0.35, 0);
     this.activeDialogue = index;
     this.activeDialogueEntry = motionEntry;
     this.dialogueFallbackRemaining =
-      dialogue.duration + MODEL.interaction.dialogueGraceSeconds;
+      dialogue.durationSeconds + this.definition.interactions.dialogueGraceSeconds;
     this.setInteractionMode("dialogue");
     return true;
   }
@@ -412,8 +418,8 @@ export class SpineRenderer {
     if (this.interactionMode !== "idle") return false;
     this.clearInteractionTracks();
     const entry = this.requireData().state.setAnimation(
-      MODEL.tracks.motion,
-      MODEL.interaction.lookAnimation,
+      this.definition.animations.tracks.motion,
+      this.definition.interactions.look.animation,
       false,
     );
     entry.mixDuration = 0.16;
@@ -427,8 +433,8 @@ export class SpineRenderer {
     const normalizedX = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1) * 2 - 1;
     const normalizedY = Math.min(Math.max((clientY - rect.top) / rect.height, 0), 1) * 2 - 1;
     this.eyeTarget = {
-      x: -normalizedY * MODEL.interaction.eyeClamp.x,
-      y: -normalizedX * MODEL.interaction.eyeClamp.y,
+      x: -normalizedY * this.definition.interactions.eyeClamp.x,
+      y: -normalizedX * this.definition.interactions.eyeClamp.y,
     };
   }
 
@@ -437,19 +443,19 @@ export class SpineRenderer {
     const { state } = this.requireData();
     this.eyeTarget = { x: 0, y: 0 };
     const motion = state.setAnimation(
-      MODEL.tracks.motion,
-      MODEL.interaction.lookEndMotionAnimation,
+      this.definition.animations.tracks.motion,
+      this.definition.interactions.look.endMotionAnimation,
       false,
     );
     motion.mixDuration = 0;
-    state.addEmptyAnimation(MODEL.tracks.motion, 0.35, 0);
+    state.addEmptyAnimation(this.definition.animations.tracks.motion, 0.35, 0);
     const attachment = state.setAnimation(
-      MODEL.tracks.attachment,
-      MODEL.interaction.lookEndAttachmentAnimation,
+      this.definition.animations.tracks.attachment,
+      this.definition.interactions.look.endAttachmentAnimation,
       false,
     );
     attachment.mixDuration = 0;
-    state.addEmptyAnimation(MODEL.tracks.attachment, 0.35, 0);
+    state.addEmptyAnimation(this.definition.animations.tracks.attachment, 0.35, 0);
     this.beginCooldown();
   }
 
@@ -457,10 +463,10 @@ export class SpineRenderer {
     if (this.interactionMode !== "idle") return false;
     this.clearInteractionTracks();
     const { state } = this.requireData();
-    state.setAnimation(MODEL.tracks.motion, MODEL.interaction.patMotionAnimation, false);
+    state.setAnimation(this.definition.animations.tracks.motion, this.definition.interactions.pat.motionAnimation, false);
     state.setAnimation(
-      MODEL.tracks.attachment,
-      MODEL.interaction.patAttachmentAnimation,
+      this.definition.animations.tracks.attachment,
+      this.definition.interactions.pat.attachmentAnimation,
       false,
     );
     this.setInteractionMode("pat");
@@ -471,8 +477,8 @@ export class SpineRenderer {
     if (this.interactionMode !== "pat") return;
     const next = this.patTarget + (deltaX - deltaY * 0.35) * 0.32;
     this.patTarget = Math.min(
-      Math.max(next, -MODEL.interaction.patClamp),
-      MODEL.interaction.patClamp,
+      Math.max(next, -this.definition.interactions.patClamp),
+      this.definition.interactions.patClamp,
     );
   }
 
@@ -481,17 +487,17 @@ export class SpineRenderer {
     const { state } = this.requireData();
     this.patTarget = 0;
     state.setAnimation(
-      MODEL.tracks.motion,
-      MODEL.interaction.patEndMotionAnimation,
+      this.definition.animations.tracks.motion,
+      this.definition.interactions.pat.endMotionAnimation,
       false,
     );
-    state.addEmptyAnimation(MODEL.tracks.motion, 0.35, 0);
+    state.addEmptyAnimation(this.definition.animations.tracks.motion, 0.35, 0);
     state.setAnimation(
-      MODEL.tracks.attachment,
-      MODEL.interaction.patEndAttachmentAnimation,
+      this.definition.animations.tracks.attachment,
+      this.definition.interactions.pat.endAttachmentAnimation,
       false,
     );
-    state.addEmptyAnimation(MODEL.tracks.attachment, 0.35, 0);
+    state.addEmptyAnimation(this.definition.animations.tracks.attachment, 0.35, 0);
     this.beginCooldown();
   }
 
@@ -518,14 +524,14 @@ export class SpineRenderer {
     const headWorld = { x: data.headAnchorBone.worldX, y: data.headAnchorBone.worldY };
     const modelRotation = this.settings?.modelRotation ?? 0;
     const pivot = {
-      x: MODEL.designViewport.centerX,
-      y: MODEL.designViewport.centerY,
+      x: this.definition.model.designViewport.centerX,
+      y: this.definition.model.designViewport.centerY,
     };
     const rotatedHeadWorld = rotateModelPoint(headWorld, modelRotation, pivot);
     const head = this.worldToCanvas(rotatedHeadWorld.x, rotatedHeadWorld.y);
     const bodyWorld = {
-      x: headWorld.x + MODEL.interaction.bodyFromHead.x,
-      y: headWorld.y + MODEL.interaction.bodyFromHead.y,
+      x: headWorld.x + this.definition.interactions.bodyFromHead.x,
+      y: headWorld.y + this.definition.interactions.bodyFromHead.y,
     };
     const rotatedBodyWorld = rotateModelPoint(bodyWorld, modelRotation, pivot);
     const body = this.worldToCanvas(rotatedBodyWorld.x, rotatedBodyWorld.y);
@@ -535,14 +541,14 @@ export class SpineRenderer {
     return {
       head: {
         ...head,
-        radiusX: MODEL.interaction.headRadius.x * scaleX,
-        radiusY: MODEL.interaction.headRadius.y * scaleY,
+        radiusX: this.definition.interactions.headRadius.x * scaleX,
+        radiusY: this.definition.interactions.headRadius.y * scaleY,
         rotation: canvasRotation,
       },
       body: {
         ...body,
-        radiusX: MODEL.interaction.bodyFromHead.radiusX * scaleX,
-        radiusY: MODEL.interaction.bodyFromHead.radiusY * scaleY,
+        radiusX: this.definition.interactions.bodyFromHead.radiusX * scaleX,
+        radiusY: this.definition.interactions.bodyFromHead.radiusY * scaleY,
         rotation: canvasRotation,
       },
     };
@@ -597,7 +603,7 @@ export class SpineRenderer {
       modelScale: this.settings?.modelScale ?? 1,
       modelX: this.settings?.modelX ?? 0,
       modelY: this.settings?.modelY ?? 0,
-      designViewport: MODEL.designViewport,
+      designViewport: this.definition.model.designViewport,
     });
     const { pixelWidth, pixelHeight, pixelRatio, worldRect } = layout;
 
@@ -614,8 +620,8 @@ export class SpineRenderer {
     );
     this.modelTransform.set(
       createModelRotationMatrix(this.settings?.modelRotation ?? 0, {
-        x: MODEL.designViewport.centerX,
-        y: MODEL.designViewport.centerY,
+        x: this.definition.model.designViewport.centerX,
+        y: this.definition.model.designViewport.centerY,
       }),
     );
     this.mvp.multiply(this.modelTransform);
@@ -725,14 +731,14 @@ export class SpineRenderer {
 
   private handleAnimationComplete(entry: any) {
     const name = entry.animation?.name ?? "";
-    if (entry.trackIndex === MODEL.tracks.base && name === MODEL.introAnimation) {
+    if (entry.trackIndex === this.definition.animations.tracks.base && name === this.definition.animations.intro) {
       this.setInteractionMode("idle");
       return;
     }
-    const dialogue = DIALOGUES.find((candidate) => candidate.index === this.activeDialogue);
+    const dialogue = this.definition.dialogues.find((candidate) => candidate.index === this.activeDialogue);
     if (
       this.interactionMode === "dialogue" &&
-      entry.trackIndex === MODEL.tracks.motion &&
+      entry.trackIndex === this.definition.animations.tracks.motion &&
       name === dialogue?.motionAnimation
     ) {
       this.finishDialogue(entry);
@@ -740,7 +746,7 @@ export class SpineRenderer {
   }
 
   private handleAnimationEnd(entry: any) {
-    if (entry.trackIndex !== MODEL.tracks.motion) return;
+    if (entry.trackIndex !== this.definition.animations.tracks.motion) return;
     this.finishDialogue(entry);
   }
 
@@ -754,7 +760,7 @@ export class SpineRenderer {
   }
 
   private beginCooldown() {
-    this.cooldownRemaining = MODEL.interaction.cooldownSeconds;
+    this.cooldownRemaining = this.definition.interactions.cooldownSeconds;
     this.setInteractionMode("cooldown");
   }
 
@@ -791,8 +797,8 @@ export class SpineRenderer {
 
   private clearInteractionTracks() {
     const { state } = this.requireData();
-    state.clearTrack(MODEL.tracks.motion);
-    state.clearTrack(MODEL.tracks.attachment);
+    state.clearTrack(this.definition.animations.tracks.motion);
+    state.clearTrack(this.definition.animations.tracks.attachment);
     this.resetInteractionOffsets();
   }
 
