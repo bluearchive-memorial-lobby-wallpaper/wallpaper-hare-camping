@@ -21,6 +21,9 @@
     "package:offline": "npm run build && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-offline.ps1",
     "preview": "vite preview --host 127.0.0.1"
   },
+  "dependencies": {
+    "ba-memorylobby-wallpaper-runtime": "file:../ba-memorylobby-wallpaper-runtime"
+  },
   "devDependencies": {
     "typescript": "7.0.2",
     "vite": "8.2.1"
