@@ -182,3 +182,10 @@ try {
   await vite.close();
   await unlink(output).catch(() => undefined);
 }
+
+const pointerControllerSource = await readFile(
+  path.resolve("src", "app", "DebugPanelPointerController.ts"),
+  "utf8",
+);
+assert(pointerControllerSource.includes("trackPointerHandlers"));
+assert(pointerControllerSource.includes('removeEventListener("pointerdown", handler)'));

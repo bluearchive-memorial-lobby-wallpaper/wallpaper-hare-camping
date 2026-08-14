@@ -25,6 +25,7 @@ type ActiveDrag =
 export class DebugPanelPointerController {
   private readonly panel: HTMLElement;
   private readonly scrollbars: readonly ScrollbarBinding[];
+  private readonly trackPointerHandlers = new Map<HTMLElement, (event: PointerEvent) => void>();
   private readonly resizeObserver: ResizeObserver;
   private active?: ActiveDrag;
   private refreshRequest = 0;
@@ -78,9 +79,9 @@ export class DebugPanelPointerController {
 
     for (const binding of this.scrollbars) {
       binding.viewport.addEventListener("scroll", this.scheduleRefresh);
-      binding.track.addEventListener("pointerdown", (event) =>
-        this.beginScrollbarDrag(event, binding),
-      );
+      const handler = (event: PointerEvent) => this.beginScrollbarDrag(event, binding);
+      this.trackPointerHandlers.set(binding.track, handler);
+      binding.track.addEventListener("pointerdown", handler);
     }
 
     this.resizeObserver = new ResizeObserver(this.scheduleRefresh);
@@ -112,7 +113,10 @@ export class DebugPanelPointerController {
     window.removeEventListener("resize", this.scheduleRefresh);
     for (const binding of this.scrollbars) {
       binding.viewport.removeEventListener("scroll", this.scheduleRefresh);
+      const handler = this.trackPointerHandlers.get(binding.track);
+      if (handler) binding.track.removeEventListener("pointerdown", handler);
     }
+    this.trackPointerHandlers.clear();
     this.finishDrag();
   }
 
