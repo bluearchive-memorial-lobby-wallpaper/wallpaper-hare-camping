@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
+import { validateDistributionFiles } from "ba-memorylobby-wallpaper-toolkit";
 
 const root = path.resolve(import.meta.dirname, "..");
 const dist = path.join(root, "dist");
@@ -38,10 +39,7 @@ for (const locale of ["ja", "zh-cn", "ko"]) {
   }
 }
 
-for (const relative of required) {
-  const info = await stat(path.join(dist, relative));
-  if (!info.isFile() || info.size === 0) throw new Error(`Invalid dist file: ${relative}`);
-}
+await validateDistributionFiles({ rootDirectory: dist, requiredFiles: required });
 
 const project = JSON.parse(await readFile(path.join(dist, "project.json"), "utf8"));
 if (project.type !== "web" || project.file !== "index.html") {
@@ -470,27 +468,6 @@ for (const relative of required.filter((file) => file.endsWith(".ogg"))) {
   const bytes = await readFile(path.join(dist, relative));
   if (bytes.subarray(0, 4).toString("ascii") !== "OggS") {
     throw new Error(`Invalid OGG file: ${relative}`);
-  }
-}
-
-async function walk(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  return (
-    await Promise.all(
-      entries.map((entry) => {
-        const fullPath = path.join(directory, entry.name);
-        return entry.isDirectory() ? walk(fullPath) : [fullPath];
-      }),
-    )
-  ).flat();
-}
-
-const textExtensions = new Set([".html", ".js", ".css", ".json"]);
-for (const file of await walk(dist)) {
-  if (!textExtensions.has(path.extname(file))) continue;
-  const content = await readFile(file, "utf8");
-  if (/https?:\/\//i.test(content)) {
-    throw new Error(`Remote runtime dependency found in ${path.relative(dist, file)}`);
   }
 }
 
