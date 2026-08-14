@@ -1,4 +1,4 @@
-import type { StoredLogSession } from "../logging/WallpaperLogger";
+import type { StoredLogSession } from "ba-memorylobby-wallpaper-runtime";
 
 type LogViewerLocale = "zh-cn" | "en";
 

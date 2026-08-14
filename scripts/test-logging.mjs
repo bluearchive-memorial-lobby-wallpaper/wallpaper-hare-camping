@@ -77,7 +77,7 @@ const cleanSession = recoveredLoad.window.__hareLogBootstrap
 assert.equal(cleanSession?.status, "clean-exit");
 
 const loggerSource = await readFile(
-  path.resolve("src", "logging", "WallpaperLogger.ts"),
+  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "logging", "WallpaperLogger.ts"),
   "utf8",
 );
 assert.equal(loggerSource.includes("window.alert("), false);
