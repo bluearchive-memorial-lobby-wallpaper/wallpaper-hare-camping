@@ -96,12 +96,17 @@ const viewerControllerSource = await readFile(
 );
 assert(viewerControllerSource.includes("class LogViewerController"));
 assert(viewerControllerSource.includes("viewer.hidden = false"));
+assert(viewerControllerSource.includes('document.execCommand("copy")'));
+assert(viewerControllerSource.includes("onVisibilityChange"));
 const sourceHtml = await readFile(path.resolve("index.html"), "utf8");
 assert(sourceHtml.includes('id="wallpaper-log-viewer"'));
 assert(sourceHtml.includes('id="wallpaper-log-viewer-content"'));
 assert(sourceHtml.includes('<pre id="wallpaper-log-viewer-content"'));
 assert.equal(sourceHtml.includes('<textarea id="wallpaper-log-viewer-content"'), false);
 assert.equal(sourceHtml.includes('<select id="wallpaper-log-viewer-session"'), false);
+assert(sourceHtml.includes('id="wallpaper-log-viewer-copy"'));
+assert(sourceHtml.includes('class="wallpaper-log-viewer__close"'));
+assert.equal(sourceHtml.includes('id="wallpaper-log-viewer-copy-hint"'), false);
 assert(sourceHtml.includes("wallpaper-log-viewer--independent"));
 assert(
   sourceHtml.indexOf('id="wallpaper-log-viewer"') >
@@ -111,6 +116,9 @@ assert(
 const sourceCss = await readFile(path.resolve("src", "style.css"), "utf8");
 const independentViewerRule = sourceCss.match(/\.wallpaper-log-viewer\s*\{([^}]*)\}/)?.[1];
 assert(independentViewerRule?.includes("position: absolute"));
+assert(independentViewerRule?.includes("top: 50%"));
+assert(independentViewerRule?.includes("left: 50%"));
+assert(independentViewerRule?.includes("zoom: var(--debug-panel-scale)"));
 assert.equal(independentViewerRule?.includes("backdrop-filter"), false);
 
 const sessionFile = "2026-08-14_12-34-56-789_test01.log";

@@ -544,6 +544,8 @@ if (
   builtJs.includes("createObjectURL") ||
   !builtHtml.includes('id="wallpaper-log-viewer-content"') ||
   !builtHtml.includes('<pre id="wallpaper-log-viewer-content"') ||
+  !builtHtml.includes('id="wallpaper-log-viewer-copy"') ||
+  !builtHtml.includes('class="wallpaper-log-viewer__close"') ||
   !builtHtml.includes("wallpaper-log-viewer--independent") ||
   !builtHtml.includes('id="wallpaper-log-scrollbar"') ||
   !builtHtml.includes('id="wallpaper-log-scrollbar-horizontal"') ||

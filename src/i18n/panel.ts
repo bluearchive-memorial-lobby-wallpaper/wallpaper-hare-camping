@@ -7,6 +7,7 @@ export interface PanelText {
   showDebugPanel: string;
   hideDebugPanel: string;
   openLogs: string;
+  closeLogs: string;
   restoreHostSettings: string;
   expandSection: string;
   collapseSection: string;
@@ -97,6 +98,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     showDebugPanel: "显示调试面板",
     hideDebugPanel: "隐藏调试面板",
     openLogs: "打开日志",
+    closeLogs: "关闭日志",
     restoreHostSettings: "恢复 WE 设置",
     expandSection: "展开",
     collapseSection: "折叠",
@@ -189,6 +191,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     showDebugPanel: "Show debug panel",
     hideDebugPanel: "Hide debug panel",
     openLogs: "Open logs",
+    closeLogs: "Close logs",
     restoreHostSettings: "Restore WE settings",
     expandSection: "Expand",
     collapseSection: "Collapse",

@@ -64,6 +64,7 @@ export class App {
   private readonly loading: HTMLElement;
   private readonly loadingLabel: HTMLElement;
   private readonly openLogsButton: HTMLButtonElement;
+  private readonly logViewer: HTMLElement;
   private readonly replayIntroButton: HTMLButtonElement;
   private readonly skipIdleButton: HTMLButtonElement;
   private readonly dialogueButton: HTMLButtonElement;
@@ -407,7 +408,7 @@ export class App {
         this.eventLabel.textContent = "bgm-error";
       },
     });
-    const logViewer = this.getElement("wallpaper-log-viewer", HTMLElement);
+    this.logViewer = this.getElement("wallpaper-log-viewer", HTMLElement);
     const logViewport = this.getElement(
       "wallpaper-log-viewer-content",
       HTMLPreElement,
@@ -419,7 +420,7 @@ export class App {
         "debug-panel-scrollbar-thumb",
         HTMLElement,
       ),
-      logViewer,
+      logViewer: this.logViewer,
       logViewport,
       logScrollbar: this.getElement("wallpaper-log-scrollbar", HTMLElement),
       logScrollbarThumb: this.getElement(
@@ -436,10 +437,14 @@ export class App {
       ),
     });
     this.logViewerController = new LogViewerController({
-      viewer: logViewer,
+      viewer: this.logViewer,
       title: this.getElement("wallpaper-log-viewer-title", HTMLElement),
       closeButton: this.getElement(
         "wallpaper-log-viewer-close",
+        HTMLButtonElement,
+      ),
+      copyButton: this.getElement(
+        "wallpaper-log-viewer-copy",
         HTMLButtonElement,
       ),
       sessionLabel: this.getElement(
@@ -459,14 +464,11 @@ export class App {
         HTMLParagraphElement,
       ),
       content: logViewport,
-      copyHint: this.getElement(
-        "wallpaper-log-viewer-copy-hint",
-        HTMLParagraphElement,
-      ),
       getSnapshot: () => wallpaperLogger.getSessionSnapshot(),
       onLayoutChange: () => this.debugPanelPointerController.requestRefresh(),
       onInteraction: (action, details) =>
         wallpaperLogger.info("interaction", `log viewer ${action}`, details),
+      onVisibilityChange: () => this.syncLogToggleButton(),
     });
   }
 
@@ -845,8 +847,12 @@ export class App {
     });
     this.openLogsButton.addEventListener("click", () => {
       try {
-        wallpaperLogger.info("interaction", "debug panel open logs clicked");
-        this.logViewerController.open(this.settings.panelLocale);
+        const opening = !this.logViewerController.isOpen;
+        wallpaperLogger.info(
+          "interaction",
+          opening ? "debug panel open logs clicked" : "debug panel close logs clicked",
+        );
+        this.logViewerController.toggle(this.settings.panelLocale);
       } catch (error) {
         wallpaperLogger.error("error", "opening logs failed", error);
         this.eventLabel.textContent = "log-open-error";
@@ -1302,7 +1308,17 @@ export class App {
         ? "—"
         : text.interactions[this.lastAction as InteractionMode];
     this.loadingLabel.textContent = text.loadingSpine;
+    this.logViewerController.setLocale(this.settings.panelLocale);
+    this.syncLogToggleButton();
     this.syncDebugPanelVisibility();
+  }
+
+  private syncLogToggleButton() {
+    const value = this.logViewerController.isOpen
+      ? this.panelText.closeLogs
+      : this.panelText.openLogs;
+    this.openLogsButton.textContent = value;
+    this.openLogsButton.setAttribute("aria-label", value);
   }
 
   private syncDebugPanelVisibility() {
@@ -1324,6 +1340,14 @@ export class App {
 
   private syncDebugPanelLayout(settings: Readonly<WallpaperSettings>) {
     this.statusPanel.style.setProperty(
+      "--debug-panel-scale",
+      String(settings.panelScale),
+    );
+    this.logViewer.style.setProperty(
+      "--debug-panel-scale",
+      String(settings.panelScale),
+    );
+    this.debugPanelToggle.style.setProperty(
       "--debug-panel-scale",
       String(settings.panelScale),
     );

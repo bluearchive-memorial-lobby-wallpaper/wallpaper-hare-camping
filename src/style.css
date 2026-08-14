@@ -224,6 +224,8 @@ body {
 }
 
 .debug-panel-toggle {
+  --debug-panel-scale: 1;
+
   position: fixed;
   z-index: 3;
   top: 1.25rem;
@@ -241,6 +243,7 @@ body {
   background: transparent;
   opacity: 0.62;
   cursor: pointer;
+  zoom: var(--debug-panel-scale);
   transition: color 160ms ease, border-color 160ms ease, opacity 160ms ease;
 }
 
@@ -360,10 +363,12 @@ body {
 }
 
 .wallpaper-log-viewer {
+  --debug-panel-scale: 1;
+
   position: absolute;
   z-index: 5;
-  top: 4.25rem;
-  right: 1.25rem;
+  top: 50%;
+  left: 50%;
   display: grid;
   gap: 0.55rem;
   width: min(42rem, calc(100vw - 2.5rem));
@@ -376,6 +381,8 @@ body {
   background: rgba(8, 16, 30, 0.94);
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.32);
   pointer-events: auto;
+  transform: translate(-50%, -50%);
+  zoom: var(--debug-panel-scale);
 }
 
 .wallpaper-log-viewer[hidden] {
@@ -392,6 +399,12 @@ body {
   justify-content: space-between;
   gap: 1rem;
   padding: 0;
+}
+
+.wallpaper-log-viewer__header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .wallpaper-log-viewer header button,
@@ -413,6 +426,16 @@ body {
   gap: 0.5rem;
   color: #abcdf8;
   font-size: 0.75rem;
+}
+
+.wallpaper-log-viewer header .wallpaper-log-viewer__close {
+  width: 1.75rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 .wallpaper-log-viewer__session-nav span {
@@ -514,12 +537,6 @@ body {
 .debug-scrollbar__thumb:active {
   cursor: grabbing;
   background: rgba(215, 232, 255, 0.9);
-}
-
-.wallpaper-log-viewer__copy-hint {
-  margin: 0;
-  color: #91acd0;
-  font-size: 0.7rem;
 }
 
 .status-panel__control-group {
