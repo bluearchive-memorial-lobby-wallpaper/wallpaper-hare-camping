@@ -17,6 +17,9 @@ import {
   canTriggerDialogue,
   didDialogueSettingChange,
   didInteractionSettingsChange,
+  SpineRenderer,
+  type InteractionMode,
+  type SpineEventDetail,
   SubtitlePresenter,
   VoicePlayer,
 } from "ba-memorylobby-wallpaper-runtime";
@@ -29,11 +32,6 @@ import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibil
 import { wallpaperLogger } from "../logging/WallpaperLogger";
 import { DebugPanelPointerController } from "./DebugPanelPointerController";
 import { LogViewerController } from "./LogViewerController";
-import {
-  SpineRenderer,
-  type InteractionMode,
-  type SpineEventDetail,
-} from "../spine/SpineRenderer";
 
 type Phase = "booting" | "loading" | "running" | "paused" | "error";
 
