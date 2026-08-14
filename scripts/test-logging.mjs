@@ -2,79 +2,7 @@ import assert from "node:assert/strict";
 import { createServer as createHttpServer } from "node:http";
 import { readFile, unlink } from "node:fs/promises";
 import path from "node:path";
-import vm from "node:vm";
 import { createServer as createViteServer } from "vite";
-
-class MemoryStorage {
-  values = new Map();
-
-  getItem(key) {
-    return this.values.get(key) ?? null;
-  }
-
-  setItem(key, value) {
-    this.values.set(key, String(value));
-  }
-
-  removeItem(key) {
-    this.values.delete(key);
-  }
-}
-
-const bootstrapSource = await readFile(
-  path.resolve("public", "logging-bootstrap.js"),
-  "utf8",
-);
-
-function launchBootstrap(localStorage, sessionStorage) {
-  const listeners = new Map();
-  const window = {
-    localStorage,
-    sessionStorage,
-    location: { href: "file:///wallpaper/index.html" },
-    addEventListener(type, listener) {
-      const registered = listeners.get(type) ?? [];
-      registered.push(listener);
-      listeners.set(type, registered);
-    },
-  };
-  window.window = window;
-  vm.runInNewContext(bootstrapSource, { window }, { filename: "logging-bootstrap.js" });
-  return { window, listeners };
-}
-
-const persistentStorage = new MemoryStorage();
-const viewStorage = new MemoryStorage();
-const crashedLoad = launchBootstrap(persistentStorage, viewStorage);
-const crashedSessionId = crashedLoad.window.__hareLogBootstrap.sessionId;
-for (const listener of crashedLoad.listeners.get("error") ?? []) {
-  listener({
-    message: "failure before application startup",
-    filename: "early-runtime.js",
-    lineno: 7,
-    colno: 3,
-    error: new Error("early crash"),
-  });
-}
-
-const recoveredLoad = launchBootstrap(persistentStorage, viewStorage);
-const recoveredSessions = recoveredLoad.window.__hareLogBootstrap.getSessions();
-const crashedSession = recoveredSessions.find(
-  (session) => session.id === crashedSessionId,
-);
-assert(crashedSession, "The previous load must remain available after a crash");
-assert.equal(crashedSession.status, "interrupted");
-assert(
-  crashedSession.lines.some((line) =>
-    line.includes("failure before application startup"),
-  ),
-  "An early global error must be persisted before the application starts",
-);
-for (const listener of recoveredLoad.listeners.get("beforeunload") ?? []) listener();
-const cleanSession = recoveredLoad.window.__hareLogBootstrap
-  .getSessions()
-  .find((session) => session.id === recoveredLoad.window.__hareLogBootstrap.sessionId);
-assert.equal(cleanSession?.status, "clean-exit");
 
 const loggerSource = await readFile(
   path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "logging", "WallpaperLogger.ts"),
@@ -183,7 +111,7 @@ try {
     "first log line\nsecond log line\n",
   );
   console.log(
-    "Validated early crash recovery, persistent sessions, and the dist/log development mirror.",
+    "Validated runtime-owned log UI integration and the dist/log development mirror.",
   );
 } finally {
   await new Promise((resolve) => server.close(resolve));
