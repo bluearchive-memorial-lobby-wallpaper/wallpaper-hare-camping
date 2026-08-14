@@ -11,9 +11,7 @@ const server = await createServer({
 });
 
 try {
-  const { FrameLimiter } = await server.ssrLoadModule(
-    "/src/render/FrameLimiter.ts",
-  );
+  const { FrameLimiter } = await import("ba-memorylobby-wallpaper-runtime");
   const sourceFps = 240;
   const seconds = 10;
   for (const fpsLimit of [15, 30, 60, 160, 0]) {

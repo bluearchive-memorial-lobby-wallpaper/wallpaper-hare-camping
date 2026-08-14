@@ -11,8 +11,8 @@ const server = await createServer({
 });
 
 try {
-  const { DialoguePlaybackSequence } = await server.ssrLoadModule(
-    "/src/dialogue/DialoguePlaybackSequence.ts",
+  const { DialoguePlaybackSequence } = await import(
+    "ba-memorylobby-wallpaper-runtime"
   );
   const {
     canTriggerDialogue,

@@ -1,7 +1,10 @@
 import { DIALOGUES, type VoiceLocale } from "../config";
+import {
+  DialoguePlaybackSequence,
+  FrameLimiter,
+} from "ba-memorylobby-wallpaper-runtime";
 import { BgmPlayer, type BgmStatus } from "../audio/BgmPlayer";
 import { VoicePlayer } from "../audio/VoicePlayer";
-import { DialoguePlaybackSequence } from "../dialogue/DialoguePlaybackSequence";
 import { SubtitlePresenter } from "../dialogue/SubtitlePresenter";
 import { PANEL_TEXT, type PanelText } from "../i18n/panel";
 import { PointerInteractionController } from "../interaction/PointerInteractionController";
@@ -18,7 +21,6 @@ import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import { MODEL_RESOLUTIONS } from "../settings/modelResolution";
 import { isQualityPreset } from "../settings/qualityPreset";
 import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
-import { FrameLimiter } from "../render/FrameLimiter";
 import { wallpaperLogger } from "../logging/WallpaperLogger";
 import { DebugPanelPointerController } from "./DebugPanelPointerController";
 import { LogViewerController } from "./LogViewerController";
