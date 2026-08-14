@@ -8,7 +8,7 @@ export {};
 declare global {
   interface Window {
     spine?: any;
-    __hareLogBootstrap?: {
+    __wallpaperLogBootstrap?: {
       sessionId: string;
       sessionFileName: string;
       handlesGlobalErrors: boolean;

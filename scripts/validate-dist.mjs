@@ -542,7 +542,7 @@ if (
   throw new Error("Persistent logging bootstrap must load before the application runtime");
 }
 if (
-  !loggingBootstrap.includes("hare-wallpaper-log:v1:") ||
+  !loggingBootstrap.includes("memory-lobby-wallpaper-log:v1:") ||
   !loggingBootstrap.includes('window.addEventListener("error"') ||
   loggingBootstrap.includes("showDirectoryPicker")
 ) {

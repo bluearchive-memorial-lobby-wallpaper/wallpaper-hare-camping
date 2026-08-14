@@ -1,10 +1,32 @@
 import { defineConfig } from "vite";
-import { appendFile, mkdir } from "node:fs/promises";
+import { appendFile, copyFile, mkdir, readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 
 const LOG_ROUTE = "/__hare-log";
 const MAX_LOG_BODY_CHARACTERS = 1024 * 1024;
 const SESSION_FILE_PATTERN = /^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-\d{3}_[a-z0-9]{6}\.log$/;
+const require = createRequire(import.meta.url);
+const loggingBootstrap = require.resolve(
+  "ba-memorylobby-wallpaper-runtime/logging-bootstrap.js",
+);
+
+function runtimeAssets() {
+  return {
+    name: "memory-lobby-runtime-assets",
+    configureServer(server: any) {
+      server.middlewares.use(async (request: any, response: any, next: () => void) => {
+        const pathname = new URL(request.url ?? "/", "http://127.0.0.1").pathname;
+        if (pathname !== "/logging-bootstrap.js") return next();
+        response.setHeader("Content-Type", "text/javascript; charset=utf-8");
+        response.end(await readFile(loggingBootstrap));
+      });
+    },
+    async writeBundle() {
+      await copyFile(loggingBootstrap, path.resolve("dist", "logging-bootstrap.js"));
+    },
+  };
+}
 
 function localLogBridge() {
   const logDirectory = path.resolve("dist", "log");
@@ -85,7 +107,7 @@ function localLogBridge() {
 
 export default defineConfig({
   base: "./",
-  plugins: [localLogBridge()],
+  plugins: [runtimeAssets(), localLogBridge()],
   build: {
     outDir: "dist",
     emptyOutDir: true,
