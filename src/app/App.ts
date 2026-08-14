@@ -19,6 +19,9 @@ import { MODEL_RESOLUTIONS } from "../settings/modelResolution";
 import { isQualityPreset } from "../settings/qualityPreset";
 import { resolvePropertyGroupVisibility } from "../settings/propertyGroupVisibility";
 import { FrameLimiter } from "../render/FrameLimiter";
+import { wallpaperLogger } from "../logging/WallpaperLogger";
+import { DebugPanelPointerController } from "./DebugPanelPointerController";
+import { LogViewerController } from "./LogViewerController";
 import { resolveDebugPanelExpanded } from "./debugPanelVisibility";
 import { initializeStableModelResolution } from "./initializeModelResolution";
 import {
@@ -28,6 +31,19 @@ import {
 } from "../spine/SpineRenderer";
 
 type Phase = "booting" | "loading" | "running" | "paused" | "error";
+
+function changedSettings(
+  previous: Readonly<WallpaperSettings>,
+  current: Readonly<WallpaperSettings>,
+) {
+  const changed: Record<string, { from: unknown; to: unknown }> = {};
+  for (const key of Object.keys(current) as (keyof WallpaperSettings)[]) {
+    if (!Object.is(previous[key], current[key])) {
+      changed[key] = { from: previous[key], to: current[key] };
+    }
+  }
+  return changed;
+}
 
 export class App {
   private readonly root: HTMLElement;
@@ -47,6 +63,8 @@ export class App {
   private readonly errorLabel: HTMLElement;
   private readonly loading: HTMLElement;
   private readonly loadingLabel: HTMLElement;
+  private readonly openLogsButton: HTMLButtonElement;
+  private readonly logViewer: HTMLElement;
   private readonly replayIntroButton: HTMLButtonElement;
   private readonly skipIdleButton: HTMLButtonElement;
   private readonly dialogueButton: HTMLButtonElement;
@@ -68,6 +86,8 @@ export class App {
   private readonly modelXOutput: HTMLOutputElement;
   private readonly modelYSlider: HTMLInputElement;
   private readonly modelYOutput: HTMLOutputElement;
+  private readonly modelRotationSlider: HTMLInputElement;
+  private readonly modelRotationOutput: HTMLOutputElement;
   private readonly interactionPresetSelect: HTMLSelectElement;
   private readonly interactionCustomControls: HTMLElement;
   private readonly interactionDependentControls: HTMLElement;
@@ -109,6 +129,8 @@ export class App {
   private readonly panelLanguageSelect: HTMLSelectElement;
   private readonly hitboxesButton: HTMLButtonElement;
   private readonly restoreHostSettingsButton: HTMLButtonElement;
+  private readonly debugPanelPointerController: DebugPanelPointerController;
+  private readonly logViewerController: LogViewerController;
   private readonly propertyGroupToggleButtons: readonly HTMLButtonElement[];
   private readonly subgroupToggleButtons: readonly HTMLButtonElement[];
   private readonly adapter = new WallpaperEngineAdapter();
@@ -144,12 +166,16 @@ export class App {
   private readonly contextLossTestDelay = Number(
     new URLSearchParams(location.search).get("testContextLossDelay"),
   );
-  private readonly fpsTestFromQuery = Number(
-    new URLSearchParams(location.search).get("testFps"),
-  );
+  private readonly fpsTestFromQuery = (() => {
+    const value = new URLSearchParams(location.search).get("testFps");
+    return value === null ? Number.NaN : Number(value);
+  })();
   private readonly qualityPresetTestFromQuery = new URLSearchParams(
     location.search,
   ).get("testQuality");
+  private readonly weInterfaceTestFromQuery = new URLSearchParams(
+    location.search,
+  ).has("testWeInterfaces");
   private debugPanelExpanded = this.debugFromQuery;
 
   constructor(root: HTMLElement) {
@@ -173,6 +199,7 @@ export class App {
     this.errorLabel = this.getElement("status-error", HTMLElement);
     this.loading = this.getElement("loading", HTMLElement);
     this.loadingLabel = this.getElement("loading-label", HTMLElement);
+    this.openLogsButton = this.getElement("debug-open-logs", HTMLButtonElement);
     this.replayIntroButton = this.getElement("debug-replay-intro", HTMLButtonElement);
     this.skipIdleButton = this.getElement("debug-skip-idle", HTMLButtonElement);
     this.dialogueButton = this.getElement("debug-dialogue", HTMLButtonElement);
@@ -221,6 +248,14 @@ export class App {
     this.modelXOutput = this.getElement("debug-model-x-output", HTMLOutputElement);
     this.modelYSlider = this.getElement("debug-model-y", HTMLInputElement);
     this.modelYOutput = this.getElement("debug-model-y-output", HTMLOutputElement);
+    this.modelRotationSlider = this.getElement(
+      "debug-model-rotation",
+      HTMLInputElement,
+    );
+    this.modelRotationOutput = this.getElement(
+      "debug-model-rotation-output",
+      HTMLOutputElement,
+    );
     this.interactionPresetSelect = this.getElement(
       "debug-interaction-preset",
       HTMLSelectElement,
@@ -371,6 +406,7 @@ export class App {
       onEnded: (eventId) => this.subtitle.hide(eventId),
       onError: (message) => {
         console.warn(message);
+        wallpaperLogger.warn("error", "voice playback error", { message });
         this.eventLabel.textContent = "audio-error";
       },
     });
@@ -378,15 +414,90 @@ export class App {
       onStatusChange: (status) => this.updateBgmLabel(status),
       onError: (message) => {
         console.warn(message);
+        wallpaperLogger.warn("error", "BGM playback error", { message });
         this.eventLabel.textContent = "bgm-error";
       },
+    });
+    this.logViewer = this.getElement("wallpaper-log-viewer", HTMLElement);
+    const logViewport = this.getElement(
+      "wallpaper-log-viewer-content",
+      HTMLPreElement,
+    );
+    this.debugPanelPointerController = new DebugPanelPointerController({
+      panel: this.statusPanel,
+      panelScrollbar: this.getElement("debug-panel-scrollbar", HTMLElement),
+      panelScrollbarThumb: this.getElement(
+        "debug-panel-scrollbar-thumb",
+        HTMLElement,
+      ),
+      logViewer: this.logViewer,
+      logViewport,
+      logScrollbar: this.getElement("wallpaper-log-scrollbar", HTMLElement),
+      logScrollbarThumb: this.getElement(
+        "wallpaper-log-scrollbar-thumb",
+        HTMLElement,
+      ),
+      logHorizontalScrollbar: this.getElement(
+        "wallpaper-log-scrollbar-horizontal",
+        HTMLElement,
+      ),
+      logHorizontalScrollbarThumb: this.getElement(
+        "wallpaper-log-scrollbar-horizontal-thumb",
+        HTMLElement,
+      ),
+    });
+    this.logViewerController = new LogViewerController({
+      viewer: this.logViewer,
+      title: this.getElement("wallpaper-log-viewer-title", HTMLElement),
+      closeButton: this.getElement(
+        "wallpaper-log-viewer-close",
+        HTMLButtonElement,
+      ),
+      copyButton: this.getElement(
+        "wallpaper-log-viewer-copy",
+        HTMLButtonElement,
+      ),
+      sessionLabel: this.getElement(
+        "wallpaper-log-viewer-session-label",
+        HTMLElement,
+      ),
+      previousSessionButton: this.getElement(
+        "wallpaper-log-viewer-previous-session",
+        HTMLButtonElement,
+      ),
+      nextSessionButton: this.getElement(
+        "wallpaper-log-viewer-next-session",
+        HTMLButtonElement,
+      ),
+      notice: this.getElement(
+        "wallpaper-log-viewer-notice",
+        HTMLParagraphElement,
+      ),
+      content: logViewport,
+      getSnapshot: () => wallpaperLogger.getSessionSnapshot(),
+      onLayoutChange: () => this.debugPanelPointerController.requestRefresh(),
+      onInteraction: (action, details) =>
+        wallpaperLogger.info("interaction", `log viewer ${action}`, details),
+      onVisibilityChange: () => this.syncLogToggleButton(),
     });
   }
 
   async start() {
     const startupStartedAt = performance.now();
+    wallpaperLogger.info("lifecycle", "application startup started");
     this.setPhase("loading");
     this.adapter.subscribePaused((paused) => this.setHostPaused(paused));
+    if (this.weInterfaceTestFromQuery) {
+      window.wallpaperPropertyListener?.applyGeneralProperties?.({ fps: 30 });
+      window.wallpaperPropertyListener?.applyUserProperties?.({
+        qualitypreset: { value: "2k" },
+        panellanguage: { value: "en" },
+        bgmvolume: { value: 25 },
+        panelpositionpreset: { value: "custom" },
+        panelscale: { value: 0.9 },
+        debugpreset: { value: "panel" },
+      });
+    }
     if (Number.isFinite(this.fpsTestFromQuery)) {
       window.wallpaperPropertyListener?.applyGeneralProperties?.({
         fps: this.fpsTestFromQuery,
@@ -412,12 +523,22 @@ export class App {
         Number((performance.now() - initialSettingsWaitStartedAt).toFixed(1)),
       );
       this.settings = this.adapter.current;
+      wallpaperLogger.info("configuration", "initial settings resolved", {
+        source: this.root.dataset.initialSettingsSource,
+        settings: this.settings,
+      });
       this.renderer = new SpineRenderer(this.canvas, {
         onAnimationChange: (animation) => {
+          const previousAnimation = this.animation;
           this.animation = animation;
           this.animationLabel.textContent = animation;
+          wallpaperLogger.info("animation", "animation changed", {
+            from: previousAnimation,
+            to: animation,
+          });
         },
         onInteractionModeChange: (mode) => {
+          const previousMode = this.interactionMode;
           if (mode === "cooldown" && this.interactionMode !== "cooldown") {
             const completedMode = this.interactionMode;
             this.lastAction = completedMode;
@@ -425,6 +546,12 @@ export class App {
           }
           this.interactionMode = mode;
           this.interactionLabel.textContent = this.panelText.interactions[mode];
+          if (previousMode !== mode) {
+            wallpaperLogger.info("animation", "interaction mode changed", {
+              from: previousMode,
+              to: mode,
+            });
+          }
           if (mode === "idle") {
             this.subtitle.hide();
             this.finishDialogueAndContinueAutomaticPlayback();
@@ -452,7 +579,11 @@ export class App {
       this.pointerController = new PointerInteractionController(
         this.canvas,
         this.renderer,
-        { onDialogueRequested: () => this.playNextDialogue(undefined, true) },
+        {
+          onDialogueRequested: () => this.playNextDialogue(undefined, true),
+          onInteractionCompleted: (interaction) =>
+            wallpaperLogger.info("interaction", "wallpaper pointer interaction", interaction),
+        },
       );
       this.pointerController.applySettings(this.settings);
       this.renderer.playInitialSequence(this.settings.introAnimation);
@@ -460,9 +591,49 @@ export class App {
       this.installDebugApi();
       this.startupComplete = true;
       this.setPhase(this.isPaused() ? "paused" : "running");
+      if (this.weInterfaceTestFromQuery) {
+        const listener = window.wallpaperPropertyListener;
+        const generalPropertiesPassed = this.settings.fpsLimit === 30;
+        const userPropertiesPassed =
+          this.settings.qualityPreset === "2k" &&
+          this.settings.panelLocale === "en" &&
+          this.settings.bgmVolume === 0.25 &&
+          this.settings.panelScale === 0.9 &&
+          this.settings.debugPanelEnabled;
+        listener?.setPaused?.(true);
+        const pausePassed = this.phase === "paused";
+        listener?.setPaused?.(false);
+        const resumePassed = this.phase === "running";
+        this.root.dataset.weInterfaceGeneral = generalPropertiesPassed
+          ? "passed"
+          : "failed";
+        this.root.dataset.weInterfaceUser = userPropertiesPassed
+          ? "passed"
+          : "failed";
+        this.root.dataset.weInterfacePause =
+          pausePassed && resumePassed ? "passed" : "failed";
+        this.root.dataset.weInterfaceTest =
+          generalPropertiesPassed &&
+          userPropertiesPassed &&
+          pausePassed &&
+          resumePassed
+            ? "passed"
+            : "failed";
+        wallpaperLogger.info("lifecycle", "WE interface browser test completed", {
+          generalPropertiesPassed,
+          userPropertiesPassed,
+          pausePassed,
+          resumePassed,
+        });
+      }
       this.root.dataset.startupReadyMs = String(
         Number((performance.now() - startupStartedAt).toFixed(1)),
       );
+      wallpaperLogger.info("lifecycle", "application startup completed", {
+        startupMilliseconds: Number((performance.now() - startupStartedAt).toFixed(1)),
+        modelResolution: initialModel.resolution,
+        modelLoadPasses: initialModel.loadPasses,
+      });
       this.lastFrameTime = performance.now() / 1000;
       this.frameLimiter.reset();
       this.resetPerformanceWindow();
@@ -483,6 +654,10 @@ export class App {
 
   private applySettings(settings: Readonly<WallpaperSettings>) {
     const previousSettings = this.settings;
+    const changes = changedSettings(previousSettings, settings);
+    if (Object.keys(changes).length > 0) {
+      wallpaperLogger.info("configuration", "effective settings changed", changes);
+    }
     const interactionSettingsChanged = didInteractionSettingsChange(
       previousSettings,
       settings,
@@ -612,10 +787,13 @@ export class App {
 
     document.addEventListener("visibilitychange", this.syncPausedState);
     window.addEventListener("beforeunload", () => {
+      wallpaperLogger.info("lifecycle", "wallpaper load ended");
       cancelAnimationFrame(this.frameRequest);
       resizeObserver.disconnect();
       document.removeEventListener("visibilitychange", this.syncPausedState);
       this.pointerController?.dispose();
+      this.logViewerController.dispose();
+      this.debugPanelPointerController.dispose();
       this.removeBgmUnlockListeners();
       this.voice.stop();
       this.bgm.dispose();
@@ -659,10 +837,36 @@ export class App {
       clearSessionOverrides: () => this.adapter.clearSessionOverrides(),
     };
 
+    this.statusPanel.addEventListener("click", (event) => {
+      const target = event.target;
+      const button = target instanceof Element ? target.closest<HTMLButtonElement>("button") : null;
+      if (!button) return;
+      wallpaperLogger.info("interaction", "debug panel button clicked", {
+        id: button.id || undefined,
+        action: button.dataset.panelText,
+      });
+    });
+
     this.debugPanelToggle.addEventListener("click", () => {
       if (this.debugPanelToggle.disabled) return;
+      wallpaperLogger.info("interaction", "debug panel visibility toggled", {
+        expanded: !this.debugPanelExpanded,
+      });
       this.debugPanelExpanded = !this.debugPanelExpanded;
       this.syncDebugPanelVisibility();
+    });
+    this.openLogsButton.addEventListener("click", () => {
+      try {
+        const opening = !this.logViewerController.isOpen;
+        wallpaperLogger.info(
+          "interaction",
+          opening ? "debug panel open logs clicked" : "debug panel close logs clicked",
+        );
+        this.logViewerController.toggle(this.settings.panelLocale);
+      } catch (error) {
+        wallpaperLogger.error("error", "opening logs failed", error);
+        this.eventLabel.textContent = "log-open-error";
+      }
     });
     for (const button of this.propertyGroupToggleButtons) {
       button.addEventListener("click", () => this.togglePropertyGroup(button));
@@ -713,6 +917,11 @@ export class App {
     );
     this.modelYSlider.addEventListener("input", () =>
       this.adapter.setUserPropertiesForDebug({ modely: Number(this.modelYSlider.value) }),
+    );
+    this.modelRotationSlider.addEventListener("input", () =>
+      this.adapter.setUserPropertiesForDebug({
+        modelrotation: Number(this.modelRotationSlider.value),
+      }),
     );
     this.interactionPresetSelect.addEventListener("change", () =>
       this.adapter.setUserPropertiesForDebug({
@@ -910,6 +1119,8 @@ export class App {
     this.modelXOutput.value = String(settings.modelX);
     this.modelYSlider.value = String(settings.modelY);
     this.modelYOutput.value = String(settings.modelY);
+    this.modelRotationSlider.value = String(settings.modelRotation);
+    this.modelRotationOutput.value = `${settings.modelRotation}°`;
     this.interactionPresetSelect.value = settings.interactionPreset;
     this.interactionCustomControls.hidden = !visibility.interactionCustom;
     this.introAnimationCheckbox.checked = settings.introAnimation;
@@ -983,6 +1194,7 @@ export class App {
   }
 
   private handleRendererContextLost() {
+    wallpaperLogger.warn("error", "WebGL context lost");
     this.rendererUnavailable = true;
     this.lastFrameTime = performance.now() / 1000;
     this.frameLimiter.reset();
@@ -995,6 +1207,7 @@ export class App {
   }
 
   private handleRendererContextRestored() {
+    wallpaperLogger.info("lifecycle", "WebGL context restored");
     this.rendererUnavailable = false;
     this.syncPausedState();
     this.updateViewportLabel();
@@ -1045,16 +1258,24 @@ export class App {
   }
 
   private setPhase(phase: Phase) {
+    const previousPhase = this.phase;
     this.phase = phase;
     this.root.dataset.phase = phase;
     this.phaseLabel.textContent = this.panelText.phases[phase];
     this.loadingLabel.textContent = this.panelText.loadingSpine;
     this.loading.hidden = phase === "running" || phase === "paused" || phase === "error";
+    if (previousPhase !== phase) {
+      wallpaperLogger.info("lifecycle", "application phase changed", {
+        from: previousPhase,
+        to: phase,
+      });
+    }
   }
 
   private fail(error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(error);
+    wallpaperLogger.error("error", "application error", error);
     this.setPhase("error");
     this.errorLabel.hidden = false;
     this.errorLabel.textContent = message;
@@ -1104,7 +1325,17 @@ export class App {
         ? "—"
         : text.interactions[this.lastAction as InteractionMode];
     this.loadingLabel.textContent = text.loadingSpine;
+    this.logViewerController.setLocale(this.settings.panelLocale);
+    this.syncLogToggleButton();
     this.syncDebugPanelVisibility();
+  }
+
+  private syncLogToggleButton() {
+    const value = this.logViewerController.isOpen
+      ? this.panelText.closeLogs
+      : this.panelText.openLogs;
+    this.openLogsButton.textContent = value;
+    this.openLogsButton.setAttribute("aria-label", value);
   }
 
   private syncDebugPanelVisibility() {
@@ -1121,6 +1352,7 @@ export class App {
     this.debugPanelToggle.setAttribute("aria-label", this.debugPanelToggle.textContent);
     this.statusPanel.classList.toggle("status-panel--visible", expanded);
     this.statusPanel.setAttribute("aria-hidden", String(!expanded));
+    this.debugPanelPointerController.refresh();
   }
 
   private syncDebugPanelLayout(settings: Readonly<WallpaperSettings>) {
@@ -1128,8 +1360,17 @@ export class App {
       "--debug-panel-scale",
       String(settings.panelScale),
     );
+    this.logViewer.style.setProperty(
+      "--debug-panel-scale",
+      String(settings.panelScale),
+    );
+    this.debugPanelToggle.style.setProperty(
+      "--debug-panel-scale",
+      String(settings.panelScale),
+    );
     this.statusPanel.style.setProperty("--debug-panel-x", `${settings.panelX}px`);
     this.statusPanel.style.setProperty("--debug-panel-y", `${settings.panelY}px`);
+    this.debugPanelPointerController.refresh();
   }
 
   private togglePropertyGroup(button: HTMLButtonElement) {
@@ -1139,6 +1380,7 @@ export class App {
     button.setAttribute("aria-expanded", String(expanded));
     group.classList.toggle("status-panel__property-group--collapsed", !expanded);
     this.syncPropertyGroupToggleLabel(button);
+    this.debugPanelPointerController.refresh();
   }
 
   private syncPropertyGroupToggleLabels() {
@@ -1157,6 +1399,7 @@ export class App {
     button.setAttribute("aria-expanded", String(expanded));
     group.classList.toggle("status-panel__nested-controls--collapsed", !expanded);
     this.syncPropertyGroupToggleLabel(button);
+    this.debugPanelPointerController.refresh();
   }
 
   private syncPropertyGroupToggleLabel(button: HTMLButtonElement) {
@@ -1198,7 +1441,7 @@ export class App {
       geometry.head.y,
       geometry.head.radiusX,
       geometry.head.radiusY,
-      0,
+      geometry.head.rotation,
       0,
       Math.PI * 2,
     );
@@ -1210,7 +1453,7 @@ export class App {
       geometry.body.y,
       geometry.body.radiusX,
       geometry.body.radiusY,
-      0,
+      geometry.body.rotation,
       0,
       Math.PI * 2,
     );

@@ -110,6 +110,17 @@
         "type": "slider",
         "value": 0
       },
+      "modelrotation": {
+        "condition": "positionpreset.value == 'custom'",
+        "fraction": false,
+        "index": 37,
+        "max": 360,
+        "min": 0,
+        "order": 14,
+        "text": "Model Rotation",
+        "type": "slider",
+        "value": 0
+      },
       "interactionpreset": {
         "index": 9,
         "options": [

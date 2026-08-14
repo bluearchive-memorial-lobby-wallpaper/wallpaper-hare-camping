@@ -32,7 +32,7 @@ try {
   assert.equal(resolveDebugPanelExpanded(true, true, false, false), false);
   assert.equal(resolveDebugPanelExpanded(false, false, false, true), false);
   assert.equal(resolveDebugPanelExpanded(true, false, false, true), true);
-  assert.equal(DEFAULT_SETTINGS_VERSION, 6);
+  assert.equal(DEFAULT_SETTINGS_VERSION, 7);
   assert.deepEqual(resolvePropertyGroupVisibility(DEFAULT_SETTINGS), {
     qualityCustom: false,
     positionCustom: false,
@@ -176,6 +176,7 @@ try {
       modelScale: DEFAULT_SETTINGS.modelScale,
       modelX: DEFAULT_SETTINGS.modelX,
       modelY: DEFAULT_SETTINGS.modelY,
+      modelRotation: DEFAULT_SETTINGS.modelRotation,
       positionPreset: DEFAULT_SETTINGS.positionPreset,
       panelPositionPreset: DEFAULT_SETTINGS.panelPositionPreset,
       panelScale: DEFAULT_SETTINGS.panelScale,
@@ -196,6 +197,7 @@ try {
       modelScale: 0.8,
       modelX: 0,
       modelY: 0,
+      modelRotation: 0,
       positionPreset: "default",
       panelPositionPreset: "default",
       panelScale: 1,
@@ -223,6 +225,7 @@ try {
       modelScale: properties.modelscale.value,
       modelX: properties.modelx.value,
       modelY: properties.modely.value,
+      modelRotation: properties.modelrotation.value,
       positionPreset: properties.positionpreset.value,
       panelPositionPreset: properties.panelpositionpreset.value,
       panelScale: properties.panelscale.value,
@@ -252,6 +255,7 @@ try {
       modelScale: DEFAULT_SETTINGS.modelScale,
       modelX: DEFAULT_SETTINGS.modelX,
       modelY: DEFAULT_SETTINGS.modelY,
+      modelRotation: DEFAULT_SETTINGS.modelRotation,
       positionPreset: DEFAULT_SETTINGS.positionPreset,
       panelPositionPreset: DEFAULT_SETTINGS.panelPositionPreset,
       panelScale: DEFAULT_SETTINGS.panelScale,
@@ -302,20 +306,21 @@ try {
     modelscale: { value: 0.92 },
     modelx: { value: 140 },
     modely: { value: -80 },
+    modelrotation: { value: 135 },
   });
   assert.deepEqual(
-    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
-    [0.92, 140, -80],
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY, adapter.current.modelRotation],
+    [0.92, 140, -80, 135],
   );
   listener.applyUserProperties({ positionpreset: { value: "default" } });
   assert.deepEqual(
-    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
-    [0.8, 0, 0],
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY, adapter.current.modelRotation],
+    [0.8, 0, 0, 0],
   );
   listener.applyUserProperties({ positionpreset: { value: "custom" } });
   assert.deepEqual(
-    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
-    [0.92, 140, -80],
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY, adapter.current.modelRotation],
+    [0.92, 140, -80, 135],
   );
 
   listener.applyUserProperties({ panelpositionpreset: { value: "custom" } });
@@ -474,20 +479,24 @@ try {
 
   adapter.setUserPropertiesForDebug({ positionpreset: "default" });
   assert.deepEqual(
-    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
-    [0.8, 0, 0],
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY, adapter.current.modelRotation],
+    [0.8, 0, 0, 0],
   );
   adapter.setUserPropertiesForDebug({ positionpreset: "custom" });
   assert.deepEqual(
-    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
-    [0.92, 140, -80],
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY, adapter.current.modelRotation],
+    [0.92, 140, -80, 135],
   );
-  adapter.setUserPropertiesForDebug({ modelscale: 1.05, modelx: -210 });
+  adapter.setUserPropertiesForDebug({
+    modelscale: 1.05,
+    modelx: -210,
+    modelrotation: 420,
+  });
   adapter.setUserPropertiesForDebug({ positionpreset: "default" });
   adapter.setUserPropertiesForDebug({ positionpreset: "custom" });
   assert.deepEqual(
-    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
-    [1.05, -210, -80],
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY, adapter.current.modelRotation],
+    [1.05, -210, -80, 360],
   );
 
   adapter.setUserPropertiesForDebug({ panelpositionpreset: "default" });
@@ -577,8 +586,8 @@ try {
 
   adapter.clearSessionOverrides();
   assert.deepEqual(
-    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY],
-    [0.92, 140, -80],
+    [adapter.current.modelScale, adapter.current.modelX, adapter.current.modelY, adapter.current.modelRotation],
+    [0.92, 140, -80, 135],
   );
   assert.deepEqual(
     [adapter.current.panelScale, adapter.current.panelX, adapter.current.panelY],

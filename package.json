@@ -15,6 +15,7 @@
     "test:settings": "node scripts/test-settings-adapter.mjs",
     "test:startup": "node scripts/test-startup-initialization.mjs",
     "test:bgm": "node scripts/test-bgm-player.mjs",
+    "test:logging": "node scripts/test-logging.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run prepare:assets && npm run typecheck && vite build && node scripts/validate-dist.mjs",
     "package:offline": "npm run build && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-offline.ps1",

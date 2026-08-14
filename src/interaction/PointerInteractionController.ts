@@ -9,7 +9,15 @@ import {
 type PointerIntent = "dialogue" | "look" | "pat";
 
 interface PointerInteractionCallbacks {
-  onDialogueRequested: () => void;
+  onDialogueRequested: () => boolean;
+  onInteractionCompleted: (interaction: {
+    intent: PointerIntent;
+    accepted: boolean;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+  }) => void;
 }
 
 export class PointerInteractionController {
@@ -121,11 +129,20 @@ export class PointerInteractionController {
   private readonly onPointerUp = (event: PointerEvent) => {
     const active = this.active;
     if (!active || active.id !== event.pointerId) return;
+    let accepted = true;
     if (active.intent === "look") this.renderer.endLook();
     else if (active.intent === "pat") this.renderer.endPat();
     else if (this.settings && canTriggerDialogue(this.settings)) {
-      this.callbacks.onDialogueRequested();
-    }
+      accepted = this.callbacks.onDialogueRequested();
+    } else accepted = false;
+    this.callbacks.onInteractionCompleted({
+      intent: active.intent,
+      accepted,
+      startX: active.startX,
+      startY: active.startY,
+      endX: event.clientX,
+      endY: event.clientY,
+    });
     this.releaseActive(event.pointerId);
     event.preventDefault();
   };

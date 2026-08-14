@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <title>Blue Archive — Hare (Camping)</title>
+    <script src="./logging-bootstrap.js"></script>
     <script vite-ignore src="./vendor/spine-webgl-3.8.js"></script>
   </head>
   <body>
@@ -35,6 +36,7 @@
         <p class="status-panel__visibility-hint" data-panel-text="debugPanelVisibilityHint">要切换调试面板的可见性，点击壁纸右上角的“显示/隐藏调试面板”按钮</p>
         <div id="debug-controls" class="status-panel__controls" aria-label="壁纸调试控制" data-panel-aria="controlsAria">
           <div class="status-panel__toolbar">
+            <button id="debug-open-logs" type="button" data-panel-text="openLogs">打开日志</button>
             <button id="debug-replay-intro" type="button" data-panel-text="replay">完整重播</button>
             <button id="debug-skip-idle" type="button" data-panel-text="skipToIdle">切到待机</button>
             <button id="debug-dialogue" type="button" data-panel-text="nextDialogue">下一组对话</button>
@@ -169,6 +171,13 @@
                     <output id="debug-model-y-output" for="debug-model-y">0</output>
                   </label>
                   <input id="debug-model-y" type="range" min="-1000" max="1000" step="1" value="0" />
+                </div>
+                <div class="status-panel__control-group">
+                  <label class="status-panel__control-label" for="debug-model-rotation">
+                    <span data-panel-text="modelRotation">模型旋转</span>
+                    <output id="debug-model-rotation-output" for="debug-model-rotation">0°</output>
+                  </label>
+                  <input id="debug-model-rotation" type="range" min="0" max="360" step="1" value="0" />
                 </div>
               </div>
             </fieldset>
@@ -343,6 +352,35 @@
         </div>
         <p id="status-error" class="status-panel__error" hidden></p>
       </section>
+
+      <section id="wallpaper-log-viewer" class="wallpaper-log-viewer wallpaper-log-viewer--independent" aria-label="壁纸日志" hidden>
+        <header>
+          <strong id="wallpaper-log-viewer-title">壁纸日志</strong>
+          <div class="wallpaper-log-viewer__header-actions">
+            <button id="wallpaper-log-viewer-copy" type="button">复制当前全部</button>
+            <button id="wallpaper-log-viewer-close" class="wallpaper-log-viewer__close" type="button" aria-label="关闭">×</button>
+          </div>
+        </header>
+        <div class="wallpaper-log-viewer__session-nav" aria-label="日志会话">
+          <button id="wallpaper-log-viewer-previous-session" type="button" aria-label="上一份日志">‹</button>
+          <span id="wallpaper-log-viewer-session-label">日志会话</span>
+          <button id="wallpaper-log-viewer-next-session" type="button" aria-label="下一份日志">›</button>
+        </div>
+        <p id="wallpaper-log-viewer-notice" class="wallpaper-log-viewer__notice" hidden></p>
+        <div class="wallpaper-log-viewer__scroll-shell">
+          <pre id="wallpaper-log-viewer-content" tabindex="0" aria-label="日志内容"></pre>
+          <div id="wallpaper-log-scrollbar" class="debug-scrollbar debug-scrollbar--embedded" aria-hidden="true" hidden>
+            <div id="wallpaper-log-scrollbar-thumb" class="debug-scrollbar__thumb"></div>
+          </div>
+          <div id="wallpaper-log-scrollbar-horizontal" class="debug-scrollbar debug-scrollbar--horizontal" aria-hidden="true" hidden>
+            <div id="wallpaper-log-scrollbar-horizontal-thumb" class="debug-scrollbar__thumb"></div>
+          </div>
+        </div>
+      </section>
+
+      <div id="debug-panel-scrollbar" class="debug-scrollbar debug-scrollbar--fixed" aria-hidden="true" hidden>
+        <div id="debug-panel-scrollbar-thumb" class="debug-scrollbar__thumb"></div>
+      </div>
 
       <button
         id="debug-panel-toggle"

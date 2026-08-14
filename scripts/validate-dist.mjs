@@ -6,6 +6,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const dist = path.join(root, "dist");
 const required = [
   "index.html",
+  "logging-bootstrap.js",
   "project.json",
   "preview.gif",
   "OFFLINE-README.txt",
@@ -133,6 +134,7 @@ const expectedPropertyOrder = [
   "modelscale",
   "modelx",
   "modely",
+  "modelrotation",
   "interactionpreset",
   "introanimation",
   "interactions",
@@ -167,6 +169,15 @@ const actualPropertyOrder = Object.entries(frozenDefaults)
   .map(([key]) => key);
 if (JSON.stringify(actualPropertyOrder) !== JSON.stringify(expectedPropertyOrder)) {
   throw new Error("Grouped property order does not match the approved layout");
+}
+if (
+  frozenDefaults.modelrotation.type !== "slider" ||
+  frozenDefaults.modelrotation.min !== 0 ||
+  frozenDefaults.modelrotation.max !== 360 ||
+  frozenDefaults.modelrotation.value !== 0 ||
+  frozenDefaults.modelrotation.condition !== "positionpreset.value == 'custom'"
+) {
+  throw new Error("Model rotation property schema is invalid");
 }
 if (
   frozenDefaults.muted.type !== "bool" ||
@@ -483,10 +494,11 @@ for (const file of await walk(dist)) {
   }
 }
 
-const [offlineReadme, thirdPartyNotices, builtHtml] = await Promise.all([
+const [offlineReadme, thirdPartyNotices, builtHtml, loggingBootstrap] = await Promise.all([
   readFile(path.join(dist, "OFFLINE-README.txt"), "utf8"),
   readFile(path.join(dist, "THIRD-PARTY-NOTICES.txt"), "utf8"),
   readFile(path.join(dist, "index.html"), "utf8"),
+  readFile(path.join(dist, "logging-bootstrap.js"), "utf8"),
 ]);
 const builtCssNames = (await readdir(path.join(dist, "assets"))).filter((name) =>
   name.endsWith(".css"),
@@ -497,6 +509,15 @@ const builtCss = (
     builtCssNames.map((name) =>
       readFile(path.join(dist, "assets", name), "utf8"),
     ),
+  )
+).join("\n");
+const builtJsNames = (await readdir(path.join(dist, "assets"))).filter((name) =>
+  name.endsWith(".js"),
+);
+if (builtJsNames.length === 0) throw new Error("Built JavaScript bundle is missing");
+const builtJs = (
+  await Promise.all(
+    builtJsNames.map((name) => readFile(path.join(dist, "assets", name), "utf8")),
   )
 ).join("\n");
 if (!offlineReadme.includes("Version 1.0.0") || !offlineReadme.includes("MANIFEST.sha256")) {
@@ -512,6 +533,44 @@ if (
 if (/M3\s+LOCAL\s+TEST/i.test(builtHtml)) {
   throw new Error("Built HTML still contains M3 test labeling");
 }
+if (
+  !builtHtml.includes('src="./logging-bootstrap.js"') ||
+  builtHtml.indexOf('src="./logging-bootstrap.js"') >
+    builtHtml.indexOf('src="./vendor/spine-webgl-3.8.js"')
+) {
+  throw new Error("Persistent logging bootstrap must load before the application runtime");
+}
+if (
+  !loggingBootstrap.includes("hare-wallpaper-log:v1:") ||
+  !loggingBootstrap.includes('window.addEventListener("error"') ||
+  loggingBootstrap.includes("showDirectoryPicker")
+) {
+  throw new Error("Built persistent logging bootstrap is incomplete");
+}
+if (builtJs.includes(".showModal(")) {
+  throw new Error("Built log viewer must not use CEF-incompatible modal dialogs");
+}
+if (
+  builtJs.includes("createObjectURL") ||
+  !builtHtml.includes('id="wallpaper-log-viewer-content"') ||
+  !builtHtml.includes('<pre id="wallpaper-log-viewer-content"') ||
+  !builtHtml.includes('id="wallpaper-log-viewer-copy"') ||
+  !builtHtml.includes('class="wallpaper-log-viewer__close"') ||
+  !builtHtml.includes("wallpaper-log-viewer--independent") ||
+  !builtHtml.includes('id="wallpaper-log-scrollbar"') ||
+  !builtHtml.includes('id="wallpaper-log-scrollbar-horizontal"') ||
+  !builtHtml.includes('id="debug-panel-scrollbar"')
+) {
+  throw new Error("Built log viewer must use the static CEF-safe pointer UI");
+}
+if (
+  !builtJs.includes(".scrollHeight") ||
+  !builtJs.includes(".scrollWidth") ||
+  !builtJs.includes("pointermove") ||
+  !builtJs.includes("pointercancel")
+) {
+  throw new Error("Built debug panel is missing explicit pointer drag handling");
+}
 for (const [label, pattern] of [
   ["right alignment", /data-alignment=(?:["']?)right(?:["']?)/],
   ["top center position", /data-position=(?:["']?)top-center(?:["']?)/],
@@ -526,6 +585,7 @@ for (const [label, pattern] of [
   }
 }
 const expectedDebugPanelLayout = [
+  "debug-open-logs",
   "debug-panel-position-preset",
   "debug-panel-position-custom",
   "debug-panel-scale",

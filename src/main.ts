@@ -1,5 +1,8 @@
 import "./style.css";
 import { App } from "./app/App";
+import { wallpaperLogger } from "./logging/WallpaperLogger";
+
+wallpaperLogger.start();
 
 const root = document.getElementById("app");
 if (!(root instanceof HTMLElement)) throw new Error("缺少 #app 根节点。");

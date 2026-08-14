@@ -6,6 +6,8 @@ export interface PanelText {
   voiceLanguageAria: string;
   showDebugPanel: string;
   hideDebugPanel: string;
+  openLogs: string;
+  closeLogs: string;
   restoreHostSettings: string;
   expandSection: string;
   collapseSection: string;
@@ -42,6 +44,7 @@ export interface PanelText {
   modelScale: string;
   modelX: string;
   modelY: string;
+  modelRotation: string;
   animationAndInteractions: string;
   introAnimation: string;
   interactiveActions: string;
@@ -95,6 +98,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
   "zh-cn": {
     showDebugPanel: "显示调试面板",
     hideDebugPanel: "隐藏调试面板",
+    openLogs: "打开日志",
+    closeLogs: "关闭日志",
     restoreHostSettings: "恢复 WE 设置",
     expandSection: "展开",
     collapseSection: "折叠",
@@ -135,6 +140,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     modelScale: "模型缩放",
     modelX: "模型 X",
     modelY: "模型 Y",
+    modelRotation: "模型旋转",
     animationAndInteractions: "动画与互动",
     introAnimation: "入场动画",
     interactiveActions: "交互动作",
@@ -186,6 +192,8 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
   en: {
     showDebugPanel: "Show debug panel",
     hideDebugPanel: "Hide debug panel",
+    openLogs: "Open logs",
+    closeLogs: "Close logs",
     restoreHostSettings: "Restore WE settings",
     expandSection: "Expand",
     collapseSection: "Collapse",
@@ -226,6 +234,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
     modelScale: "Model scale",
     modelX: "Model X",
     modelY: "Model Y",
+    modelRotation: "Model rotation",
     animationAndInteractions: "Animation & Interactions",
     introAnimation: "Intro animation",
     interactiveActions: "Interactive actions",
