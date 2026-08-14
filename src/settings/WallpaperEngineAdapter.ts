@@ -4,7 +4,7 @@ import {
   isSubtitlePosition,
   type SubtitleAlignment,
   type SubtitlePosition,
-} from "../dialogue/subtitleLayout";
+} from "ba-memorylobby-wallpaper-runtime";
 import { isPanelLocale, type PanelLocale } from "../i18n/panel";
 import {
   isRenderResolution,

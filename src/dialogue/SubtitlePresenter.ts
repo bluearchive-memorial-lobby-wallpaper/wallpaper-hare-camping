@@ -3,7 +3,7 @@ import {
   applySubtitleLayout,
   type SubtitleAlignment,
   type SubtitlePosition,
-} from "./subtitleLayout";
+} from "ba-memorylobby-wallpaper-runtime";
 
 export interface SubtitlePresentation {
   primaryText: string;

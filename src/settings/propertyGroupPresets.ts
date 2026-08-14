@@ -2,7 +2,7 @@ import type { SubtitleLocale, VoiceLocale } from "../config";
 import type {
   SubtitleAlignment,
   SubtitlePosition,
-} from "../dialogue/subtitleLayout";
+} from "ba-memorylobby-wallpaper-runtime";
 
 export type PositionPreset = "default" | "custom";
 export type PanelPositionPreset = "default" | "custom";

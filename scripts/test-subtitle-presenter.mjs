@@ -19,7 +19,7 @@ try {
     applySubtitleLayout,
     isSubtitleAlignment,
     isSubtitlePosition,
-  } = await server.ssrLoadModule("/src/dialogue/subtitleLayout.ts");
+  } = await import("ba-memorylobby-wallpaper-runtime");
   const eventId = "CH0233_MemorialLobby_1_1";
 
   assert.equal(
