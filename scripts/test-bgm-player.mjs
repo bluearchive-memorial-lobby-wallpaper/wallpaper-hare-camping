@@ -46,8 +46,11 @@ class FakeAudio {
 
 try {
   globalThis.Audio = FakeAudio;
-  const { BgmPlayer } = await server.ssrLoadModule("/src/audio/BgmPlayer.ts");
+  const { BgmPlayer } = await import("ba-memorylobby-wallpaper-runtime");
   const player = new BgmPlayer({
+    title: "Starry Confession",
+    path: "./assets/hare-camping/bgm/25 - Starry Confession.flac",
+  }, {
     onStatusChange: () => {},
     onError: (message) => assert.fail(message),
   });
