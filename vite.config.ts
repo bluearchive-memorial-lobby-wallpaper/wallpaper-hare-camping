@@ -3,6 +3,7 @@ import { appendFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 
 const LOG_ROUTE = "/__hare-log";
+const MAX_LOG_BODY_CHARACTERS = 1024 * 1024;
 const SESSION_FILE_PATTERN = /^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-\d{3}_[a-z0-9]{6}\.log$/;
 
 function localLogBridge() {
@@ -17,12 +18,20 @@ function localLogBridge() {
       const pathname = new URL(request.url ?? "/", "http://127.0.0.1").pathname;
       if (request.method === "POST" && pathname === `${LOG_ROUTE}/append`) {
         let body = "";
+        let rejected = false;
         request.setEncoding("utf8");
         request.on("data", (chunk: string) => {
+          if (rejected) return;
+          if (body.length + chunk.length > MAX_LOG_BODY_CHARACTERS) {
+            rejected = true;
+            response.statusCode = 413;
+            response.end("Log payload too large");
+            return;
+          }
           body += chunk;
-          if (body.length > 1024 * 1024) request.destroy();
         });
         request.on("end", async () => {
+          if (rejected || response.writableEnded) return;
           try {
             const payload = JSON.parse(body) as {
               sessionFile?: unknown;
@@ -47,6 +56,12 @@ function localLogBridge() {
             response.statusCode = 204;
             response.end();
           } catch (error) {
+            if (response.writableEnded) return;
+            if (error instanceof SyntaxError) {
+              response.statusCode = 400;
+              response.end("Invalid JSON payload");
+              return;
+            }
             response.statusCode = 500;
             response.end(error instanceof Error ? error.message : String(error));
           }

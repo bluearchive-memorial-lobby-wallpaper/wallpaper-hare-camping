@@ -138,6 +138,22 @@ try {
   assert(address && typeof address === "object");
   const endpoint = `http://127.0.0.1:${address.port}/__hare-log/append`;
 
+  const malformedResponse = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "{not-json",
+  });
+  assert.equal(malformedResponse.status, 400);
+  assert.equal(await malformedResponse.text(), "Invalid JSON payload");
+
+  const oversizedResponse = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "x".repeat(1024 * 1024 + 1),
+  });
+  assert.equal(oversizedResponse.status, 413);
+  assert.equal(await oversizedResponse.text(), "Log payload too large");
+
   const invalidResponse = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
