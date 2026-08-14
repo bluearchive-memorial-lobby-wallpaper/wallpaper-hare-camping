@@ -19,10 +19,10 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
-    "ba-memorylobby-wallpaper-runtime": "file:../ba-memorylobby-wallpaper-runtime"
+    "ba-memorylobby-wallpaper-runtime": "^0.1.0"
   },
   "devDependencies": {
-    "ba-memorylobby-wallpaper-toolkit": "file:../ba-memorylobby-wallpaper-toolkit",
+    "ba-memorylobby-wallpaper-toolkit": "^0.1.0",
     "typescript": "7.0.2",
     "vite": "8.2.1"
   }
