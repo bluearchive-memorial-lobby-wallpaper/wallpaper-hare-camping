@@ -3,6 +3,23 @@ export {};
 declare global {
   interface Window {
     spine?: any;
+    __hareLogBootstrap?: {
+      sessionId: string;
+      sessionFileName: string;
+      handlesGlobalErrors: boolean;
+      append: (line: string) => void;
+      getSessions: () => Array<{
+        id: string;
+        fileName: string;
+        startedAt: string;
+        updatedAt: string;
+        endedAt: string | null;
+        status: "running" | "clean-exit" | "interrupted";
+        truncated: boolean;
+        lines: string[];
+      }>;
+      markCleanExit: () => void;
+    };
     wallpaperPropertyListener?: {
       applyGeneralProperties?: (properties: { fps?: number }) => void;
       applyUserProperties?: (

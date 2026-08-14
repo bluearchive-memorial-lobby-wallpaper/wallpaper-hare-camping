@@ -6,6 +6,7 @@ export interface PanelText {
   voiceLanguageAria: string;
   showDebugPanel: string;
   hideDebugPanel: string;
+  openLogs: string;
   restoreHostSettings: string;
   expandSection: string;
   collapseSection: string;
@@ -95,6 +96,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
   "zh-cn": {
     showDebugPanel: "显示调试面板",
     hideDebugPanel: "隐藏调试面板",
+    openLogs: "打开日志",
     restoreHostSettings: "恢复 WE 设置",
     expandSection: "展开",
     collapseSection: "折叠",
@@ -186,6 +188,7 @@ export const PANEL_TEXT: Record<PanelLocale, PanelText> = {
   en: {
     showDebugPanel: "Show debug panel",
     hideDebugPanel: "Hide debug panel",
+    openLogs: "Open logs",
     restoreHostSettings: "Restore WE settings",
     expandSection: "Expand",
     collapseSection: "Collapse",

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <title>Blue Archive — Hare (Camping)</title>
+    <script src="./logging-bootstrap.js"></script>
     <script vite-ignore src="./vendor/spine-webgl-3.8.js"></script>
   </head>
   <body>
@@ -35,12 +36,35 @@
         <p class="status-panel__visibility-hint" data-panel-text="debugPanelVisibilityHint">要切换调试面板的可见性，点击壁纸右上角的“显示/隐藏调试面板”按钮</p>
         <div id="debug-controls" class="status-panel__controls" aria-label="壁纸调试控制" data-panel-aria="controlsAria">
           <div class="status-panel__toolbar">
+            <button id="debug-open-logs" type="button" data-panel-text="openLogs">打开日志</button>
             <button id="debug-replay-intro" type="button" data-panel-text="replay">完整重播</button>
             <button id="debug-skip-idle" type="button" data-panel-text="skipToIdle">切到待机</button>
             <button id="debug-dialogue" type="button" data-panel-text="nextDialogue">下一组对话</button>
             <button id="debug-hitboxes" type="button">显示命中区</button>
             <button id="debug-restore-host-settings" type="button" data-panel-text="restoreHostSettings">恢复 WE 设置</button>
           </div>
+
+          <section id="wallpaper-log-viewer" class="wallpaper-log-viewer" aria-label="壁纸日志" hidden>
+            <header>
+              <strong id="wallpaper-log-viewer-title">壁纸日志</strong>
+              <button id="wallpaper-log-viewer-close" type="button">关闭</button>
+            </header>
+            <label class="wallpaper-log-viewer__session-label" for="wallpaper-log-viewer-session">
+              <span id="wallpaper-log-viewer-session-label">日志会话</span>
+              <select id="wallpaper-log-viewer-session"></select>
+            </label>
+            <p id="wallpaper-log-viewer-notice" class="wallpaper-log-viewer__notice" hidden></p>
+            <div class="wallpaper-log-viewer__scroll-shell">
+              <textarea id="wallpaper-log-viewer-content" readonly wrap="off" spellcheck="false" aria-label="日志内容"></textarea>
+              <div id="wallpaper-log-scrollbar" class="debug-scrollbar debug-scrollbar--embedded" aria-hidden="true" hidden>
+                <div id="wallpaper-log-scrollbar-thumb" class="debug-scrollbar__thumb"></div>
+              </div>
+              <div id="wallpaper-log-scrollbar-horizontal" class="debug-scrollbar debug-scrollbar--horizontal" aria-hidden="true" hidden>
+                <div id="wallpaper-log-scrollbar-horizontal-thumb" class="debug-scrollbar__thumb"></div>
+              </div>
+            </div>
+            <p id="wallpaper-log-viewer-copy-hint" class="wallpaper-log-viewer__copy-hint">只读日志；可使用 Ctrl+A、Ctrl+C 复制。</p>
+          </section>
 
           <div class="status-panel__property-groups">
             <fieldset class="status-panel__property-group">
@@ -343,6 +367,10 @@
         </div>
         <p id="status-error" class="status-panel__error" hidden></p>
       </section>
+
+      <div id="debug-panel-scrollbar" class="debug-scrollbar debug-scrollbar--fixed" aria-hidden="true" hidden>
+        <div id="debug-panel-scrollbar-thumb" class="debug-scrollbar__thumb"></div>
+      </div>
 
       <button
         id="debug-panel-toggle"

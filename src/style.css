@@ -195,8 +195,8 @@ body {
 
   position: relative;
   z-index: 2;
-  top: 1.25rem;
-  left: 1.25rem;
+  top: calc(1.25rem + var(--debug-panel-y));
+  left: calc(1.25rem + var(--debug-panel-x));
   width: min(24rem, calc(100vw - 2.5rem));
   max-height: calc(100vh - 2.5rem);
   padding: 1rem 1.1rem;
@@ -206,22 +206,21 @@ body {
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.24);
   opacity: 0;
   overflow-y: auto;
+  scrollbar-width: none;
   pointer-events: none;
-  transform: translate(
-      var(--debug-panel-x),
-      calc(var(--debug-panel-y) - 0.5rem)
-    )
-    scale(var(--debug-panel-scale));
-  transform-origin: top left;
-  transition: opacity 180ms ease, transform 180ms ease;
+  zoom: var(--debug-panel-scale);
+  transition: opacity 180ms ease;
   backdrop-filter: blur(16px);
+}
+
+.status-panel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .status-panel--visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translate(var(--debug-panel-x), var(--debug-panel-y))
-    scale(var(--debug-panel-scale));
 }
 
 .debug-panel-toggle {
@@ -358,6 +357,154 @@ body {
 .status-panel__controls button:disabled {
   opacity: 0.42;
   cursor: not-allowed;
+}
+
+.wallpaper-log-viewer {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+  padding: 0.65rem;
+  color: #e8f1ff;
+  border: 1px solid rgba(159, 200, 255, 0.32);
+  border-radius: 0.65rem;
+  background: rgba(8, 16, 30, 0.72);
+}
+
+.wallpaper-log-viewer[hidden] {
+  display: none;
+}
+
+.wallpaper-log-viewer header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0;
+}
+
+.wallpaper-log-viewer header button {
+  padding: 0.1rem 0.45rem;
+  color: inherit;
+  font: inherit;
+  font-size: 0.75rem;
+  border: 1px solid rgba(159, 200, 255, 0.32);
+  border-radius: 0.35rem;
+  background: rgba(47, 78, 121, 0.55);
+  cursor: pointer;
+}
+
+.wallpaper-log-viewer__session-label {
+  display: grid;
+  gap: 0.3rem;
+  color: #abcdf8;
+  font-size: 0.75rem;
+}
+
+.wallpaper-log-viewer__session-label select {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0.35rem 0.6rem;
+  color: #e8f1ff;
+  font: inherit;
+  border: 1px solid rgba(159, 200, 255, 0.38);
+  border-radius: 0.35rem;
+  background: rgba(47, 78, 121, 0.55);
+}
+
+.wallpaper-log-viewer__notice {
+  margin: 0;
+  padding: 0.4rem 0;
+  color: #ffd69a;
+  border-bottom: 1px solid rgba(255, 214, 154, 0.2);
+  font-size: 0.75rem;
+}
+
+.wallpaper-log-viewer__scroll-shell {
+  position: relative;
+}
+
+.wallpaper-log-viewer textarea {
+  display: block;
+  width: 100%;
+  height: 14rem;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.65rem;
+  resize: none;
+  color: #dceaff;
+  border: 1px solid rgba(159, 200, 255, 0.2);
+  border-radius: 0.35rem;
+  background: rgba(2, 8, 17, 0.7);
+  font: 0.78rem/1.5 Consolas, "Cascadia Mono", monospace;
+  scrollbar-width: none;
+}
+
+.wallpaper-log-viewer textarea::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.debug-scrollbar {
+  width: 0.7rem;
+  border-radius: 999px;
+  background: rgba(214, 229, 252, 0.12);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.debug-scrollbar[hidden] {
+  display: none;
+}
+
+.debug-scrollbar--fixed {
+  position: fixed;
+  z-index: 4;
+}
+
+.debug-scrollbar--embedded {
+  position: absolute;
+  z-index: 2;
+  top: 0.3rem;
+  right: 0.3rem;
+  bottom: 1.15rem;
+}
+
+.debug-scrollbar--horizontal {
+  position: absolute;
+  z-index: 2;
+  right: 1.15rem;
+  bottom: 0.3rem;
+  left: 0.3rem;
+  width: auto;
+  height: 0.7rem;
+}
+
+.debug-scrollbar--horizontal .debug-scrollbar__thumb {
+  width: 1.75rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.debug-scrollbar__thumb {
+  width: 100%;
+  min-height: 1.75rem;
+  border: 1px solid rgba(222, 235, 255, 0.42);
+  border-radius: inherit;
+  background: rgba(188, 213, 247, 0.72);
+  box-shadow: 0 0.15rem 0.4rem rgba(0, 0, 0, 0.25);
+  cursor: grab;
+}
+
+.debug-scrollbar__thumb:active {
+  cursor: grabbing;
+  background: rgba(215, 232, 255, 0.9);
+}
+
+.wallpaper-log-viewer__copy-hint {
+  margin: 0;
+  color: #91acd0;
+  font-size: 0.7rem;
 }
 
 .status-panel__control-group {
@@ -543,10 +690,32 @@ body {
 }
 
 .status-panel__control-group input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
+  height: 1rem;
   margin: 0;
-  accent-color: #85b8f5;
+  border-radius: 999px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0.35rem,
+    rgba(222, 235, 255, 0.3) 0.35rem,
+    rgba(222, 235, 255, 0.3) 0.65rem,
+    transparent 0.65rem
+  );
   cursor: pointer;
+  touch-action: none;
+}
+
+.status-panel__control-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid rgba(222, 235, 255, 0.5);
+  border-radius: 50%;
+  background: #85b8f5;
+  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.28);
 }
 
 .status-panel__control-group select {

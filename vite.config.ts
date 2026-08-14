@@ -1,7 +1,76 @@
 import { defineConfig } from "vite";
+import { appendFile, mkdir } from "node:fs/promises";
+import path from "node:path";
+
+const LOG_ROUTE = "/__hare-log";
+const SESSION_FILE_PATTERN = /^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-\d{3}_[a-z0-9]{6}\.log$/;
+
+function localLogBridge() {
+  const logDirectory = path.resolve("dist", "log");
+
+  const installMiddleware = (server: {
+    middlewares: {
+      use: (handler: (request: any, response: any, next: () => void) => void) => void;
+    };
+  }) => {
+    server.middlewares.use((request, response, next) => {
+      const pathname = new URL(request.url ?? "/", "http://127.0.0.1").pathname;
+      if (request.method === "POST" && pathname === `${LOG_ROUTE}/append`) {
+        let body = "";
+        request.setEncoding("utf8");
+        request.on("data", (chunk: string) => {
+          body += chunk;
+          if (body.length > 1024 * 1024) request.destroy();
+        });
+        request.on("end", async () => {
+          try {
+            const payload = JSON.parse(body) as {
+              sessionFile?: unknown;
+              lines?: unknown;
+            };
+            if (
+              typeof payload.sessionFile !== "string" ||
+              !SESSION_FILE_PATTERN.test(payload.sessionFile) ||
+              !Array.isArray(payload.lines) ||
+              payload.lines.some((line) => typeof line !== "string")
+            ) {
+              response.statusCode = 400;
+              response.end("Invalid log payload");
+              return;
+            }
+            await mkdir(logDirectory, { recursive: true });
+            await appendFile(
+              path.join(logDirectory, payload.sessionFile),
+              `${payload.lines.join("\n")}\n`,
+              "utf8",
+            );
+            response.statusCode = 204;
+            response.end();
+          } catch (error) {
+            response.statusCode = 500;
+            response.end(error instanceof Error ? error.message : String(error));
+          }
+        });
+        return;
+      }
+
+      next();
+    });
+  };
+
+  return {
+    name: "hare-local-log-bridge",
+    configureServer: installMiddleware,
+    configurePreviewServer: installMiddleware,
+    async writeBundle() {
+      await mkdir(logDirectory, { recursive: true });
+    },
+  };
+}
 
 export default defineConfig({
   base: "./",
+  plugins: [localLogBridge()],
   build: {
     outDir: "dist",
     emptyOutDir: true,
