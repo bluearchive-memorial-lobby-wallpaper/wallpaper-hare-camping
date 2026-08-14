@@ -5,6 +5,8 @@ import {
   type SubtitleAlignment,
   type SubtitlePosition,
 } from "ba-memorylobby-wallpaper-runtime";
+import type { WallpaperProperties } from "ba-memorylobby-wallpaper-runtime/wallpaper-engine";
+import { installWallpaperEngineBridge } from "ba-memorylobby-wallpaper-runtime/wallpaper-engine";
 import { isPanelLocale, type PanelLocale } from "../i18n/panel";
 import {
   isRenderResolution,
@@ -155,6 +157,7 @@ function isSubtitleLocale(value: unknown): value is SubtitleLocale {
 }
 
 export class WallpaperEngineAdapter {
+  private readonly uninstallHostBridge: () => void;
   private readonly listeners = new Set<SettingsListener>();
   private readonly pauseListeners = new Set<PauseListener>();
   private readonly initialUserPropertyWaiters = new Set<() => void>();
@@ -219,11 +222,18 @@ export class WallpaperEngineAdapter {
   };
 
   constructor() {
-    window.wallpaperPropertyListener = {
+    this.uninstallHostBridge = installWallpaperEngineBridge(window, {
       applyGeneralProperties: (properties) => this.applyGeneralProperties(properties),
       applyUserProperties: (properties) => this.applyUserProperties(properties),
       setPaused: (paused) => this.setPaused(paused),
-    };
+    });
+  }
+
+  dispose() {
+    this.uninstallHostBridge();
+    this.listeners.clear();
+    this.pauseListeners.clear();
+    this.initialUserPropertyWaiters.clear();
   }
 
   get current(): Readonly<WallpaperSettings> {
@@ -346,7 +356,7 @@ export class WallpaperEngineAdapter {
   }
 
   private applyUserProperties(
-    properties: Record<string, { value: boolean | number | string }>,
+    properties: WallpaperProperties,
   ) {
     const patch = this.parseUserProperties(properties);
     if (patch.modelScale !== undefined) this.customPositionSettings.modelScale = patch.modelScale;
@@ -491,7 +501,7 @@ export class WallpaperEngineAdapter {
   }
 
   private parseUserProperties(
-    properties: Record<string, { value: boolean | number | string }>,
+    properties: WallpaperProperties,
   ) {
     const patch: Partial<WallpaperSettings> = {};
 

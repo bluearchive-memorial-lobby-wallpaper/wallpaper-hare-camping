@@ -1,3 +1,8 @@
+import type {
+  WallpaperEngineGeneralProperties,
+  WallpaperProperties,
+} from "ba-memorylobby-wallpaper-runtime/wallpaper-engine";
+
 export {};
 
 declare global {
@@ -21,10 +26,8 @@ declare global {
       markCleanExit: () => void;
     };
     wallpaperPropertyListener?: {
-      applyGeneralProperties?: (properties: { fps?: number }) => void;
-      applyUserProperties?: (
-        properties: Record<string, { value: boolean | number | string }>,
-      ) => void;
+      applyGeneralProperties?: (properties: WallpaperEngineGeneralProperties) => void;
+      applyUserProperties?: (properties: WallpaperProperties) => void;
       setPaused?: (paused: boolean) => void;
     };
     __hareWallpaperDebug?: {
