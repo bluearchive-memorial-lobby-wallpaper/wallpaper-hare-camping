@@ -1,14 +1,14 @@
 import { DIALOGUES, MODEL } from "../config";
+import {
+  calculateViewportLayout,
+  createModelRotationMatrix,
+  modelRotationRadians,
+  rotateModelPoint,
+} from "ba-memorylobby-wallpaper-runtime";
 import type { WallpaperSettings } from "../settings/WallpaperEngineAdapter";
 import { RENDER_RESOLUTIONS } from "../settings/renderResolution";
 import type { ModelResolution } from "../settings/modelResolution";
 import { resetAndApplyPlaybackPose } from "./resetPlaybackPose";
-import {
-  createModelRotationMatrix,
-  modelRotationRadians,
-  rotateModelPoint,
-} from "./modelTransform";
-import { calculateViewportLayout } from "./viewportLayout";
 
 export type InteractionMode = "intro" | "idle" | "dialogue" | "look" | "pat" | "cooldown";
 export type HitRegion = "head" | "body" | "background";
