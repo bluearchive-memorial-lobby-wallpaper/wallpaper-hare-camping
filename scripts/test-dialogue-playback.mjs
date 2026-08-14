@@ -18,7 +18,7 @@ try {
     canTriggerDialogue,
     didDialogueSettingChange,
     didInteractionSettingsChange,
-  } = await server.ssrLoadModule("/src/interaction/interactionSettings.ts");
+  } = await server.ssrLoadModule("ba-memorylobby-wallpaper-runtime");
 
   const sequence = new DialoguePlaybackSequence(5);
   assert.equal(sequence.nextIndex, 1);

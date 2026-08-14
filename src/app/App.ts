@@ -11,18 +11,16 @@ import {
   initializeStableResourceVariant,
   isQualityPreset,
   MODEL_RESOLUTIONS,
+  PointerInteractionController,
   RENDER_RESOLUTIONS,
   resolveDebugPanelExpanded,
+  canTriggerDialogue,
+  didDialogueSettingChange,
+  didInteractionSettingsChange,
   SubtitlePresenter,
   VoicePlayer,
 } from "ba-memorylobby-wallpaper-runtime";
 import { PANEL_TEXT, type PanelText } from "../i18n/panel";
-import { PointerInteractionController } from "../interaction/PointerInteractionController";
-import {
-  canTriggerDialogue,
-  didDialogueSettingChange,
-  didInteractionSettingsChange,
-} from "../interaction/interactionSettings";
 import {
   WallpaperEngineAdapter,
   type WallpaperSettings,

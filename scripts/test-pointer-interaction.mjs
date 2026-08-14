@@ -19,7 +19,7 @@ function renderer() {
   return { calls, hitTest: () => "body", beginLook: () => (calls.push("beginLook"), true), updateLook: () => calls.push("updateLook"), endLook: () => calls.push("endLook"), beginPat: () => false, updatePat() {}, endPat() {}, cancelInteraction() {} };
 }
 try {
-  const { PointerInteractionController } = await server.ssrLoadModule("/src/interaction/PointerInteractionController.ts");
+  const { PointerInteractionController } = await server.ssrLoadModule("ba-memorylobby-wallpaper-runtime");
   const canvas = new FakeCanvas(); const target = renderer(); const completed = [];
   const controller = new PointerInteractionController(canvas, target, { dragThresholdPixels: 20 }, {
     onDialogueRequested: () => true,
