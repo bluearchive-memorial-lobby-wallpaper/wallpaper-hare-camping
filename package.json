@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "generate:model-textures": "node scripts/generate-model-textures.mjs",
-    "generate:checksums": "memory-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base .",
-    "verify:checksums": "memory-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base . --verify",
+    "generate:checksums": "memorial-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base .",
+    "verify:checksums": "memorial-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base . --verify",
     "prepare:assets": "node scripts/prepare-assets.mjs",
     "dev": "npm run prepare:assets && vite --host 127.0.0.1",
     "test:display": "node scripts/test-display-layout.mjs",
@@ -15,14 +15,14 @@
     "test:logging": "node scripts/test-logging.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run prepare:assets && npm run typecheck && vite build && node scripts/validate-dist.mjs",
-    "package:offline": "npm run build && memory-lobby-toolkit package --input dist --output release/hare-camping-we-offline-v{version}.zip --package-json package.json --timestamp 2026-08-11T00:00:00.000Z",
+    "package:offline": "npm run build && memorial-lobby-toolkit package --input dist --output release/hare-camping-we-offline-v{version}.zip --package-json package.json --timestamp 2026-08-11T00:00:00.000Z",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
-    "ba-memorylobby-wallpaper-runtime": "^0.1.0"
+    "ba-memorial-lobby-wallpaper-runtime": "^0.1.0"
   },
   "devDependencies": {
-    "ba-memorylobby-wallpaper-toolkit": "^0.1.0",
+    "ba-memorial-lobby-wallpaper-toolkit": "^0.1.0",
     "typescript": "7.0.2",
     "vite": "8.2.1"
   }

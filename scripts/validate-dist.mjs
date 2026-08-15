@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
-import { validateDistributionFiles } from "ba-memorylobby-wallpaper-toolkit";
+import { validateDistributionFiles } from "ba-memorial-lobby-wallpaper-toolkit";
 
 const root = path.resolve(import.meta.dirname, "..");
 const dist = path.join(root, "dist");
@@ -519,7 +519,7 @@ if (
   throw new Error("Persistent logging bootstrap must load before the application runtime");
 }
 if (
-  !loggingBootstrap.includes("memory-lobby-wallpaper-log:v1:") ||
+  !loggingBootstrap.includes("memorial-lobby-wallpaper-log:v1:") ||
   !loggingBootstrap.includes('window.addEventListener("error"') ||
   loggingBootstrap.includes("showDirectoryPicker")
 ) {

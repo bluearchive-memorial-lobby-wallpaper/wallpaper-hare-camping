@@ -1,4 +1,4 @@
-import { createMemoryLobbyVitePlugins } from "ba-memorylobby-wallpaper-toolkit/vite";
+import { createMemorialLobbyVitePlugins } from "ba-memorial-lobby-wallpaper-toolkit/vite";
 import { createRequire } from "node:module";
 import { defineConfig } from "vite";
 
@@ -6,9 +6,9 @@ const require = createRequire(import.meta.url);
 
 export default defineConfig({
   base: "./",
-  plugins: createMemoryLobbyVitePlugins({
+  plugins: createMemorialLobbyVitePlugins({
     loggingBootstrapPath: require.resolve(
-      "ba-memorylobby-wallpaper-runtime/logging-bootstrap.js",
+      "ba-memorial-lobby-wallpaper-runtime/logging-bootstrap.js",
     ),
     logRoute: "/__hare-log",
   }),
