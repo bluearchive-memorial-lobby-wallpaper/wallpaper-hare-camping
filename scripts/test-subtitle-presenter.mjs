@@ -19,7 +19,7 @@ try {
     isSubtitleAlignment,
     isSubtitlePosition,
     resolveSubtitlePresentation,
-  } = await import("ba-memorylobby-wallpaper-runtime");
+  } = await import("ba-memorial-lobby-wallpaper-runtime");
   const eventId = "CH0233_MemorialLobby_1_1";
   assert.equal(WALLPAPER_DEFINITION.id, "blue-archive-hare-camping");
   assert.equal(WALLPAPER_DEFINITION.dialogues.length, DIALOGUES.length);

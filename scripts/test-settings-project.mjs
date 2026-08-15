@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { DEFAULT_SETTINGS } from "ba-memorylobby-wallpaper-runtime";
+import { DEFAULT_SETTINGS } from "ba-memorial-lobby-wallpaper-runtime";
 
 const root = path.resolve(import.meta.dirname, "..");
 const project = JSON.parse(await readFile(path.join(root, "public", "project.json"), "utf8"));

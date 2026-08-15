@@ -1,5 +1,5 @@
-import "ba-memorylobby-wallpaper-runtime/style.css";
-import { App, createWallpaperShell } from "ba-memorylobby-wallpaper-runtime";
+import "ba-memorial-lobby-wallpaper-runtime/style.css";
+import { App, createWallpaperShell } from "ba-memorial-lobby-wallpaper-runtime";
 import { findDialogueLine, WALLPAPER_DEFINITION } from "./config";
 import { wallpaperLogger } from "./logging/WallpaperLogger";
 

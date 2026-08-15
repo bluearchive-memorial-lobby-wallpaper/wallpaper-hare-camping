@@ -5,7 +5,7 @@ import path from "node:path";
 import { createServer as createViteServer } from "vite";
 
 const loggerSource = await readFile(
-  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "logging", "WallpaperLogger.ts"),
+  path.resolve("..", "runtime", "src", "logging", "WallpaperLogger.ts"),
   "utf8",
 );
 assert.equal(loggerSource.includes("window.alert("), false);
@@ -19,7 +19,7 @@ assert.equal(loggerSource.includes("new Blob"), false);
 assert.equal(loggerSource.includes("document.getElementById"), false);
 assert(loggerSource.includes("getSessionSnapshot"));
 const viewerControllerSource = await readFile(
-  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "debug-ui", "LogViewerController.ts"),
+  path.resolve("..", "runtime", "src", "debug-ui", "LogViewerController.ts"),
   "utf8",
 );
 assert(viewerControllerSource.includes("class LogViewerController"));
@@ -29,7 +29,7 @@ assert(viewerControllerSource.includes("onVisibilityChange"));
 const sourceHtml = await readFile(path.resolve("index.html"), "utf8");
 assert(sourceHtml.includes('<main id="app"></main>'));
 const shellSource = await readFile(
-  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "ui", "createWallpaperShell.ts"),
+  path.resolve("..", "runtime", "src", "ui", "createWallpaperShell.ts"),
   "utf8",
 );
 assert(shellSource.includes('id="wallpaper-log-viewer"'));
@@ -47,7 +47,7 @@ assert(
   "The log viewer must be outside the debug panel surface",
 );
 const sourceCss = await readFile(
-  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "styles", "wallpaper.css"),
+  path.resolve("..", "runtime", "styles", "wallpaper.css"),
   "utf8",
 );
 const independentViewerRule = sourceCss.match(/\.wallpaper-log-viewer\s*\{([^}]*)\}/)?.[1];
@@ -120,7 +120,7 @@ try {
 }
 
 const pointerControllerSource = await readFile(
-  path.resolve("..", "ba-memorylobby-wallpaper-runtime", "src", "debug-ui", "DebugPanelPointerController.ts"),
+  path.resolve("..", "runtime", "src", "debug-ui", "DebugPanelPointerController.ts"),
   "utf8",
 );
 assert(pointerControllerSource.includes("trackPointerHandlers"));

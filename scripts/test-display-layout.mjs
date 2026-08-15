@@ -16,7 +16,7 @@ try {
     calculateViewportLayout,
     createModelRotationMatrix,
     rotateModelPoint,
-  } = await import("ba-memorylobby-wallpaper-runtime");
+  } = await import("ba-memorial-lobby-wallpaper-runtime");
   const cases = [
     ["1080p 16:9", 1920, 1080, 1920, 1080, 3200, 1800],
     ["1440p 16:9", 2560, 1440, 1920, 1080, 3200, 1800],

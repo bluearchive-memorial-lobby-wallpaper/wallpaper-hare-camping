@@ -1,7 +1,7 @@
 import type {
   WallpaperEngineGeneralProperties,
   WallpaperProperties,
-} from "ba-memorylobby-wallpaper-runtime/wallpaper-engine";
+} from "ba-memorial-lobby-wallpaper-runtime/wallpaper-engine";
 
 export {};
 

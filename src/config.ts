@@ -2,7 +2,7 @@ import {
   assertWallpaperDefinition,
   createDialogueLineResolver,
   defineWallpaper,
-} from "ba-memorylobby-wallpaper-runtime";
+} from "ba-memorial-lobby-wallpaper-runtime";
 
 export type VoiceLocale = "ja" | "zh-cn" | "ko";
 export type SubtitleLocale = "zh-cn" | "ja" | "ko" | "en";
