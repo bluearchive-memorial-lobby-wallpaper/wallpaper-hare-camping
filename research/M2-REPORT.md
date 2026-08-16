@@ -64,7 +64,7 @@ M1 的背景色、入场开关、模型缩放/X/Y、调试面板和全局 FPS �
 - `validate-dist.mjs` 验证 30 条语音均具有 `OggS` 文件头；
 - `validate-dist.mjs` 验证 BGM 具有 `fLaC` 文件头且 SHA-256 为 `bbe128aad2ba5a9ce7e596f214db638d42ae9194bc6d0b91e3923b7bb64bf2f8`；
 - skeleton 哈希保持为 `bc808f19378fad6d186cbab0a17de166307bb5388dcfeef6401ac60e141b6517`；
-- `dist/project.json` 为私有 M2 web 项目，不含创意工坊身份；
+- `dist/project.json` 为 M2 web 项目，不含创意工坊身份；
 - HTML、JS、CSS、JSON 不含 HTTP(S) 运行依赖。
 
 经典全局脚本 `spine-webgl-3.8.js` 不参与 Vite 模块打包的提示仍属预期，Runtime 会作为本地脚本先于应用模块加载。
@@ -163,6 +163,6 @@ M1 的背景色、入场开关、模型缩放/X/Y、调试面板和全局 FPS �
 
 官方 `closeWallpaper` 命令本次返回成功但没有即时回收弹窗子进程，因此按 14:19 的统一启动时间和已记录 PID 只清理了本次新建的五个测试进程。用户原有 11:51 启动的六个壁纸进程保持响应，Wallpaper Engine 主服务未停止。
 
-## 资源与发布边界
+## 资源与 Git 边界
 
-模型、纹理、30 条语音、BGM、Runtime、`public/assets/`、`public/vendor/` 和 `dist/` 均由 Git 忽略。M2 证明技术可行，不改变 M0 的权利结论；在素材书面授权与 Spine Runtime 许可门槛通过前，当前构建只用于本机验证。
+模型、纹理、30 条语音、BGM、Runtime、`public/assets/`、`public/vendor/` 和 `dist/` 均由 Git 忽略。M2 证明技术可行；资产来源、哈希与权利归属见 `PROVENANCE.md`。

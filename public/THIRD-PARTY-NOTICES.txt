@@ -1,13 +1,15 @@
 THIRD-PARTY NOTICES
-Blue Archive - Hare (Camping) [Offline Edition] 1.0.0
+Blue Archive - Hare (Camping) 1.0.0
 
 Blue Archive assets
 -------------------
 Character model, animation, textures, dialogue audio, dialogue text, and music
 are derived from or reproduce content from Blue Archive. Blue Archive and the
 included game content are the property of their respective rights holders,
-including NEXON Games and Yostar. This private offline project is unofficial
-and is not affiliated with or endorsed by those companies.
+including NEXON Games and Yostar. This unofficial fan project is provided for
+informational and educational purposes only and is not affiliated with or
+endorsed by those companies. The affected assets will be removed upon request
+from the rights holders.
 
 Spine Runtime
 -------------

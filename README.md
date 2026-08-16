@@ -1,56 +1,147 @@
 # Hare (Camping) Wallpaper
 
-小钩晴（露营）Wallpaper Engine 网页壁纸项目。
+English | [简体中文](README.zh-CN.md)
 
-当前状态：M4 已完成，私人离线正式版为 `1.0.0`。项目已具备完整交互、WE 属性、桌面调试面板、分辨率/纹理档位、配置优先级、材质无感切换、WebGL 上下文恢复、低 FPS 时间一致性、4K/8K 性能基线，以及带逐文件校验清单的可复现离线包。
+A Blue Archive memorial-lobby-style web wallpaper for Wallpaper Engine,
+featuring Hare (Camping).
 
-## 本地运行
+Current status: release `1.0.0` is prepared for publishing to the Steam
+Workshop. The project includes full interactions, Wallpaper Engine properties,
+a desktop debug panel, resolution/texture tiers, configuration priority,
+seamless material switching, WebGL context recovery, low-FPS time consistency,
+4K/8K performance baselines, and a reproducible package with a per-file
+checksum manifest.
 
-M0 的本地资源和固定 Spine Runtime 必须已经存在，且都不会加入 Git：
+## Local Development
+
+M0 local assets and the pinned Spine Runtime must exist locally, and neither is
+committed to Git:
 
 ```powershell
 npm install
 npm run dev
 ```
 
-浏览器调试面板：`http://127.0.0.1:5173/?debug=1`。普通浏览器可能阻止页面自动播放音频，此时第一次鼠标或键盘交互会自动解锁 BGM。WE 属性页和调试面板都提供统一静音、BGM 音量与对话音量控制；静音时隐藏两个音量滑块。调试面板的“面板设置”可独立选择界面语言，并通过“位置与缩放”的 `Default`/`Custom` 预设调整面板尺寸及 X/Y 偏移。每个顶层设置分组及其子分组均可由用户单击标题栏独立折叠或展开，状态不随属性值或预设切换而变化。
+Browser debug panel: `http://127.0.0.1:5173/?debug=1`. Browsers may block
+autoplaying audio; the first mouse or keyboard interaction unlocks the BGM
+automatically. Both the Wallpaper Engine properties page and the debug panel
+provide unified mute and BGM/dialogue volume controls; the volume sliders are
+hidden while muted. The debug panel's "Panel Settings" can select the UI
+language independently and adjust panel size and X/Y offset through the
+`Default`/`Custom` presets under "Position & Scale". Every top-level settings
+group and its subgroups can be collapsed or expanded independently by clicking
+its title bar; the state is not affected by property values or preset
+switches.
 
-每次壁纸加载都会单独记录一份日志，内容包括错误、动画切换、交互点击和配置修改。日志脚本会在应用代码之前启动，并直接保存到壁纸宿主提供的持久存储中，无需首次选择目录。调试面板顶部的“打开日志”会在屏幕中央显示独立浮层窗口，打开后按钮切换为“关闭日志”；窗口可在隐藏调试面板后继续查看、切换和复制当前完整会话，并识别未正常结束的会话。日志窗口和右上调试面板切换按钮会跟随面板尺寸设置同步缩放；使用本地 Vite 开发或预览服务时，日志还会同步写入构建目录的 `log` 文件夹。日志功能不增加 WE 属性页选项。
+Each wallpaper load records a separate log session including errors, animation
+switches, interaction clicks, and configuration changes. The logging script
+starts before the application code and saves directly to the persistent
+storage provided by the wallpaper host, without requiring a first-time
+directory selection. The "Open Log" button at the top of the debug panel shows
+an independent floating window in the center of the screen; once open, the
+button switches to "Close Log". The window keeps working after the debug panel
+is hidden and can view, switch, and copy the full current session, detecting
+sessions that did not end normally. The log window and the debug-panel toggle
+button in the top-right corner scale with the panel size setting; when using
+the local Vite dev or preview server, logs are also written to the `log`
+folder in the build directory. The logging feature adds no Wallpaper Engine
+property options.
 
-Wallpaper Engine 中的属性标签与选项保持英文。属性按 `Visual Quality`、`Position & Scale`、`Animation & Interactions`、`Volume`、`Dialogue Playback` 和 `Debug` 的顺序排列；固定预设会隐藏所属的高级子项，选择 `Custom` 后才显示并恢复此前的自定义值。`Volume` 统一管理静音与两条音轨音量；对话音量还会在对话关闭时隐藏。`Dialogue Playback` 提供自动播放与原有语言预设；启用自动播放后，单击一次人物身体会从当前队列的下一组开始连续播放，并在第 5 组结束后停止。播放期间切换自动播放只改变当前组结束后的队列，不会重置位置。`Animation & Interactions` 中任一设置变化都会立即结束当前动作并回到待机；“对话”开关变化还会把播放队列重置为第 1 组，关闭后单击不再触发对话。`Debug` 默认为 `Off`；启用面板后，桌面右上角会显示透明底的面板切换按钮。面板内的参数调整只覆盖当前运行实例，不会改写管理页的持久设置，“恢复 WE 设置”可清除全部临时覆盖。
+Wallpaper Engine property labels and options stay in English. Properties are
+ordered `Visual Quality`, `Position & Scale`, `Animation & Interactions`,
+`Volume`, `Dialogue Playback`, and `Debug`; fixed presets hide their advanced
+sub-items, and selecting `Custom` shows and restores the previously customized
+values. `Volume` manages mute and the two track volumes together; the dialogue
+volume slider is also hidden when dialogue is off. `Dialogue Playback` offers
+auto play and language presets; with auto play enabled, a single click on the
+character's body starts continuous playback from the next group in the queue
+and stops after group 5. Switching auto play during playback only changes the
+queue after the current group, without resetting the position. Any change in
+`Animation & Interactions` immediately ends the current action and returns to
+idle; toggling "Dialogue" also resets the playback queue to group 1, and
+clicking no longer triggers dialogue while it is off. `Debug` defaults to
+`Off`; enabling the panel shows a translucent toggle button in the top-right
+corner of the desktop. Adjustments made in the panel only override the current
+running instance and never rewrite the persistent settings on the properties
+page; "Restore WE Settings" clears all temporary overrides.
 
-分辨率选项控制 WebGL 内部渲染高度，并按当前壁纸视口比例计算宽度。因此 16:9 下对应 1280×720、1920×1080、2560×1440、3840×2160；在 16:10、21:9 等屏幕上会保持屏幕宽高比，不会强行拉伸为 16:9。
+The resolution option controls the WebGL internal render height and computes
+the width from the current wallpaper viewport aspect ratio. Thus at 16:9 it
+maps to 1280×720, 1920×1080, 2560×1440, 3840×2160; on 16:10, 21:9, and other
+screens it keeps the screen aspect ratio without force-stretching to 16:9.
 
-默认参数为模型缩放 `0.80`、X/Y `0/0`、旋转 `0°`、关闭静音、关闭对话自动播放、BGM 音量 `50`、对话音量 `70`、项目 FPS 上限 `60`、主题色 `#0e4eac`，以及 1080P 渲染配 2K 纹理的默认画质预设。自定义模型布局可在 `0–360°` 范围内旋转模型；项目 FPS 上限与 Wallpaper Engine 全局上限同时存在时取两者较低值。实机视口回归结果见 [`research/DEFAULT-PRESET-V1-REPORT.md`](research/DEFAULT-PRESET-V1-REPORT.md)。
+Default parameters: model scale `0.80`, X/Y `0/0`, rotation `0°`, unmuted,
+dialogue auto play off, BGM volume `50`, dialogue volume `70`, project FPS
+cap `60`, theme color `#0e4eac`, and the default quality preset of 1080P
+rendering with 2K textures. Custom model layouts can rotate the model within
+`0–360°`; when both the project FPS cap and the Wallpaper Engine global cap
+exist, the lower of the two applies. On-device viewport regression results are
+in [`research/DEFAULT-PRESET-V1-REPORT.md`](research/DEFAULT-PRESET-V1-REPORT.md).
 
-属性页可直接加载 `Default`、`2K`、`4K` 和 `Maximum` 画质预设；选择 `Custom` 后才显示独立的渲染分辨率、模型纹理和 FPS 控件。位置、互动、对话语言和调试分组也采用相同的固定预设/自定义模式。自定义对话可同时显示上下排列的主、副字幕，并可从简体中文、日文、韩文和英文中分别选择语言，还可设置字幕对齐、底部/顶部/屏幕中心/底部左侧位置或自定义 X/Y；两种字幕语言相同时自动只显示主字幕。固定中/日/韩预设使用对应语音和字幕；英文预设按国际服组合使用日语语音和官方英文字幕。2K 纹理使用游戏资源中的原始 Atlas 页面；4K 和 8K 纹理使用 Real-CUGAN 对整张页面做 2×/4× 确定性超分。8K 档占用的显存和载入时间明显更高，只在最高预设或自定义中使用。
+The properties page can load the `Default`, `2K`, `4K`, and `Maximum` quality
+presets directly; selecting `Custom` shows the independent render resolution,
+model texture, and FPS controls. Position, interaction, dialogue language, and
+debug groups use the same fixed-preset/custom pattern. Custom dialogue can show
+primary and secondary subtitles stacked vertically, with each chosen
+independently from Simplified Chinese, Japanese, Korean, and English, plus
+subtitle alignment, bottom/top/screen-center/bottom-left position, or custom
+X/Y; when both subtitle languages are identical, only the primary subtitle is
+shown. The fixed Chinese/Japanese/Korean presets use the matching voice and
+subtitles; the English preset uses Japanese voices with official English
+subtitles per the global server. 2K textures use the original atlas pages from
+the game assets; 4K and 8K textures use deterministic 2×/4× Real-CUGAN
+upscaling of the whole pages. The 8K tier uses noticeably more VRAM and load
+time and is only available in the highest preset or Custom.
 
-需要重新生成本机高清纹理时，先将 Real-CUGAN Windows 版放在脚本默认的 `.cache/realcugan/` 路径，或设置 `REALCUGAN_PATH` 与 `REALCUGAN_MODEL_PATH`，然后运行：
+To regenerate local high-resolution textures, place the Real-CUGAN Windows
+build at the default `.cache/realcugan/` path or set `REALCUGAN_PATH` and
+`REALCUGAN_MODEL_PATH`, then run:
 
 ```powershell
 npm run generate:model-textures
 ```
 
-构建并验证 `dist/`：
+Build and validate `dist/`:
 
 ```powershell
 npm run build
 ```
 
-构建结果位于 `dist/`。可将 `dist/index.html` 导入 Wallpaper Engine 编辑器进行本地测试。
+The build output is in `dist/`. You can import `dist/index.html` into the
+Wallpaper Engine editor for local testing.
 
-生成并回验正式离线 ZIP：
+Generate and verify the release ZIP:
 
 ```powershell
 npm run package:offline
 ```
 
-正式产物位于 `release/hare-camping-we-offline-v1.0.0.zip`，同目录 `.sha256` 文件记录整个 ZIP 的校验和；包内 `MANIFEST.sha256` 覆盖其余每个文件。
+The official artifact is `release/hare-camping-we-offline-v1.0.0.zip`; the
+`.sha256` file next to it records the whole-ZIP checksum, and the embedded
+`MANIFEST.sha256` covers every other file.
 
-## 离线发行范围
+## Distribution and Copyright
 
-本仓库不跟踪游戏模型、纹理、音频或 Spine Runtime。`npm run prepare:assets` 会校验本地输入并准备完整离线构建；正式 ZIP 包含模型、三语语音、四语字幕、BGM、三档纹理和固定 Spine 3.8 Runtime。
+This repository does not track game models, textures, audio, or the Spine
+Runtime. `npm run prepare:assets` validates the local inputs and prepares the
+complete build; the release package contains the model, three-language voices,
+four-language subtitles, BGM, three texture tiers, and the pinned Spine 3.8
+Runtime. The official release is published to the Steam Workshop through the
+Wallpaper Engine editor (the editor writes the `workshopid` on publish).
 
-本项目的交付范围仅限私人离线使用，不上传创意工坊，也不创建或沿用 `workshopid`。包内安装方法见 `OFFLINE-README.txt`，素材和 Runtime 说明见 `THIRD-PARTY-NOTICES.txt` 与 `vendor/SPINE-RUNTIMES-LICENSE.txt`。M4 的八项离线发行门槛和最终验证记录见 [`research/M4-GATE-REVIEW.md`](research/M4-GATE-REVIEW.md)。
+Installation instructions are in `OFFLINE-README.txt`; asset and Runtime
+notices are in `THIRD-PARTY-NOTICES.txt` and
+`vendor/SPINE-RUNTIMES-LICENSE.txt`.
 
-阶段记录见 [`research/M0-REPORT.md`](research/M0-REPORT.md)、[`research/M1-REPORT.md`](research/M1-REPORT.md)、[`research/M2-REPORT.md`](research/M2-REPORT.md)、[`research/M3-REPORT.md`](research/M3-REPORT.md) 与 [`research/M4-GATE-REVIEW.md`](research/M4-GATE-REVIEW.md)。
+The Blue Archive character models, animations, artwork, voices, subtitle text,
+and music in this package belong to their respective rights holders, including
+NEXON Games Co., Ltd., Yostar, and other Blue Archive rightsholders. This
+project and its assets are provided for informational and educational purposes
+only, without any commercial intent. This project is an unofficial fan project
+and is not affiliated with, sponsored by, or endorsed by those companies. The
+affected assets will be removed upon request from the rights holders.
+
+Stage reports: [`research/M0-REPORT.md`](research/M0-REPORT.md),
+[`research/M1-REPORT.md`](research/M1-REPORT.md),
+[`research/M2-REPORT.md`](research/M2-REPORT.md), and
+[`research/M3-REPORT.md`](research/M3-REPORT.md).
