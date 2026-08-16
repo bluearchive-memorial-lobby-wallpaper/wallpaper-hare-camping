@@ -11,7 +11,7 @@ if (!(root instanceof HTMLElement)) throw new Error("缺少 #app 根节点。");
 createWallpaperShell(root, {
   title: "Hare (Camping)",
   canvasLabel: "Hare Camping animated wallpaper",
-  editionLabel: "OFFLINE EDITION · 1.0",
+  editionLabel: "PUBLIC EDITION · 1.0",
 });
 
 const app = new App(root, {

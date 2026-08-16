@@ -47,26 +47,23 @@ if (project.type !== "web" || project.file !== "index.html") {
 }
 if (
   project.version !== 2 ||
-  project.title !== "Blue Archive - Hare (Camping) [Offline Edition]" ||
-  !project.description?.toLowerCase().includes("offline")
+  project.title !== "Blue Archive - Hare (Camping)" ||
+  !project.description?.toLowerCase().includes("educational")
 ) {
-  throw new Error("project.json does not identify the offline 1.0 edition");
+  throw new Error("project.json does not identify the 1.0 edition");
 }
 if (project.preview !== "preview.gif") {
-  throw new Error("Offline edition preview metadata is missing");
+  throw new Error("Edition preview metadata is missing");
 }
 if (
   project.contentrating !== "Everyone" ||
   project.ratingsex !== "none" ||
   project.ratingviolence !== "none" ||
-  project.visibility !== "private" ||
+  project.visibility !== "public" ||
   !Array.isArray(project.tags) ||
   !project.tags.includes("Anime")
 ) {
-  throw new Error("Offline edition rating, visibility, or tags are incomplete");
-}
-if (Object.hasOwn(project, "workshopid") || Object.hasOwn(project, "workshopurl")) {
-  throw new Error("Local project.json must not contain Workshop identity fields");
+  throw new Error("Edition rating, visibility, or tags are incomplete");
 }
 if (project.general?.properties?.modelresolution?.value !== "2k") {
   throw new Error("Model texture default is missing");
@@ -499,7 +496,7 @@ const builtJs = (
 ).join("\n");
 const builtUi = builtJs;
 if (!offlineReadme.includes("Version 1.0.0") || !offlineReadme.includes("MANIFEST.sha256")) {
-  throw new Error("Offline installation and integrity instructions are incomplete");
+  throw new Error("Installation and integrity instructions are incomplete");
 }
 if (
   !thirdPartyNotices.includes("Spine 3.8.99") ||
@@ -657,4 +654,4 @@ for (const variable of [
   }
 }
 
-console.log("Validated offline 1.0 dist: preview, metadata, notices, 2K/4K/8K model tiers, 30 voices, BGM, Runtime, and checksums.");
+console.log("Validated 1.0 dist: preview, metadata, notices, 2K/4K/8K model tiers, 30 voices, BGM, Runtime, and checksums.");

@@ -1,6 +1,6 @@
 {
   "contentrating": "Everyone",
-  "description": "Hare (Camping) interactive wallpaper — private offline edition. Includes five dialogue sequences, Chinese/Japanese/Korean voices, Chinese/Japanese/Korean/English subtitles, head patting, mouse tracking, BGM, and selectable render/texture quality.\n\n小钩晴（露营）互动壁纸私人离线版：包含五组对话、中日韩语音、中日韩英字幕、摸头、视线跟随、BGM，以及可选渲染和纹理画质。",
+  "description": "Hare (Camping) interactive wallpaper. Includes five dialogue sequences, Chinese/Japanese/Korean voices, Chinese/Japanese/Korean/English subtitles, head patting, mouse tracking, BGM, and selectable render/texture quality. This is a fan-made project for informational and educational purposes only; all Blue Archive assets belong to their respective rights holders.\n\n小钩晴（露营）互动壁纸：包含五组对话、中日韩语音、中日韩英字幕、摸头、视线跟随、BGM，以及可选渲染和纹理画质。本项目为粉丝自制，仅用于信息与教育目的；所有《蔚蓝档案》资产归其各自权利方所有。",
   "file": "index.html",
   "general": {
     "properties": {
@@ -425,8 +425,8 @@
   "ratingsex": "none",
   "ratingviolence": "none",
   "tags": ["Anime"],
-  "title": "Blue Archive - Hare (Camping) [Offline Edition]",
+  "title": "Blue Archive - Hare (Camping)",
   "type": "web",
   "version": 2,
-  "visibility": "private"
+  "visibility": "public"
 }
