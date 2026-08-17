@@ -4,7 +4,7 @@
 
 小钩晴（露营）Wallpaper Engine 网页壁纸项目。
 
-当前状态：正式版 `1.0.0`，准备发布至 Steam 创意工坊。项目已具备完整交互、WE 属性、桌面调试面板、分辨率/纹理档位、配置优先级、材质无感切换、WebGL 上下文恢复、低 FPS 时间一致性、4K/8K 性能基线，以及带逐文件校验清单的可复现发行包。
+当前状态：正式版 `1.0.1` 已发布至 [Steam 创意工坊](https://steamcommunity.com/sharedfiles/filedetails/?id=3785064025)。项目已具备完整交互、WE 属性、桌面调试面板、分辨率/纹理档位、配置优先级、材质无感切换、WebGL 上下文恢复、低 FPS 时间一致性、4K/8K 性能基线，以及带逐文件校验清单的可复现发行包。
 
 ## 本地运行
 
@@ -23,7 +23,7 @@ Wallpaper Engine 中的属性标签与选项保持英文。属性按 `Visual Qua
 
 分辨率选项控制 WebGL 内部渲染高度，并按当前壁纸视口比例计算宽度。因此 16:9 下对应 1280×720、1920×1080、2560×1440、3840×2160；在 16:10、21:9 等屏幕上会保持屏幕宽高比，不会强行拉伸为 16:9。
 
-默认参数为模型缩放 `0.80`、X/Y `0/0`、旋转 `0°`、关闭静音、关闭对话自动播放、BGM 音量 `50`、对话音量 `70`、项目 FPS 上限 `60`、主题色 `#0e4eac`，以及 1080P 渲染配 2K 纹理的默认画质预设。自定义模型布局可在 `0–360°` 范围内旋转模型；项目 FPS 上限与 Wallpaper Engine 全局上限同时存在时取两者较低值。实机视口回归结果见 [`research/DEFAULT-PRESET-V1-REPORT.md`](research/DEFAULT-PRESET-V1-REPORT.md)。
+默认参数为模型缩放 `0.80`、X/Y `0/0`、旋转 `0°`、关闭静音、关闭对话自动播放、BGM 音量 `50`、对话音量 `70`、项目 FPS 上限 `60`、主题色 `#819ee0`，以及 1080P 渲染配 2K 纹理的默认画质预设。自定义模型布局可在 `0–360°` 范围内旋转模型；项目 FPS 上限与 Wallpaper Engine 全局上限同时存在时取两者较低值。实机视口回归结果见 [`research/DEFAULT-PRESET-V1-REPORT.md`](research/DEFAULT-PRESET-V1-REPORT.md)。
 
 属性页可直接加载 `Default`、`2K`、`4K` 和 `Maximum` 画质预设；选择 `Custom` 后才显示独立的渲染分辨率、模型纹理和 FPS 控件。位置、互动、对话语言和调试分组也采用相同的固定预设/自定义模式。自定义对话可同时显示上下排列的主、副字幕，并可从简体中文、日文、韩文和英文中分别选择语言，还可设置字幕对齐、底部/顶部/屏幕中心/底部左侧位置或自定义 X/Y；两种字幕语言相同时自动只显示主字幕。固定中/日/韩预设使用对应语音和字幕；英文预设按国际服组合使用日语语音和官方英文字幕。2K 纹理使用游戏资源中的原始 Atlas 页面；4K 和 8K 纹理使用 Real-CUGAN 对整张页面做 2×/4× 确定性超分。8K 档占用的显存和载入时间明显更高，只在最高预设或自定义中使用。
 
@@ -51,7 +51,7 @@ npm run package:offline
 
 ## 发行与版权
 
-本仓库不跟踪游戏模型、纹理、音频或 Spine Runtime。`npm run prepare:assets` 会校验本地输入并准备完整构建；发行包包含模型、三语语音、四语字幕、BGM、三档纹理和固定 Spine 3.8 Runtime。正式版本通过 Wallpaper Engine 编辑器发布至 Steam 创意工坊（发布时编辑器会写入 `workshopid`）。
+本仓库不跟踪游戏模型、纹理、音频或 Spine Runtime。`npm run prepare:assets` 会校验本地输入并准备完整构建；发行包包含模型、三语语音、四语字幕、BGM、三档纹理和固定 Spine 3.8 Runtime。正式版 `1.0.1` 已通过 Wallpaper Engine 编辑器发布至 [Steam 创意工坊](https://steamcommunity.com/sharedfiles/filedetails/?id=3785064025)，对应 Workshop ID 为 `3785064025`。
 
 包内安装方法见 `OFFLINE-README.txt`，素材和 Runtime 说明见 `THIRD-PARTY-NOTICES.txt` 与 `vendor/SPINE-RUNTIMES-LICENSE.txt`。
 
@@ -60,3 +60,15 @@ npm run package:offline
 本发行包中的《蔚蓝档案》角色模型、动画、立绘、语音、字幕文本与音乐等资产，版权归其各自权利方（NEXON Games Co., Ltd.、Yostar 等《蔚蓝档案》相关权利方）所有。本项目及其资产仅用于信息与教育目的，不用于任何商业用途；本项目为粉丝自制项目，与上述公司无隶属、赞助或背书关系。若权利方要求，相关资产将被移除。
 
 阶段记录见 [`research/M0-REPORT.md`](research/M0-REPORT.md)、[`research/M1-REPORT.md`](research/M1-REPORT.md)、[`research/M2-REPORT.md`](research/M2-REPORT.md) 与 [`research/M3-REPORT.md`](research/M3-REPORT.md)。
+
+## 发布更新
+
+### v1.0.1（2026-08-17）
+
+- 已将更新发布至 Steam 创意工坊项目 `3785064025`。
+- 修复创意工坊预览 GIF 仅播放一次后停止的问题，现会持续循环播放。
+- 将默认主题色更新为从待机阶段代表截图采集的 `#819ee0`。
+
+### v1.0.0（2026-08-17）
+
+- 首次发布小钩晴（露营）记忆大厅壁纸至 Steam 创意工坊。

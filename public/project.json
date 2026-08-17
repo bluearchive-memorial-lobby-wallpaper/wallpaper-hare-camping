@@ -1,6 +1,6 @@
 {
   "contentrating": "Everyone",
-  "description": "Voice: CN/JP/KR · Subtitles: CN/JP/KR/EN · Textures: 2K/4K/8K\n\nHare (Camping) interactive wallpaper. Includes five dialogue sequences, Chinese/Japanese/Korean voices, Chinese/Japanese/Korean/English subtitles, head patting, mouse tracking, BGM, and selectable render/texture quality. This is a fan-made project for informational and educational purposes only; all Blue Archive assets belong to their respective rights holders.\n\n语音：中/日/韩 · 字幕：中/日/韩/英 · 纹理：2K/4K/8K\n\n小钩晴（露营）互动壁纸：包含五组对话、中日韩语音、中日韩英字幕、摸头、视线跟随、BGM，以及可选渲染和纹理画质。本项目为粉丝自制，仅用于信息与教育目的；所有《蔚蓝档案》资产归其各自权利方所有。\n\n## Update Log\n\n### v1.0.0 (2026-08-17)\n- Initial release: Hare (Camping) memorial lobby wallpaper with CN/JP/KR voices, CN/JP/KR/EN subtitles, head patting, mouse tracking, and 2K/4K/8K textures.\n- 首次发布：小钩晴（露营）记忆大厅壁纸，中日韩语音、中日韩英字幕、摸头、视线跟随与 2K/4K/8K 纹理。",
+  "description": "Voice: CN/JP/KR · Subtitles: CN/JP/KR/EN · Textures: 2K/4K/8K\n\nHare (Camping) interactive wallpaper. Includes five dialogue sequences, Chinese/Japanese/Korean voices, Chinese/Japanese/Korean/English subtitles, head patting, mouse tracking, BGM, and selectable render/texture quality. This is a fan-made project for informational and educational purposes only; all Blue Archive assets belong to their respective rights holders.\n\n语音：中/日/韩 · 字幕：中/日/韩/英 · 纹理：2K/4K/8K\n\n小钩晴（露营）互动壁纸：包含五组对话、中日韩语音、中日韩英字幕、摸头、视线跟随、BGM，以及可选渲染和纹理画质。本项目为粉丝自制，仅用于信息与教育目的；所有《蔚蓝档案》资产归其各自权利方所有。\n\n## Update Log\n\n### v1.0.1 (2026-08-17)\n- Fixed the Workshop preview GIF so it loops continuously instead of stopping after one playback.\n- 修复创意工坊预览 GIF 仅播放一次后停止的问题，现会持续循环播放。\n\n### v1.0.0 (2026-08-17)\n- Initial release: Hare (Camping) memorial lobby wallpaper with CN/JP/KR voices, CN/JP/KR/EN subtitles, head patting, mouse tracking, and 2K/4K/8K textures.\n- 首次发布：小钩晴（露营）记忆大厅壁纸，中日韩语音、中日韩英字幕、摸头、视线跟随与 2K/4K/8K 纹理。",
   "file": "index.html",
   "general": {
     "properties": {
@@ -23,7 +23,7 @@
         "order": 1,
         "text": "Theme Color",
         "type": "color",
-        "value": "0.054902 0.305882 0.674510"
+        "value": "0.505882 0.619608 0.878431"
       },
       "renderresolution": {
         "condition": "qualitypreset.value == 'custom'",

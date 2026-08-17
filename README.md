@@ -5,8 +5,8 @@ English | [简体中文](README.zh-CN.md)
 A Blue Archive memorial-lobby-style web wallpaper for Wallpaper Engine,
 featuring Hare (Camping).
 
-Current status: release `1.0.0` is prepared for publishing to the Steam
-Workshop. The project includes full interactions, Wallpaper Engine properties,
+Current status: release `1.0.1` is published on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3785064025).
+The project includes full interactions, Wallpaper Engine properties,
 a desktop debug panel, resolution/texture tiers, configuration priority,
 seamless material switching, WebGL context recovery, low-FPS time consistency,
 4K/8K performance baselines, and a reproducible package with a per-file
@@ -72,7 +72,7 @@ screens it keeps the screen aspect ratio without force-stretching to 16:9.
 
 Default parameters: model scale `0.80`, X/Y `0/0`, rotation `0°`, unmuted,
 dialogue auto play off, BGM volume `50`, dialogue volume `70`, project FPS
-cap `60`, theme color `#0e4eac`, and the default quality preset of 1080P
+cap `60`, theme color `#819ee0`, and the default quality preset of 1080P
 rendering with 2K textures. Custom model layouts can rotate the model within
 `0–360°`; when both the project FPS cap and the Wallpaper Engine global cap
 exist, the lower of the two applies. On-device viewport regression results are
@@ -126,8 +126,9 @@ This repository does not track game models, textures, audio, or the Spine
 Runtime. `npm run prepare:assets` validates the local inputs and prepares the
 complete build; the release package contains the model, three-language voices,
 four-language subtitles, BGM, three texture tiers, and the pinned Spine 3.8
-Runtime. The official release is published to the Steam Workshop through the
-Wallpaper Engine editor (the editor writes the `workshopid` on publish).
+Runtime. Release `1.0.1` is published to the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3785064025)
+through the Wallpaper Engine editor. The published project uses Workshop ID
+`3785064025`.
 
 Installation instructions are in `OFFLINE-README.txt`; asset and Runtime
 notices are in `THIRD-PARTY-NOTICES.txt` and
@@ -145,3 +146,18 @@ Stage reports: [`research/M0-REPORT.md`](research/M0-REPORT.md),
 [`research/M1-REPORT.md`](research/M1-REPORT.md),
 [`research/M2-REPORT.md`](research/M2-REPORT.md), and
 [`research/M3-REPORT.md`](research/M3-REPORT.md).
+
+## Release Updates
+
+### v1.0.1 (2026-08-17)
+
+- Published the update to Steam Workshop item `3785064025`.
+- Fixed the Workshop preview GIF so it loops continuously instead of stopping
+  after one playback.
+- Updated the default theme color to `#819ee0`, sampled from the wallpaper's
+  representative idle-stage screenshot.
+
+### v1.0.0 (2026-08-17)
+
+- Published the initial Hare (Camping) memorial lobby wallpaper release to the
+  Steam Workshop.
