@@ -62,7 +62,8 @@ if (
   project.ratingviolence !== "none" ||
   project.visibility !== "public" ||
   !Array.isArray(project.tags) ||
-  !project.tags.includes("Anime")
+  !project.tags.includes("Anime") ||
+  !project.tags.includes("Interactive")
 ) {
   throw new Error("Edition rating, visibility, or tags are incomplete");
 }
