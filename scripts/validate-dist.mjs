@@ -49,7 +49,8 @@ if (
   project.version !== 2 ||
   project.title !==
     "Blue Archive Memorial Lobby · 蔚蓝档案 · Hare (Camping) · 晴（露营） · ハレ（キャンプ） · 8K 互动" ||
-  !project.description?.toLowerCase().includes("educational")
+  !project.description?.toLowerCase().includes("educational") ||
+  !project.description?.includes("Update Log")
 ) {
   throw new Error("project.json does not identify the 1.0 edition");
 }
