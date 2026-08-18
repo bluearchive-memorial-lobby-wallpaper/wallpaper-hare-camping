@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "blue-archive-hare-camping",
+    "entry": "src/main.ts"
+  },
+  "runtime": {
+    "package": "ba-memorial-lobby-wallpaper-runtime",
+    "range": "^0.1.0"
+  },
+  "content": {
+    "studentId": "CH0233",
+    "variantId": "camping"
+  },
+  "resources": {
+    "model": {
+      "sourceTier": "2k",
+      "outputTiers": [
+        "2k",
+        "4k",
+        "8k"
+      ]
+    },
+    "voice": {
+      "locales": [
+        "ja",
+        "zh-cn",
+        "ko"
+      ],
+      "expectedCount": 30
+    },
+    "preview": true,
+    "source": {
+      "provider": "kivo",
+      "studentRecordId": 340,
+      "musicRecordId": 252,
+      "voiceFields": {
+        "ja": "voice",
+        "zh-cn": "voice_cn",
+        "ko": "voice_kr"
+      },
+      "memorialVoiceCountPerLocale": 10
+    }
+  },
+  "structure": {
+    "requiredFiles": [
+      "src/main.ts",
+      "src/config.ts",
+      "public/project.json",
+      "public/preview.gif",
+      "README.md",
+      ".gitignore"
+    ],
+    "validateHtmlShell": true,
+    "validatePreview": true,
+    "validateChecksums": true
+  },
+  "build": {
+    "outputDirectory": "dist",
+    "logRoute": "/__hare-log",
+    "target": "chrome90"
+  },
+  "distribution": {
+    "requiredFiles": [
+      "index.html",
+      "logging-bootstrap.js",
+      "preview.gif"
+    ],
+    "previewPath": "preview.gif",
+    "validatePreview": true
+  },
+  "package": {
+    "archiveName": "blue-archive-hare-camping.zip"
+  }
+}
