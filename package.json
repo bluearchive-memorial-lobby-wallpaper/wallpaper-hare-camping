@@ -3,27 +3,7 @@
   "version": "1.0.1",
   "private": true,
   "type": "module",
-  "scripts": {
-    "generate:model-textures": "node scripts/generate-model-textures.mjs",
-    "generate:checksums": "memorial-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base .",
-    "verify:checksums": "memorial-lobby-toolkit checksums --input local-assets/original --output research/checksums.sha256 --base . --verify",
-    "prepare:assets": "node scripts/prepare-assets.mjs",
-    "dev": "npm run prepare:assets && vite --host 127.0.0.1",
-    "test:display": "node scripts/test-display-layout.mjs",
-    "test:subtitle": "node scripts/test-subtitle-presenter.mjs",
-    "test:settings": "node scripts/test-settings-project.mjs",
-    "test:logging": "node scripts/test-logging.mjs",
-    "typecheck": "tsc --noEmit",
-    "build": "npm run prepare:assets && npm run typecheck && vite build && node scripts/validate-dist.mjs",
-    "package:offline": "npm run build && node scripts/package-offline.mjs",
-    "preview": "vite preview --host 127.0.0.1"
-  },
   "dependencies": {
     "ba-memorial-lobby-wallpaper-runtime": "^0.1.0"
-  },
-  "devDependencies": {
-    "ba-memorial-lobby-wallpaper-toolkit": "^0.1.0",
-    "typescript": "7.0.2",
-    "vite": "8.2.1"
   }
 }
