@@ -7,11 +7,26 @@
       "qualitypreset": {
         "index": 0,
         "options": [
-          { "label": "Default (1080P / 2K / 60 FPS)", "value": "default" },
-          { "label": "2K (1440P / 4K / 60 FPS)", "value": "2k" },
-          { "label": "4K (2160P / 4K / 60 FPS)", "value": "4k" },
-          { "label": "Maximum (2160P / 8K / 160 FPS)", "value": "maximum" },
-          { "label": "Custom", "value": "custom" }
+          {
+            "label": "Default (1080P / 2K / 60 FPS)",
+            "value": "default"
+          },
+          {
+            "label": "2K (1440P / 4K / 60 FPS)",
+            "value": "2k"
+          },
+          {
+            "label": "4K (2160P / 4K / 60 FPS)",
+            "value": "4k"
+          },
+          {
+            "label": "Maximum (2160P / 8K / 160 FPS)",
+            "value": "maximum"
+          },
+          {
+            "label": "Custom",
+            "value": "custom"
+          }
         ],
         "order": 0,
         "text": "Visual Quality",
@@ -29,10 +44,22 @@
         "condition": "qualitypreset.value == 'custom'",
         "index": 2,
         "options": [
-          { "label": "720P", "value": "720p" },
-          { "label": "1080P", "value": "1080p" },
-          { "label": "2K", "value": "1440p" },
-          { "label": "4K", "value": "2160p" }
+          {
+            "label": "720P",
+            "value": "720p"
+          },
+          {
+            "label": "1080P",
+            "value": "1080p"
+          },
+          {
+            "label": "2K",
+            "value": "1440p"
+          },
+          {
+            "label": "4K",
+            "value": "2160p"
+          }
         ],
         "order": 2,
         "text": "Render Resolution",
@@ -43,9 +70,18 @@
         "condition": "qualitypreset.value == 'custom'",
         "index": 3,
         "options": [
-          { "label": "2K", "value": "2k" },
-          { "label": "4K", "value": "4k" },
-          { "label": "8K", "value": "8k" }
+          {
+            "label": "2K",
+            "value": "2k"
+          },
+          {
+            "label": "4K",
+            "value": "4k"
+          },
+          {
+            "label": "8K",
+            "value": "8k"
+          }
         ],
         "order": 3,
         "text": "Model Texture Resolution",
@@ -67,8 +103,14 @@
       "positionpreset": {
         "index": 5,
         "options": [
-          { "label": "Default", "value": "default" },
-          { "label": "Custom", "value": "custom" }
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Custom",
+            "value": "custom"
+          }
         ],
         "order": 10,
         "text": "Position & Scale",
@@ -124,8 +166,14 @@
       "interactionpreset": {
         "index": 9,
         "options": [
-          { "label": "Default", "value": "default" },
-          { "label": "Custom", "value": "custom" }
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Custom",
+            "value": "custom"
+          }
         ],
         "order": 20,
         "text": "Animation & Interactions",
@@ -213,11 +261,26 @@
         "condition": "interactionpreset.value == 'default' || (interactionpreset.value == 'custom' && interactions.value == true && voicelines.value == true)",
         "index": 19,
         "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" },
-          { "label": "Korean", "value": "ko" },
-          { "label": "English", "value": "en" },
-          { "label": "Custom", "value": "custom" }
+          {
+            "label": "Simplified Chinese",
+            "value": "zh-cn"
+          },
+          {
+            "label": "Japanese",
+            "value": "ja"
+          },
+          {
+            "label": "Korean",
+            "value": "ko"
+          },
+          {
+            "label": "English",
+            "value": "en"
+          },
+          {
+            "label": "Custom",
+            "value": "custom"
+          }
         ],
         "order": 41,
         "text": "Dialogue Language",
@@ -228,9 +291,18 @@
         "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
         "index": 20,
         "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" },
-          { "label": "Korean", "value": "ko" }
+          {
+            "label": "Simplified Chinese",
+            "value": "zh-cn"
+          },
+          {
+            "label": "Japanese",
+            "value": "ja"
+          },
+          {
+            "label": "Korean",
+            "value": "ko"
+          }
         ],
         "order": 42,
         "text": "Voice Language",
@@ -249,10 +321,22 @@
         "condition": "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
         "index": 22,
         "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" },
-          { "label": "Korean", "value": "ko" },
-          { "label": "English", "value": "en" }
+          {
+            "label": "Simplified Chinese",
+            "value": "zh-cn"
+          },
+          {
+            "label": "Japanese",
+            "value": "ja"
+          },
+          {
+            "label": "Korean",
+            "value": "ko"
+          },
+          {
+            "label": "English",
+            "value": "en"
+          }
         ],
         "order": 44,
         "text": "Primary Subtitle Language",
@@ -271,10 +355,22 @@
         "condition": "dialoguelanguagepreset.value == 'custom' && showsubtitles.value == true && showsecondarysubtitles.value == true && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
         "index": 24,
         "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "Japanese", "value": "ja" },
-          { "label": "Korean", "value": "ko" },
-          { "label": "English", "value": "en" }
+          {
+            "label": "Simplified Chinese",
+            "value": "zh-cn"
+          },
+          {
+            "label": "Japanese",
+            "value": "ja"
+          },
+          {
+            "label": "Korean",
+            "value": "ko"
+          },
+          {
+            "label": "English",
+            "value": "en"
+          }
         ],
         "order": 46,
         "text": "Secondary Subtitle Language",
@@ -285,9 +381,18 @@
         "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
         "index": 25,
         "options": [
-          { "label": "Center", "value": "center" },
-          { "label": "Left", "value": "left" },
-          { "label": "Right", "value": "right" }
+          {
+            "label": "Center",
+            "value": "center"
+          },
+          {
+            "label": "Left",
+            "value": "left"
+          },
+          {
+            "label": "Right",
+            "value": "right"
+          }
         ],
         "order": 47,
         "text": "Subtitle Alignment",
@@ -298,11 +403,26 @@
         "condition": "dialoguelanguagepreset.value == 'custom' && (interactionpreset.value == 'default' || (interactions.value == true && voicelines.value == true))",
         "index": 26,
         "options": [
-          { "label": "Bottom Center", "value": "bottom-center" },
-          { "label": "Top Center", "value": "top-center" },
-          { "label": "Screen Center", "value": "screen-center" },
-          { "label": "Bottom Left", "value": "bottom-left" },
-          { "label": "Custom", "value": "custom" }
+          {
+            "label": "Bottom Center",
+            "value": "bottom-center"
+          },
+          {
+            "label": "Top Center",
+            "value": "top-center"
+          },
+          {
+            "label": "Screen Center",
+            "value": "screen-center"
+          },
+          {
+            "label": "Bottom Left",
+            "value": "bottom-left"
+          },
+          {
+            "label": "Custom",
+            "value": "custom"
+          }
         ],
         "order": 48,
         "text": "Subtitle Position",
@@ -334,10 +454,22 @@
       "debugpreset": {
         "index": 29,
         "options": [
-          { "label": "Off", "value": "off" },
-          { "label": "Debug Panel Only", "value": "panel" },
-          { "label": "All", "value": "all" },
-          { "label": "Custom", "value": "custom" }
+          {
+            "label": "Off",
+            "value": "off"
+          },
+          {
+            "label": "Debug Panel Only",
+            "value": "panel"
+          },
+          {
+            "label": "All",
+            "value": "all"
+          },
+          {
+            "label": "Custom",
+            "value": "custom"
+          }
         ],
         "order": 60,
         "text": "Debug",
@@ -364,8 +496,14 @@
         "condition": "debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true)",
         "index": 33,
         "options": [
-          { "label": "Default", "value": "default" },
-          { "label": "Custom", "value": "custom" }
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Custom",
+            "value": "custom"
+          }
         ],
         "order": 63,
         "text": "Debug Panel Position & Scale",
@@ -411,8 +549,14 @@
         "condition": "debugpreset.value == 'panel' || debugpreset.value == 'all' || (debugpreset.value == 'custom' && debugpanelenabled.value == true)",
         "index": 32,
         "options": [
-          { "label": "Simplified Chinese", "value": "zh-cn" },
-          { "label": "English", "value": "en" }
+          {
+            "label": "Simplified Chinese",
+            "value": "zh-cn"
+          },
+          {
+            "label": "English",
+            "value": "en"
+          }
         ],
         "order": 67,
         "text": "Panel Language",
@@ -424,7 +568,10 @@
   "preview": "preview.gif",
   "ratingsex": "none",
   "ratingviolence": "none",
-  "tags": ["Anime", "Interactive"],
+  "tags": [
+    "Anime",
+    "Interactive"
+  ],
   "title": "Blue Archive Memorial Lobby · 蔚蓝档案 · Hare (Camping) · 晴（露营） · ハレ（キャンプ） · 8K 互动",
   "type": "web",
   "version": 2,
