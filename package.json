@@ -1,9 +1,9 @@
 {
   "name": "hare-camping-wallpaper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "type": "module",
   "dependencies": {
-    "ba-memorial-lobby-wallpaper-runtime": "^0.3.1"
+    "ba-memorial-lobby-wallpaper-runtime": "^0.4.0"
   }
 }
