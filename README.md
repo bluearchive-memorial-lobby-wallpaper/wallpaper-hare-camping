@@ -146,18 +146,3 @@ Stage reports: [`research/M0-REPORT.md`](research/M0-REPORT.md),
 [`research/M1-REPORT.md`](research/M1-REPORT.md),
 [`research/M2-REPORT.md`](research/M2-REPORT.md), and
 [`research/M3-REPORT.md`](research/M3-REPORT.md).
-
-## Release Updates
-
-### v1.0.1 (2026-08-17)
-
-- Published the update to Steam Workshop item `3785064025`.
-- Fixed the Workshop preview GIF so it loops continuously instead of stopping
-  after one playback.
-- Updated the default theme color to `#819ee0`, sampled from the wallpaper's
-  representative idle-stage screenshot.
-
-### v1.0.0 (2026-08-17)
-
-- Published the initial Hare (Camping) memorial lobby wallpaper release to the
-  Steam Workshop.
