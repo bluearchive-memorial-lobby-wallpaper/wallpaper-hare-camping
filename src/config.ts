@@ -7,6 +7,13 @@ import {
 export type VoiceLocale = "ja" | "zh-cn" | "ko";
 export type SubtitleLocale = "zh-cn" | "ja" | "ko" | "en";
 
+// Project identity: title and the debug-panel edition label. The version part
+// is injected at build time (__WALLPAPER_VERSION__), never a literal here.
+export const PROJECT = {
+  title: "Hare (Camping)",
+  editionLabel: `PUBLIC EDITION · ${__WALLPAPER_VERSION__}`,
+} as const;
+
 export const BGM = {
   title: "Starry Confession",
   path: "./assets/hare-camping/bgm/25 - Starry Confession.flac",
