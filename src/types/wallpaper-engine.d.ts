@@ -41,6 +41,17 @@ declare global {
         properties: Record<string, boolean | number | string>,
       ) => void;
       clearSessionOverrides: () => void;
+      captureAudioProbe: (
+        args:
+          | { source: "bgm" }
+          | { source: "voice"; eventId: string; locale: string }
+          & { durationSeconds?: number },
+      ) => Promise<{
+        dataUrl: string;
+        duration: number;
+        sampleRate: number;
+        frameCount: number;
+      }>;
     };
   }
 }

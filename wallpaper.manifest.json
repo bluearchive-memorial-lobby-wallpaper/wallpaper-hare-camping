@@ -67,6 +67,9 @@
       "preview.gif"
     ],
     "previewPath": "preview.gif",
+    "previewWidth": 192,
+    "previewHeight": 192,
+    "previewMaxBytes": 1000000,
     "validatePreview": true
   },
   "package": {
