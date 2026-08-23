@@ -12,6 +12,10 @@
             "value": "default"
           },
           {
+            "label": "Eco (720P / 2K / 30 FPS)",
+            "value": "eco"
+          },
+          {
             "label": "2K (1440P / 4K / 60 FPS)",
             "value": "2k"
           },
