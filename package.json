@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "ba-memorial-lobby-wallpaper-runtime": "^0.4.0"
+    "ba-memorial-lobby-wallpaper-runtime": "^0.5.0"
   }
 }
