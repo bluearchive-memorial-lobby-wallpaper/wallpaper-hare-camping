@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
 
-// Injected at build time by ba-memorial-lobby-wallpaper-toolkit
-// (buildWallpaperProject define) from the authoritative release tag.
+// Injected at build time by the Pipeline build toolchain
+// from the authoritative release tag.
 declare const __WALLPAPER_VERSION__: string;
